@@ -215,6 +215,12 @@ var test = {
       lexer.analyze('|string');
     }, TypeLexer.SyntaxError);
     test.done();
+  },
+  'Analyze an illegal star token': function(test) {
+    test.throws(function() {
+      lexer.analyze('Promise*Error');
+    }, TypeLexer.SyntaxError);
+    test.done();
   }
 };
 

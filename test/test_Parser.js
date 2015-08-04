@@ -4,7 +4,7 @@ var chai = require('chai');
 var expect = chai.expect;
 
 var NodeType = require('../lib/NodeType.js');
-var Parser = require('../lib/Parser.js');
+var Parser = require('../lib/parsing.js');
 
 
 describe('Parser', function() {

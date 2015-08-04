@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "properties": {
+    "type": { "$ref": "NodeType.json" },
+    "params": {
+      "type": "array",
+      "items": { "$ref": "Node.json" }
+    },
+    "returns": {
+      "oneOf": [
+        { "$ref": "Node.json" },
+        null
+      ]
+    },
+    "thisValue": {
+      "oneOf": [
+        { "$ref": "Node.json" },
+        null
+      ]
+    },
+    "newValue": {
+      "oneOf": [
+        { "$ref": "Node.json" },
+        null
+      ]
+    }
+  },
+  "required": [
+    "type",
+    "params",
+    "returns",
+    "thisValue",
+    "newValue"
+  ]
+}

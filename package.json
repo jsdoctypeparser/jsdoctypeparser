@@ -19,7 +19,7 @@
   "directories": {
     "test": "test"
   },
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "prepublidh": "npm run build",
     "pretest": "npm run lint",

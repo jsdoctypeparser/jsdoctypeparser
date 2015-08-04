@@ -3,12 +3,12 @@
 'use strict';
 
 
-var Parser = require('../lib/index.js').Parser;
-var Lexer = require('../lib/index.js').Lexer;
+var Parser = require('../index.js').Parser;
+var Lexer = require('../index.js').Lexer;
 var expect = require('chai').expect;
 
 
-describe('Parser', function() {
+describe.skip('Parser', function() {
   it('Build a primitive type name', function() {
     var parser = new Parser();
     var union = parser.parse('boolean');

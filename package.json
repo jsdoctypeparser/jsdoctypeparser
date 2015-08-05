@@ -34,7 +34,6 @@
     "eslint": "^0.20.0",
     "gulp": "^3.8.11",
     "gulp-debug": "^2.0.1",
-    "gulp-notify": "^2.2.0",
     "gulp-peg": "^0.1.2",
     "gulp-plumber": "^0.6.6",
     "jscs": "^1.13.1",

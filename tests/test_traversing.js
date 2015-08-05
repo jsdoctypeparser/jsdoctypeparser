@@ -308,7 +308,23 @@ describe('traversing', function() {
       ],
     },
 
-    'should visit an external member node': {
+    'should visit a string value node': {
+      given: { type: NodeType.STRING_VALUE, value: 'stringValue' },
+      then: [
+        ['enter', NodeType.STRING_VALUE],
+        ['leave', NodeType.STRING_VALUE],
+      ],
+    },
+
+    'should visit a number value node': {
+      given: { type: NodeType.NUMBER_VALUE, value: 'numberValue' },
+      then: [
+        ['enter', NodeType.NUMBER_VALUE],
+        ['leave', NodeType.NUMBER_VALUE],
+      ],
+    },
+
+    'should visit an external node': {
       given: { type: NodeType.EXTERNAL, value: createNameNode('external') },
       then: [
         ['enter', NodeType.EXTERNAL],

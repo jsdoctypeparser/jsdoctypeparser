@@ -456,7 +456,8 @@ unionTypeExpr = unionTypeOperator _ right:typeExpr {
     };
   }
 
-unionTypeOperator = "|"
+// https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
+unionTypeOperator = "|" / "/"
 
 
 /*

@@ -310,6 +310,19 @@ describe('Parser', function() {
   });
 
 
+  it('should return an union type when "LeftType/RightType" arrived', function() {
+    var typeExprStr = 'LeftType/RightType';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createUnionTypeNode(
+      createTypeNameNode('LeftType'),
+      createTypeNameNode('RightType')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a variadic type node when "...variadicType" arrived', function() {
     var typeExprStr = '...variadicType';
     var node = Parser.parse(typeExprStr);

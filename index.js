@@ -1,6 +1,10 @@
-// This script licensed under the MIT.
-// http://orgachem.mit-license.org
 'use strict';
+
+
+var parsing = require('./lib/parsing.js');
+var publishing = require('./lib/publishing.js');
+var traversing = require('./lib/traversing.js');
+var NodeType = require('./lib/NodeType.js');
 
 
 /**
@@ -9,5 +13,10 @@
  * @exports jsdoctypeparser
  */
 module.exports = {
-  Parser: require('./lib/Parser.js'),
+  parse: parsing.parse,
+  SyntaxError: parsing.SyntaxError,
+  publish: publishing.publish,
+  createDefaultPublisher: publishing.createDefaultPublisher,
+  traverse: traversing.traverse,
+  NodeType: NodeType,
 };

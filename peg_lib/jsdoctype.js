@@ -208,8 +208,8 @@ module.exports = (function() {
               type: NodeType.FUNCTION,
               params: params,
               returns: returnedTypeNode,
-              thisValue: thisValue,
-              newValue: newValue,
+              this: thisValue,
+              new: newValue,
             };
           },
         peg$c35 = ",",
@@ -253,14 +253,12 @@ module.exports = (function() {
             };
           },
         peg$c50 = function(key, valueWithColon) {
-            var hasValue = Boolean(valueWithColon);
-            var value = hasValue ? valueWithColon[3] : null;
+            var value = valueWithColon ? valueWithColon[3] : null;
 
             return {
               type: NodeType.RECORD_ENTRY,
               key: key,
-              value: value,
-              hasValue: hasValue,
+              value: value
             };
           },
         peg$c51 = function() {

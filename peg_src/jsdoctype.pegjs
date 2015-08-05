@@ -305,8 +305,8 @@ funcTypeExpr = "function" _ "(" _ paramParts:funcTypeExprParamsPart _ ")" _
       type: NodeType.FUNCTION,
       params: params,
       returns: returnedTypeNode,
-      thisValue: thisValue,
-      newValue: newValue,
+      this: thisValue,
+      new: newValue,
     };
   }
 
@@ -358,14 +358,12 @@ recordTypeExpr = "{" _ firstEntry:recordEntry? restEntriesWithComma:(_ "," _ rec
   }
 
 recordEntry = key:$(jsIdentifier) valueWithColon:(_ ":" _ typeExpr)? {
-    var hasValue = Boolean(valueWithColon);
-    var value = hasValue ? valueWithColon[3] : null;
+    var value = valueWithColon ? valueWithColon[3] : null;
 
     return {
       type: NodeType.RECORD_ENTRY,
       key: key,
-      value: value,
-      hasValue: hasValue,
+      value: value
     };
   }
 

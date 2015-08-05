@@ -3,7 +3,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 var NodeType = require('../lib/NodeType.js');
-var traverse = require('../lib/traversing.js');
+var traverse = require('../lib/traversing.js').traverse;
 var lodash = require('lodash');
 
 

@@ -145,7 +145,6 @@ modifiee =
     funcTypeExpr
     / recordTypeExpr
     / parenthesisTypeExpr
-    / quotedTypeExpr
     / anyTypeExpr
     / unknownTypeExpr
     / moduleNameExpr
@@ -172,17 +171,6 @@ postfixModifiers =
  *   - (module: path/to/file).Module
  */
 parenthesisTypeExpr = "(" _ wrapped:typeExpr _ ")" {
-    return wrapped;
-  }
-
-
-/*
- * Quoted expressions.
- *
- * Examples:
- *   - external:"jQuery.fn".starfairy
- */
-quotedTypeExpr = '"' _ wrapped:typeExpr _ '"' {
     return wrapped;
   }
 

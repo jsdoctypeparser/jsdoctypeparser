@@ -107,7 +107,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createMemberTypeNode(
-      createTypeNameNode('owner'), 'Member');
+      createTypeNameNode('owner'),
+      'Member');
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -760,26 +761,6 @@ describe('Parser', function() {
       { thisValue: null, newValue: null }
     );
 
-    expect(node).to.deep.equal(expectedNode);
-  });
-
-
-  it('should return an any type node when "(*)"' +
-     ' arrived', function() {
-    var typeExprStr = '(*)';
-    var node = Parser.parse(typeExprStr);
-
-    var expectedNode = createAnyTypeNode();
-    expect(node).to.deep.equal(expectedNode);
-  });
-
-
-  it('should return an any type node when "\\"*\\""' +
-     ' arrived', function() {
-    var typeExprStr = '"*"';
-    var node = Parser.parse(typeExprStr);
-
-    var expectedNode = createAnyTypeNode();
     expect(node).to.deep.equal(expectedNode);
   });
 

@@ -92,6 +92,25 @@ describe('Parser', function() {
   });
 
 
+  it('should return a module name node when "external:string" arrived', function() {
+    var typeExprStr = 'external:string';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createExternalNameNode(createTypeNameNode('string'));
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a module name node when "external : String#rot13" arrived', function() {
+    var typeExprStr = 'external : String#rot13';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createExternalNameNode(
+      createInstanceMemberTypeNode(createTypeNameNode('String'), 'rot13'));
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a member type node when "owner.Member" arrived', function() {
     var typeExprStr = 'owner.Member';
     var node = Parser.parse(typeExprStr);
@@ -815,6 +834,13 @@ function createModuleNameNode(moduleName) {
   return {
     type: NodeType.MODULE,
     path: moduleName,
+  };
+}
+
+function createExternalNameNode(value) {
+  return {
+    type: NodeType.EXTERNAL,
+    value: value,
   };
 }
 

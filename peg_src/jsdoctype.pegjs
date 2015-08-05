@@ -148,6 +148,7 @@ modifiee =
     / anyTypeExpr
     / unknownTypeExpr
     / moduleNameExpr
+    / externalNameExpr
     / typeNameExpr
 
 postfixModifiers =
@@ -210,8 +211,24 @@ moduleNameExpr = "module" _ ":" _ filePath:$(moduleNameFilePathPart) {
       path: filePath
     };
   }
-
 moduleNameFilePathPart = [a-zA-Z_0-9_$./-]+
+
+
+/*
+ * External name expressions.
+ *
+ * Examples:
+ *   - external:path/to/file
+ *   - external:path/to/file.js
+ *
+ * Spec: http://usejsdoc.org/tags-external.html
+ */
+externalNameExpr = "external" _ ":" _ value:typeExpr {
+    return {
+      type: NodeType.EXTERNAL,
+      value: value
+    };
+  }
 
 
 /*

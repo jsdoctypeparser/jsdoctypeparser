@@ -329,6 +329,19 @@ describe('Parser', function() {
   });
 
 
+  it('should return an union type when "LeftType/RightType" arrived', function() {
+    var typeExprStr = 'LeftType/RightType';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createUnionTypeNode(
+      createTypeNameNode('LeftType'),
+      createTypeNameNode('RightType')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a variadic type node when "...variadicType" arrived', function() {
     var typeExprStr = '...variadicType';
     var node = Parser.parse(typeExprStr);
@@ -774,6 +787,96 @@ describe('Parser', function() {
   });
 
 
+  it('should return a number value type node when "0123456789" arrived', function() {
+    var typeExprStr = '0123456789';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNumberValueNode(typeExprStr);
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a number value type node when "0.0" arrived', function() {
+    var typeExprStr = '0.0';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNumberValueNode(typeExprStr);
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a number value type node when "-0" arrived', function() {
+    var typeExprStr = '-0';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNumberValueNode(typeExprStr);
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a number value type node when "0b01" arrived', function() {
+    var typeExprStr = '0b01';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNumberValueNode(typeExprStr);
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a number value type node when "0o01234567" arrived', function() {
+    var typeExprStr = '0o01234567';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNumberValueNode(typeExprStr);
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a number value type node when "0x0123456789abcdef" arrived', function() {
+    var typeExprStr = '0x0123456789abcdef';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNumberValueNode(typeExprStr);
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a string value type node when \'""\' arrived', function() {
+    var typeExprStr = '""';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createStringValueNode('');
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a string value type node when \'"string"\' arrived', function() {
+    var typeExprStr = '"string"';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createStringValueNode('string');
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a string value type node when \'"マルチバイト"\' arrived', function() {
+    var typeExprStr = '"マルチバイト"';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createStringValueNode('マルチバイト');
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a string value type node when \'"\\n\\"\\t"\' arrived', function() {
+    var typeExprStr = '"\\n\\"\\t"';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createStringValueNode('\\n"\\t');
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should throw a syntax error when "" arrived', function() {
     var typeExprStr = '';
 
@@ -934,5 +1037,19 @@ function createFunctionTypeNode(paramNodes, returnedNode, modifierMap) {
     returns: returnedNode,
     this: modifierMap.this,
     new: modifierMap.new,
+  };
+}
+
+function createNumberValueNode(numberLiteral) {
+  return {
+    type: NodeType.NUMBER_VALUE,
+    number: numberLiteral,
+  };
+}
+
+function createStringValueNode(stringLiteral) {
+  return {
+    type: NodeType.STRING_VALUE,
+    string: stringLiteral,
   };
 }

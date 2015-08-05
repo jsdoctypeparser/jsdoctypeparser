@@ -206,8 +206,8 @@ describe('traversing', function() {
         type: NodeType.FUNCTION,
         params: [],
         returns: null,
-        thisValue: null,
-        newValue: null,
+        this: null,
+        new: null,
       },
       should: [
         ['enter', NodeType.FUNCTION],
@@ -223,8 +223,8 @@ describe('traversing', function() {
           createNameNode('param2'),
         ],
         returns: createNameNode('return'),
-        thisValue: createNameNode('this'),
-        newValue: createNameNode('new'),
+        this: createNameNode('this'),
+        new: createNameNode('new'),
       },
       should: [
         ['enter', NodeType.FUNCTION],

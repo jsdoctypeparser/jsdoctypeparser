@@ -17,6 +17,15 @@ describe('Parser', function() {
   });
 
 
+  it('should return a type name node when "my-type" arrived', function() {
+    var typeExprStr = 'my-type';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createTypeNameNode(typeExprStr);
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a type name node when "$" arrived', function() {
     var typeExprStr = '$';
     var node = Parser.parse(typeExprStr);

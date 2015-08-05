@@ -149,6 +149,7 @@ modifiee =
     / unknownTypeExpr
     / moduleNameExpr
     / valueExpr
+    / externalNameExpr
     / typeNameExpr
 
 postfixModifiers =
@@ -211,7 +212,6 @@ moduleNameExpr = "module" _ ":" _ filePath:$(moduleNameFilePathPart) {
       path: filePath
     };
   }
-
 moduleNameFilePathPart = [a-zA-Z_0-9_$./-]+
 
 
@@ -248,6 +248,23 @@ binNumberLiteralExpr = $("-"? "0b"[01]+)
 octNumberLiteralExpr = $("-"? "0o"[0-7]+)
 hexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
 
+
+
+/*
+ * External name expressions.
+ *
+ * Examples:
+ *   - external:path/to/file
+ *   - external:path/to/file.js
+ *
+ * Spec: http://usejsdoc.org/tags-external.html
+ */
+externalNameExpr = "external" _ ":" _ value:typeExpr {
+    return {
+      type: NodeType.EXTERNAL,
+      value: value
+    };
+  }
 
 
 /*
@@ -324,8 +341,8 @@ funcTypeExpr = "function" _ "(" _ paramParts:funcTypeExprParamsPart _ ")" _
       type: NodeType.FUNCTION,
       params: params,
       returns: returnedTypeNode,
-      thisValue: thisValue,
-      newValue: newValue,
+      this: thisValue,
+      new: newValue,
     };
   }
 
@@ -377,14 +394,12 @@ recordTypeExpr = "{" _ firstEntry:recordEntry? restEntriesWithComma:(_ "," _ rec
   }
 
 recordEntry = key:$(jsIdentifier) valueWithColon:(_ ":" _ typeExpr)? {
-    var hasValue = Boolean(valueWithColon);
-    var value = hasValue ? valueWithColon[3] : null;
+    var value = valueWithColon ? valueWithColon[3] : null;
 
     return {
       type: NodeType.RECORD_ENTRY,
       key: key,
-      value: value,
-      hasValue: hasValue,
+      value: value
     };
   }
 

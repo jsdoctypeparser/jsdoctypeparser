@@ -3,13 +3,16 @@
   "properties": {
     "type": { "$ref": "NodeType.json" },
     "key": { "type": "string" },
-    "value": { "$ref": "Node.json" },
-    "hasValue": { "type": "boolean" }
+    "value": {
+      "oneOf": [
+        { "$ref": "Node.json" },
+        null
+      ]
+    }
   },
   "required": [
     "type",
     "key",
-    "value",
-    "hasValue"
+    "value"
   ]
 }

@@ -247,6 +247,12 @@ describe('publish', function() {
   });
 
 
+  it('Build an external node type', function() {
+    var node = parse('external:string');
+    expect(publish(node)).to.equal('external:string');
+  });
+
+
   it('Build a module type with a generic type operator', function() {
     // Because the new generic type syntax was arrived, the old type generic
     // with the module keyword is not equivalent to the legacy behavior.

@@ -148,6 +148,7 @@ modifiee =
     / anyTypeExpr
     / unknownTypeExpr
     / moduleNameExpr
+    / valueExpr
     / typeNameExpr
 
 postfixModifiers =
@@ -208,6 +209,41 @@ moduleNameExpr = "module" _ ":" _ filePath:$(moduleNameFilePathPart) {
   }
 
 moduleNameFilePathPart = [a-zA-Z_0-9_$./-]+
+
+
+
+/*
+ * Value type expressions.
+ * Example:
+ *   - 123
+ *   - 0.0
+ *   - -123
+ *   - 0b11
+ *   - 0o77
+ *   - 0cff
+ *   - "foo"
+ *   - "foo\"bar\nbuz"
+ *
+ * Spec: https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
+ */
+valueExpr = stringLiteralExpr / numberLiteralExpr
+stringLiteralExpr = '"' value:$([^\\"] / "\\".)* '"' {
+    return {
+      type: NodeType.STRING_VALUE,
+      string: value.replace(/\\"/g, '"')
+    };
+  }
+numberLiteralExpr = value:(binNumberLiteralExpr / octNumberLiteralExpr / hexNumberLiteralExpr / decimalNumberLiteralExpr) {
+    return {
+      type: NodeType.NUMBER_VALUE,
+      number: value
+    };
+  }
+decimalNumberLiteralExpr = $("-"? [0-9.]+)
+binNumberLiteralExpr = $("-"? "0b"[01]+)
+octNumberLiteralExpr = $("-"? "0o"[0-7]+)
+hexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
+
 
 
 /*

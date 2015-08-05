@@ -19,13 +19,12 @@
   "directories": {
     "test": "test"
   },
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "prepublidh": "npm run build",
     "pretest": "npm run lint",
-    "test": "mocha test",
-
-    "lint": "eslint lib test && jscs lib test",
+    "test": "mocha tests",
+    "lint": "eslint lib tests && jscs lib tests",
     "build": "gulp build"
   },
   "readmeFilename": "README.md",
@@ -34,6 +33,7 @@
     "chai": "^2.2.0",
     "eslint": "^0.20.0",
     "gulp": "^3.8.11",
+    "gulp-debug": "^2.0.1",
     "gulp-notify": "^2.2.0",
     "gulp-peg": "^0.1.2",
     "gulp-plumber": "^0.6.6",

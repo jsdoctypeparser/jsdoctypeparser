@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "type": { "$ref": "NodeType.json" },
+    "key": { "type": "string" },
+    "value": { "$ref": "Node.json" },
+    "hasValue": { "type": "boolean" }
+  },
+  "required": [
+    "type",
+    "key",
+    "value",
+    "hasValue"
+  ]
+}

@@ -6,7 +6,7 @@ jsdoctypeparser
 
 The parser can parse:
 
-* [JSDoc type expressions](https://code.google.com/p/jsdoc-toolkit/wiki/TagParam)
+* [JSDoc type expressions](http://usejsdoc.org/tags-type.html)
   * `foo.bar`, `String[]`
 * [Closure Compiler type expressions](https://developers.google.com/closure/compiler/docs/js-for-compiler)
   * `Array<string>`, `function(arg1, arg2): ret`

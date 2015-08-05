@@ -881,7 +881,6 @@ function createRecordEntryNode(key, valueTypeExpr) {
     type: NodeType.RECORD_ENTRY,
     key: key,
     value: valueTypeExpr,
-    hasValue: Boolean(valueTypeExpr),
   };
 }
 

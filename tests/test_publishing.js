@@ -217,6 +217,36 @@ describe('publish', function() {
   });
 
 
+  it('Build a string value type', function() {
+    var node = parse('"stringValue"');
+    expect(publish(node)).to.equal('"stringValue"');
+  });
+
+
+  it('Build a number value type', function() {
+    var node = parse('0123456789');
+    expect(publish(node)).to.equal('0123456789');
+  });
+
+
+  it('Build a bin number value type', function() {
+    var node = parse('0b01');
+    expect(publish(node)).to.equal('0b01');
+  });
+
+
+  it('Build an oct number value type', function() {
+    var node = parse('0o01234567');
+    expect(publish(node)).to.equal('0o01234567');
+  });
+
+
+  it('Build a hex number value type', function() {
+    var node = parse('0x0123456789abcdef');
+    expect(publish(node)).to.equal('0x0123456789abcdef');
+  });
+
+
   it('Build a module type with a generic type operator', function() {
     // Because the new generic type syntax was arrived, the old type generic
     // with the module keyword is not equivalent to the legacy behavior.

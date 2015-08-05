@@ -51,6 +51,8 @@ The `ast` becomes:
 }
 ```
 
+See the [AST specifications](https://github.com/Kuniwak/jsdoctypeparser/blob/update-readme/README.md#ast-specifications).
+
 
 ### Publishing
 
@@ -119,7 +121,7 @@ The `string` becomes:
 ### Traversing
 
 We can traverse the AST by using `traverse`.
-This function take 3 parameters (a node and an onEnter handler, an onLeave handler).
+This function takes 3 parameters (a node and an onEnter handler, an onLeave handler).
 The handlers take a visiting node.
 
 ```javascript

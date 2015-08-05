@@ -284,8 +284,8 @@ funcTypeExpr = "function" _ "(" _ paramParts:funcTypeExprParamsPart _ ")" _
       type: NodeType.FUNCTION,
       params: params,
       returns: returnedTypeNode,
-      thisValue: thisValue,
-      newValue: newValue,
+      this: thisValue,
+      new: newValue,
     };
   }
 

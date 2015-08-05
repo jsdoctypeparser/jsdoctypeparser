@@ -12,13 +12,13 @@
         null
       ]
     },
-    "thisValue": {
+    "this": {
       "oneOf": [
         { "$ref": "Node.json" },
         null
       ]
     },
-    "newValue": {
+    "new": {
       "oneOf": [
         { "$ref": "Node.json" },
         null
@@ -29,7 +29,7 @@
     "type",
     "params",
     "returns",
-    "thisValue",
-    "newValue"
+    "this",
+    "new"
   ]
 }

@@ -198,8 +198,8 @@ module.exports = (function() {
               type: NodeType.FUNCTION,
               params: params,
               returns: returnedTypeNode,
-              thisValue: thisValue,
-              newValue: newValue,
+              this: thisValue,
+              new: newValue,
             };
           },
         peg$c30 = ",",

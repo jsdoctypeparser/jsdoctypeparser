@@ -184,13 +184,17 @@ parenthesisTypeExpr = "(" _ wrapped:typeExpr _ ")" {
  *   - $
  *   - _
  */
-typeNameExpr = name:$(jsIdentifier) {
+typeNameExpr = name:$(jsIdentifierWithHyphen) {
     return {
       type: NodeType.NAME,
       name: name
     };
   }
+
 jsIdentifier = [a-zA-Z_$][a-zA-Z0-9_$]*
+
+// https://github.com/Kuniwak/jsdoctypeparser/issues/15
+jsIdentifierWithHyphen = [a-zA-Z_$][a-zA-Z0-9_$-]*
 
 
 /*

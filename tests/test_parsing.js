@@ -4,6 +4,9 @@ var chai = require('chai');
 var expect = chai.expect;
 
 var NodeType = require('../lib/NodeType.js');
+var SyntaxType = require('../lib/SyntaxType.js');
+var GenericTypeSyntax = SyntaxType.GenericTypeSyntax;
+var UnionTypeSyntax = SyntaxType.UnionTypeSyntax;
 var Parser = require('../lib/parsing.js');
 
 
@@ -281,7 +284,8 @@ describe('Parser', function() {
 
     var expectedNode = createUnionTypeNode(
       createTypeNameNode('LeftType'),
-      createTypeNameNode('RightType')
+      createTypeNameNode('RightType'),
+      UnionTypeSyntax.PIPE
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -296,8 +300,9 @@ describe('Parser', function() {
       createTypeNameNode('LeftType'),
       createUnionTypeNode(
         createTypeNameNode('MiddleType'),
-        createTypeNameNode('RightType')
-      ));
+        createTypeNameNode('RightType'),
+        UnionTypeSyntax.PIPE
+      ), UnionTypeSyntax.PIPE);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -335,7 +340,8 @@ describe('Parser', function() {
 
     var expectedNode = createUnionTypeNode(
       createTypeNameNode('LeftType'),
-      createTypeNameNode('RightType')
+      createTypeNameNode('RightType'),
+      UnionTypeSyntax.SLASH
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -436,7 +442,7 @@ describe('Parser', function() {
     var expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType'),
-      ]);
+    ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -451,7 +457,7 @@ describe('Parser', function() {
         createGenericTypeNode(
           createTypeNameNode('Inner'), [ createTypeNameNode('ParamType') ]
         ),
-    ]);
+    ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -466,7 +472,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -481,7 +487,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -494,7 +500,7 @@ describe('Parser', function() {
     var expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType'),
-      ]);
+    ], GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -509,7 +515,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -524,7 +530,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -537,7 +543,7 @@ describe('Parser', function() {
     var expectedNode = createGenericTypeNode(
       createTypeNameNode('Array'), [
         createTypeNameNode('ParamType'),
-      ]);
+      ], GenericTypeSyntax.SQUARE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -552,8 +558,8 @@ describe('Parser', function() {
         createGenericTypeNode(
           createTypeNameNode('Array'), [
             createTypeNameNode('ParamType'),
-        ]),
-      ]);
+        ], GenericTypeSyntax.SQUARE_BRACKET),
+      ], GenericTypeSyntax.SQUARE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -992,11 +998,12 @@ function createInstanceMemberTypeNode(ownerTypeExpr, memberTypeName) {
   };
 }
 
-function createUnionTypeNode(leftTypeExpr, rightTypeExpr) {
+function createUnionTypeNode(leftTypeExpr, rightTypeExpr, syntax) {
   return {
     type: NodeType.UNION,
     left: leftTypeExpr,
     right: rightTypeExpr,
+    meta: { syntax: syntax || UnionTypeSyntax.PIPE },
   };
 }
 
@@ -1022,11 +1029,12 @@ function createRecordEntryNode(key, valueTypeExpr) {
   };
 }
 
-function createGenericTypeNode(genericTypeName, paramExprs) {
+function createGenericTypeNode(genericTypeName, paramExprs, syntaxType) {
   return {
     type: NodeType.GENERIC,
     subject: genericTypeName,
     objects: paramExprs,
+    meta: { syntax: syntaxType || GenericTypeSyntax.ANGLE_BRACKET },
   };
 }
 

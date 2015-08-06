@@ -14,6 +14,7 @@ describe('jsdoctypeparser', function() {
     createDefaultPublisher: 'function',
     traverse: 'function',
     NodeType: 'object',
+    SyntaxType: 'object',
   };
 
 

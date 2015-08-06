@@ -1,5 +1,8 @@
 {
   var lodash = require('lodash');
+  var meta = require('../lib/SyntaxType.js');
+  var GenericTypeSyntax = meta.GenericTypeSyntax;
+  var UnionTypeSyntax = meta.UnionTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
   var OperatorType = {
@@ -67,6 +70,7 @@ notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
             type: NodeType.UNION,
             left: prevNode,
             right: unionOperator.right,
+            meta: { syntax: unionOperator.syntax },
           };
         case OperatorType.MEMBER:
           var memberOperator = operator;
@@ -95,6 +99,7 @@ notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
             type: NodeType.GENERIC,
             subject: prevNode,
             objects: genericOperator.objects,
+            meta: { syntax: genericOperator.syntax },
           }
         case OperatorType.ARRAY:
           var arrayOperator = operator;
@@ -105,6 +110,7 @@ notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
               name: 'Array'
             },
             objects: [ prevNode ],
+            meta: { syntax: GenericTypeSyntax.SQUARE_BRACKET },
           };
         case OperatorType.OPTIONAL:
           return {
@@ -464,15 +470,24 @@ variadicTypeOperator = "..." {
  *   - number|undefined
  *   - Foo|Bar|Baz
  */
-unionTypeExpr = unionTypeOperator _ right:typeExpr {
+unionTypeExpr = syntax:unionTypeOperator _ right:typeExpr {
     return {
       operatorType: OperatorType.UNION,
       right: right,
+      syntax: syntax,
     };
   }
 
 // https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
-unionTypeOperator = "|" / "/"
+unionTypeOperator = unionTypeOperatorClosureLibraryFlavored
+                  / unionTypeOperatorJSDuckFlavored
+
+unionTypeOperatorClosureLibraryFlavored = "|" {
+  return UnionTypeSyntax.PIPE;
+}
+unionTypeOperatorJSDuckFlavored = "/" {
+  return UnionTypeSyntax.SLASH;
+}
 
 
 /*
@@ -538,12 +553,13 @@ instanceMemberTypeOperator = "#"
  *   - Array.<string>
  */
 genericTypeExpr =
-  genericTypeStartToken _
+  syntax:genericTypeStartToken _
   objects:genericTypeExprObjectivePart _
   genericTypeEndToken {
     return {
       operatorType: OperatorType.GENERIC,
       objects: objects,
+      syntax: syntax
     };
   }
 
@@ -551,9 +567,13 @@ genericTypeStartToken =
   genericTypeEcmaScriptFlavoredStartToken /
   genericTypeTypeScriptFlavoredStartToken
 
-genericTypeEcmaScriptFlavoredStartToken = ".<"
+genericTypeEcmaScriptFlavoredStartToken = ".<" {
+  return GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT;
+}
 
-genericTypeTypeScriptFlavoredStartToken = "<"
+genericTypeTypeScriptFlavoredStartToken = "<" {
+  return GenericTypeSyntax.ANGLE_BRACKET;
+}
 
 genericTypeEndToken = ">"
 

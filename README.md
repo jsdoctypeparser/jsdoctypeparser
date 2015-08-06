@@ -47,7 +47,10 @@ The `ast` becomes:
       "type": "NAME",
       "name": "MyClass"
     }
-  ]
+  ],
+  "meta": {
+    "syntax": ("ANGLE_BRACKET" or "ANGLE_BRACKET_WITH_DOT" or "SQUARE_BRACKET")
+  }
 }
 ```
 
@@ -267,7 +270,10 @@ Structure:
 {
   "type": "UNION",
   "left": node,
-  "right": node
+  "right": node,
+  "meta": {
+    "syntax": ("PIPE" or "SLASH")
+  }
 }
 ```
 

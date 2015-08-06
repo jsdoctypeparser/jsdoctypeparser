@@ -5,6 +5,7 @@ var parsing = require('./lib/parsing.js');
 var publishing = require('./lib/publishing.js');
 var traversing = require('./lib/traversing.js');
 var NodeType = require('./lib/NodeType.js');
+var SyntaxType = require('./lib/SyntaxType.js');
 
 
 /**
@@ -19,4 +20,5 @@ module.exports = {
   createDefaultPublisher: publishing.createDefaultPublisher,
   traverse: traversing.traverse,
   NodeType: NodeType,
+  SyntaxType: SyntaxType,
 };

@@ -49,7 +49,7 @@ The `ast` becomes:
     }
   ],
   "meta": {
-    "syntax": ("ANGLE_BRACKET" or "ANGLE_BRACKET_WITH_DOT" or "SQUARE_BRACKET")
+    "syntax": "ANGLE_BRACKET"
   }
 }
 ```
@@ -338,7 +338,10 @@ Structure:
     node,
     node,
     ...
-  ]
+  ],
+  "meta": {
+    "syntax": ("ANGLE_BRACKET" or "ANGLE_BRACKET_WITH_DOT" or "SQUARE_BRACKET")
+  }
 }
 ```
 

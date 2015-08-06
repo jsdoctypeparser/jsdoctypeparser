@@ -4,9 +4,9 @@ var chai = require('chai');
 var expect = chai.expect;
 
 var NodeType = require('../lib/NodeType.js');
-var meta = require('../lib/meta.js');
-var GenericTypeSyntax = meta.GenericTypeSyntax;
-var UnionTypeSyntax = meta.UnionTypeSyntax;
+var SyntaxType = require('../lib/SyntaxType.js');
+var GenericTypeSyntax = SyntaxType.GenericTypeSyntax;
+var UnionTypeSyntax = SyntaxType.UnionTypeSyntax;
 var Parser = require('../lib/parsing.js');
 
 

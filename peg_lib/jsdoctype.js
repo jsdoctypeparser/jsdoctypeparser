@@ -2606,7 +2606,7 @@ module.exports = (function() {
 
 
       var lodash = require('lodash');
-      var meta = require('../lib/meta.js');
+      var meta = require('../lib/SyntaxType.js');
       var GenericTypeSyntax = meta.GenericTypeSyntax;
       var UnionTypeSyntax = meta.UnionTypeSyntax;
       var NodeType = require('../lib/NodeType.js');

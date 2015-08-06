@@ -2,6 +2,7 @@
   var lodash = require('lodash');
   var meta = require('../lib/meta.js');
   var GenericTypeSyntax = meta.GenericTypeSyntax;
+  var UnionTypeSyntax = meta.UnionTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
   var OperatorType = {
@@ -69,6 +70,7 @@ notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
             type: NodeType.UNION,
             left: prevNode,
             right: unionOperator.right,
+            meta: { syntax: unionOperator.syntax },
           };
         case OperatorType.MEMBER:
           var memberOperator = operator;
@@ -468,15 +470,24 @@ variadicTypeOperator = "..." {
  *   - number|undefined
  *   - Foo|Bar|Baz
  */
-unionTypeExpr = unionTypeOperator _ right:typeExpr {
+unionTypeExpr = syntax:unionTypeOperator _ right:typeExpr {
     return {
       operatorType: OperatorType.UNION,
       right: right,
+      syntax: syntax,
     };
   }
 
 // https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
-unionTypeOperator = "|" / "/"
+unionTypeOperator = unionTypeOperatorClosureLibraryFlavored
+                  / unionTypeOperatorJSDuckFlavored
+
+unionTypeOperatorClosureLibraryFlavored = "|" {
+  return UnionTypeSyntax.PIPE;
+}
+unionTypeOperatorJSDuckFlavored = "/" {
+  return UnionTypeSyntax.SLASH;
+}
 
 
 /*

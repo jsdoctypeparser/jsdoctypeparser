@@ -6,6 +6,7 @@ var expect = chai.expect;
 var NodeType = require('../lib/NodeType.js');
 var meta = require('../lib/meta.js');
 var GenericTypeSyntax = meta.GenericTypeSyntax;
+var UnionTypeSyntax = meta.UnionTypeSyntax;
 var Parser = require('../lib/parsing.js');
 
 
@@ -283,7 +284,8 @@ describe('Parser', function() {
 
     var expectedNode = createUnionTypeNode(
       createTypeNameNode('LeftType'),
-      createTypeNameNode('RightType')
+      createTypeNameNode('RightType'),
+      UnionTypeSyntax.PIPE
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -298,8 +300,9 @@ describe('Parser', function() {
       createTypeNameNode('LeftType'),
       createUnionTypeNode(
         createTypeNameNode('MiddleType'),
-        createTypeNameNode('RightType')
-      ));
+        createTypeNameNode('RightType'),
+        UnionTypeSyntax.PIPE
+      ), UnionTypeSyntax.PIPE);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -337,7 +340,8 @@ describe('Parser', function() {
 
     var expectedNode = createUnionTypeNode(
       createTypeNameNode('LeftType'),
-      createTypeNameNode('RightType')
+      createTypeNameNode('RightType'),
+      UnionTypeSyntax.SLASH
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -994,11 +998,12 @@ function createInstanceMemberTypeNode(ownerTypeExpr, memberTypeName) {
   };
 }
 
-function createUnionTypeNode(leftTypeExpr, rightTypeExpr) {
+function createUnionTypeNode(leftTypeExpr, rightTypeExpr, syntax) {
   return {
     type: NodeType.UNION,
     left: leftTypeExpr,
     right: rightTypeExpr,
+    meta: { syntax: syntax || UnionTypeSyntax.PIPE },
   };
 }
 

@@ -1,5 +1,7 @@
 {
   var lodash = require('lodash');
+  var meta = require('../lib/meta.js');
+  var GenericTypeSyntax = meta.GenericTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
   var OperatorType = {
@@ -95,6 +97,7 @@ notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
             type: NodeType.GENERIC,
             subject: prevNode,
             objects: genericOperator.objects,
+            meta: { syntax: genericOperator.syntax },
           }
         case OperatorType.ARRAY:
           var arrayOperator = operator;
@@ -105,6 +108,7 @@ notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
               name: 'Array'
             },
             objects: [ prevNode ],
+            meta: { syntax: GenericTypeSyntax.SQUARE_BRACKET },
           };
         case OperatorType.OPTIONAL:
           return {
@@ -538,12 +542,13 @@ instanceMemberTypeOperator = "#"
  *   - Array.<string>
  */
 genericTypeExpr =
-  genericTypeStartToken _
+  syntax:genericTypeStartToken _
   objects:genericTypeExprObjectivePart _
   genericTypeEndToken {
     return {
       operatorType: OperatorType.GENERIC,
       objects: objects,
+      syntax: syntax
     };
   }
 
@@ -551,9 +556,13 @@ genericTypeStartToken =
   genericTypeEcmaScriptFlavoredStartToken /
   genericTypeTypeScriptFlavoredStartToken
 
-genericTypeEcmaScriptFlavoredStartToken = ".<"
+genericTypeEcmaScriptFlavoredStartToken = ".<" {
+  return GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT;
+}
 
-genericTypeTypeScriptFlavoredStartToken = "<"
+genericTypeTypeScriptFlavoredStartToken = "<" {
+  return GenericTypeSyntax.ANGLE_BRACKET;
+}
 
 genericTypeEndToken = ">"
 

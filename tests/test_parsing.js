@@ -4,6 +4,8 @@ var chai = require('chai');
 var expect = chai.expect;
 
 var NodeType = require('../lib/NodeType.js');
+var meta = require('../lib/meta.js');
+var GenericTypeSyntax = meta.GenericTypeSyntax;
 var Parser = require('../lib/parsing.js');
 
 
@@ -436,7 +438,7 @@ describe('Parser', function() {
     var expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType'),
-      ]);
+    ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -451,7 +453,7 @@ describe('Parser', function() {
         createGenericTypeNode(
           createTypeNameNode('Inner'), [ createTypeNameNode('ParamType') ]
         ),
-    ]);
+    ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -466,7 +468,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -481,7 +483,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -494,7 +496,7 @@ describe('Parser', function() {
     var expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType'),
-      ]);
+    ], GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -509,7 +511,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -524,7 +526,7 @@ describe('Parser', function() {
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
-      ]);
+      ], GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -537,7 +539,7 @@ describe('Parser', function() {
     var expectedNode = createGenericTypeNode(
       createTypeNameNode('Array'), [
         createTypeNameNode('ParamType'),
-      ]);
+      ], GenericTypeSyntax.SQUARE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -552,8 +554,8 @@ describe('Parser', function() {
         createGenericTypeNode(
           createTypeNameNode('Array'), [
             createTypeNameNode('ParamType'),
-        ]),
-      ]);
+        ], GenericTypeSyntax.SQUARE_BRACKET),
+      ], GenericTypeSyntax.SQUARE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -1022,11 +1024,12 @@ function createRecordEntryNode(key, valueTypeExpr) {
   };
 }
 
-function createGenericTypeNode(genericTypeName, paramExprs) {
+function createGenericTypeNode(genericTypeName, paramExprs, syntaxType) {
   return {
     type: NodeType.GENERIC,
     subject: genericTypeName,
     objects: paramExprs,
+    meta: { syntax: syntaxType || GenericTypeSyntax.ANGLE_BRACKET },
   };
 }
 

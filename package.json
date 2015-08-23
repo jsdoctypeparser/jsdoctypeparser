@@ -29,7 +29,6 @@
   },
   "readmeFilename": "README.md",
   "devDependencies": {
-    "benchmark": "~1.0.0",
     "chai": "^2.2.0",
     "eslint": "^0.20.0",
     "gulp": "^3.8.11",

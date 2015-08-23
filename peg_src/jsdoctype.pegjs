@@ -258,7 +258,7 @@ numberLiteralExpr = value:(binNumberLiteralExpr / octNumberLiteralExpr / hexNumb
       number: value
     };
   }
-decimalNumberLiteralExpr = $("-"? [0-9.]+)
+decimalNumberLiteralExpr = $("-"? [0-9]+ ("." [0-9]+)?)
 binNumberLiteralExpr = $("-"? "0b"[01]+)
 octNumberLiteralExpr = $("-"? "0o"[0-7]+)
 hexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)

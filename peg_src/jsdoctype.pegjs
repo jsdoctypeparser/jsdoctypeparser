@@ -43,23 +43,10 @@
 }
 
 
-// "?" is a ambiguous token. It has 2 meanings. The first meaning is a prefix
-// nullable operator. Another meaning is an unknown type keyword.
-// If "typeExpr" is equivalent to "notUnknownTypeExpr" and then "?" arrived,
-// parsing "prefixModifiers" become successful, but it make a parsing failure
-// because parsing "modifiee" is failed.
-//
-// So, the parser try to parse the assamption that it is a prefix nullable
-// operator, if the try is failed the parser try to parse under the assamption
-// that it is an unknown type keyword.
-typeExpr = notUnknownTypeExpr / unknownTypeExpr
-
-notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
-                     modifieeWithWhiteSpaces:modifiee _
-                     postfixModifiersWithWhiteSpaces:(postfixModifiers _)* {
-    var prefixModifiers = lodash.pluck(prefixModifiersWithWhiteSpaces, 0);
-    var modifiee = modifieeWithWhiteSpaces;
-    var postfixModifiers = lodash.pluck(postfixModifiersWithWhiteSpaces, 0);
+typeExpr = prefixModifiers:prefixModifiers? modifieeAndPostfixModifiers:modifieeAndPostfixModifiers {
+    var prefixModifiers = prefixModifiers || [];
+    var modifiee = modifieeAndPostfixModifiers.modifiee;
+    var postfixModifiers = modifieeAndPostfixModifiers.postfixModifiers;
 
     var modifiersOrderedByPriority = postfixModifiers.concat(reverse(prefixModifiers));
     var rootNode = modifiersOrderedByPriority.reduce(function(prevNode, operator) {
@@ -141,7 +128,29 @@ notUnknownTypeExpr = prefixModifiersWithWhiteSpaces:(prefixModifiers _)*
     return rootNode;
   }
 
-prefixModifiers =
+
+// "?" is a ambiguous token. It has 2 meanings. The first meaning is a prefix
+// nullable operator. Another meaning is an unknown type keyword.
+// In fact, we cannot use geedy quantifiers to parsing prefix operators,
+// because it mistakenly take an unknown type as a nullable operator.
+prefixModifiers = prefixModifier:prefixModifier _ restPrefixModifiers:(prefixModifiers / & modifieeAndPostfixModifiers) {
+      if (!prefixModifier) return [];
+      if (!restPrefixModifiers) return [prefixModifier];
+
+      restPrefixModifiers.unshift(prefixModifier);
+      return restPrefixModifiers;
+    }
+
+modifieeAndPostfixModifiers = 
+    modifieeWithWhiteSpaces:modifiee _
+    postfixModifiersWithWhiteSpaces:(postfixModifier _)* {
+      return {
+        modifiee: modifieeWithWhiteSpaces,
+        postfixModifiers: lodash.pluck(postfixModifiersWithWhiteSpaces, 0),
+      };
+    }
+
+prefixModifier =
     nullableTypeOperator
     / notNullableTypeOperator
     / variadicTypeOperator
@@ -158,7 +167,7 @@ modifiee =
     / externalNameExpr
     / typeNameExpr
 
-postfixModifiers =
+postfixModifier =
     optionalTypeOperator
     / arrayOfGenericTypeOperatorJsDocFlavored
     / genericTypeExpr

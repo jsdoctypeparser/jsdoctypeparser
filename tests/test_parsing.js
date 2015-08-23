@@ -637,6 +637,16 @@ describe('Parser', function() {
   });
 
 
+  it('should return a variadic type node when "...?" arrived', function() {
+    var typeExprStr = '...?';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createVariadicTypeNode(createUnknownTypeNode());
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a not nullable type node when "!Object" arrived', function() {
     var typeExprStr = '!Object';
     var node = Parser.parse(typeExprStr);

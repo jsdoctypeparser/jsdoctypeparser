@@ -927,6 +927,16 @@ describe('Parser', function() {
       Parser.parse(typeExprStr);
     }).to.throw(Parser.SyntaxError);
   });
+
+
+
+  it('should throw a syntax error when "..." arrived', function() {
+    var typeExprStr = '...';
+
+    expect(function() {
+      Parser.parse(typeExprStr);
+    }).to.throw(Parser.SyntaxError);
+  });
 });
 
 

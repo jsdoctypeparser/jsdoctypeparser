@@ -443,6 +443,7 @@ Example:
 ```javascript
 /**
  * @type {...Variadic}
+ * @type {Variadic...}
  */
 ```
 
@@ -451,7 +452,10 @@ Structure:
 ```javascript
 {
   "type": "VARIADIC",
-  "value": node
+  "value": node,
+  "meta": {
+    "syntax": ("PREFIX_DOTS" or "SUFFIX_DOTS")
+  }
 }
 ```
 

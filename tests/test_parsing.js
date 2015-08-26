@@ -7,6 +7,7 @@ var NodeType = require('../lib/NodeType.js');
 var SyntaxType = require('../lib/SyntaxType.js');
 var GenericTypeSyntax = SyntaxType.GenericTypeSyntax;
 var UnionTypeSyntax = SyntaxType.UnionTypeSyntax;
+var VariadicTypeSyntax = SyntaxType.VariadicTypeSyntax;
 var Parser = require('../lib/parsing.js');
 
 
@@ -625,6 +626,28 @@ describe('Parser', function() {
   });
 
 
+  it('should return a variadic type node when "...PrefixVariadic" arrived', function() {
+    var typeExprStr = '...PrefixVariadic';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createVariadicTypeNode(
+      createTypeNameNode('PrefixVariadic'), VariadicTypeSyntax.PREFIX_DOTS);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a variadic type node when "SuffixVariadic..." arrived', function() {
+    var typeExprStr = 'SuffixVariadic...';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createVariadicTypeNode(
+      createTypeNameNode('SuffixVariadic'), VariadicTypeSyntax.SUFFIX_DOTS);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a variadic type node when "...!Object" arrived', function() {
     var typeExprStr = '...!Object';
     var node = Parser.parse(typeExprStr);
@@ -1027,10 +1050,11 @@ function createUnionTypeNode(leftTypeExpr, rightTypeExpr, syntax) {
   };
 }
 
-function createVariadicTypeNode(variadicTypeExpr) {
+function createVariadicTypeNode(variadicTypeExpr, syntax) {
   return {
     type: NodeType.VARIADIC,
     value: variadicTypeExpr,
+    meta: { syntax: syntax || VariadicTypeSyntax.PREFIX_DOTS },
   };
 }
 

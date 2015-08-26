@@ -4,7 +4,6 @@ var gulp = require('gulp');
 var watch = require('gulp-watch');
 var peg = require('gulp-peg');
 var gutil = require('gulp-util');
-var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var debug = require('gulp-debug');
 

@@ -3,6 +3,7 @@
   var meta = require('../lib/SyntaxType.js');
   var GenericTypeSyntax = meta.GenericTypeSyntax;
   var UnionTypeSyntax = meta.UnionTypeSyntax;
+  var VariadicTypeSyntax = meta.VariadicTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
   var OperatorType = {
@@ -118,6 +119,7 @@ typeExpr = prefixModifiers:prefixModifiers? modifieeAndPostfixModifiers:modifiee
           return {
             type: NodeType.VARIADIC,
             value: prevNode,
+            meta: { syntax: operator.syntax },
           };
         default:
           throw Error('Unexpected token: ' + token);
@@ -153,7 +155,7 @@ modifieeAndPostfixModifiers =
 prefixModifier =
     nullableTypeOperator
     / notNullableTypeOperator
-    / variadicTypeOperator
+    / prefixVariadicTypeOperator
     / deprecatedOptionalTypeOperator
 
 modifiee =
@@ -175,6 +177,7 @@ postfixModifier =
     / innerMemberTypeExpr
     / instanceMemberTypeExpr
     / unionTypeExpr
+    / suffixVariadicTypeOperator
     / deprecatedNullableTypeOperator
     / deprecatedNotNullableTypeOperator
 
@@ -467,8 +470,27 @@ deprecatedOptionalTypeOperator = optionalTypeOperator
  * Examples:
  *   - ...string
  */
-variadicTypeOperator = "..." {
-    return { operatorType: OperatorType.VARIADIC };
+prefixVariadicTypeOperator = "..." {
+    return {
+      operatorType: OperatorType.VARIADIC,
+      syntax: VariadicTypeSyntax.PREFIX_DOTS,
+    };
+  }
+
+
+/*
+ * Variadic type expressions.
+ *
+ * Examples:
+ *   - string...
+ *
+ * https://github.com/senchalabs/jsduck/wiki/Type-Definitions
+ */
+suffixVariadicTypeOperator = "..." {
+    return {
+      operatorType: OperatorType.VARIADIC,
+      syntax: VariadicTypeSyntax.SUFFIX_DOTS,
+    };
   }
 
 

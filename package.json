@@ -35,6 +35,8 @@
     "gulp-debug": "^2.0.1",
     "gulp-peg": "^0.1.2",
     "gulp-plumber": "^0.6.6",
+    "gulp-util": "^3.0.6",
+    "gulp-watch": "^4.3.5",
     "jscs": "^1.13.1",
     "mocha": "^2.2.4"
   },

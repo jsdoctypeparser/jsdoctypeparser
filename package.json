@@ -24,7 +24,7 @@
     "prepublidh": "npm run build",
     "pretest": "npm run lint",
     "test": "mocha tests",
-    "lint": "eslint lib tests && jscs lib tests",
+    "lint": "eslint lib tests",
     "build": "gulp build"
   },
   "readmeFilename": "README.md",

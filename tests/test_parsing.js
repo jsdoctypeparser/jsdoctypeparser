@@ -794,23 +794,6 @@ describe('Parser', function() {
   });
 
 
-  it('should return a function type node as a constructor when ' +
-     '"function(new:NewObject, this:ThisObject, param1)" arrived', function() {
-    var typeExprStr = 'function(new:NewObject, this:ThisObject, param1)';
-    var node = Parser.parse(typeExprStr);
-
-    var expectedNode = createFunctionTypeNode(
-      [ createTypeNameNode('param1') ], null,
-      {
-        'this': createTypeNameNode('ThisObject'),
-        'new': createTypeNameNode('NewObject'),
-      }
-    );
-
-    expect(node).to.deep.equal(expectedNode);
-  });
-
-
   it('should return a function type node when "function( Param1 , Param2 ) : Returned"' +
      ' arrived', function() {
     var typeExprStr = 'function( Param1 , Param2 ) : Returned';

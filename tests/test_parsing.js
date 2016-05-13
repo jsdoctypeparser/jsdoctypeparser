@@ -11,7 +11,7 @@ var VariadicTypeSyntax = SyntaxType.VariadicTypeSyntax;
 var Parser = require('../lib/parsing.js');
 
 
-describe('Parser', function() {
+describe.only('Parser', function() {
   it('should return a type name node when "TypeName" arrived', function() {
     var typeExprStr = 'TypeName';
     var node = Parser.parse(typeExprStr);
@@ -719,6 +719,47 @@ describe('Parser', function() {
     );
 
     expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a function type node with variadic params when "function(...VariadicParam)"' +
+     ' arrived', function() {
+    var typeExprStr = 'function(...VariadicParam)';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createFunctionTypeNode(
+      [ createVariadicTypeNode(createTypeNameNode('VariadicParam'), VariadicTypeSyntax.PREFIX_DOTS) ],
+      null, { 'this': null, 'new': null }
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a function type node with variadic params when "function(Param,...VariadicParam)"' +
+     ' arrived', function() {
+    var typeExprStr = 'function(Param,...VariadicParam)';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createFunctionTypeNode(
+      [
+        createTypeNameNode('Param'),
+        createVariadicTypeNode(createTypeNameNode('VariadicParam'), VariadicTypeSyntax.PREFIX_DOTS),
+      ],
+      null, { 'this': null, 'new': null }
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should throw an error when "function(...VariadicParam, UnexpectedLastParam)"' +
+     ' arrived', function() {
+    var typeExprStr = 'function(...VariadicParam, UnexpectedLastParam)';
+
+    expect(function() {
+      Parser.parse(typeExprStr);
+    }).to.throw(Parser.SyntaxError);
   });
 
 

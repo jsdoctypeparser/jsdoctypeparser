@@ -6,12 +6,6 @@
   var VariadicTypeSyntax = meta.VariadicTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
-  var FunctionModifierType = {
-    NONE: "NONE",
-    CONTEXT: "CONTEXT",
-    NEW: "NEW",
-  };
-
   function reverse(array) {
     var reversed = [].concat(array);
     reversed.reverse();
@@ -147,8 +141,13 @@ FuncTypeExprModifier = modifierThis:("this" _ ":" _ Operand7) {
                        }
 
 
-FuncTypeExprParams = first:Operand7 restWithComma:(_ "," _ TypeExpr)* {
-                     return buildByFirstAndRest(first, restWithComma, 3);
+// Variadic type is only allowed on the last parameter.
+FuncTypeExprParams = paramsWithComma:(Operand7 _ "," _)* lastParam:Operand9 {
+                     var params = paramsWithComma.map(function(tokens) {
+                       var operand7 = tokens[0];
+                       return operand7;
+                     });
+                     return params.concat([lastParam]);
                    }
 
 

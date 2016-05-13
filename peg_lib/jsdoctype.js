@@ -98,8 +98,12 @@ module.exports = (function() {
         peg$c33 = function(modifierNew) {
                                  return { nodeThis: null, nodeNew: modifierNew[4] };
                                },
-        peg$c34 = function(first, restWithComma) {
-                             return buildByFirstAndRest(first, restWithComma, 3);
+        peg$c34 = function(paramsWithComma, lastParam) {
+                             var params = paramsWithComma.map(function(tokens) {
+                               var operand7 = tokens[0];
+                               return operand7;
+                             });
+                             return params.concat([lastParam]);
                            },
         peg$c35 = "{",
         peg$c36 = { type: "literal", value: "{", description: "\"{\"" },
@@ -1031,13 +1035,13 @@ module.exports = (function() {
     }
 
     function peg$parseFuncTypeExprParams() {
-      var s0, s1, s2, s3, s4, s5, s6, s7;
+      var s0, s1, s2, s3, s4, s5, s6;
 
       s0 = peg$currPos;
-      s1 = peg$parseOperand7();
-      if (s1 !== peg$FAILED) {
-        s2 = [];
-        s3 = peg$currPos;
+      s1 = [];
+      s2 = peg$currPos;
+      s3 = peg$parseOperand7();
+      if (s3 !== peg$FAILED) {
         s4 = peg$parse_();
         if (s4 !== peg$FAILED) {
           if (input.charCodeAt(peg$currPos) === 44) {
@@ -1050,29 +1054,29 @@ module.exports = (function() {
           if (s5 !== peg$FAILED) {
             s6 = peg$parse_();
             if (s6 !== peg$FAILED) {
-              s7 = peg$parseOperand9();
-              if (s7 !== peg$FAILED) {
-                s4 = [s4, s5, s6, s7];
-                s3 = s4;
-              } else {
-                peg$currPos = s3;
-                s3 = peg$c3;
-              }
+              s3 = [s3, s4, s5, s6];
+              s2 = s3;
             } else {
-              peg$currPos = s3;
-              s3 = peg$c3;
+              peg$currPos = s2;
+              s2 = peg$c3;
             }
           } else {
-            peg$currPos = s3;
-            s3 = peg$c3;
+            peg$currPos = s2;
+            s2 = peg$c3;
           }
         } else {
-          peg$currPos = s3;
-          s3 = peg$c3;
+          peg$currPos = s2;
+          s2 = peg$c3;
         }
-        while (s3 !== peg$FAILED) {
-          s2.push(s3);
-          s3 = peg$currPos;
+      } else {
+        peg$currPos = s2;
+        s2 = peg$c3;
+      }
+      while (s2 !== peg$FAILED) {
+        s1.push(s2);
+        s2 = peg$currPos;
+        s3 = peg$parseOperand7();
+        if (s3 !== peg$FAILED) {
           s4 = peg$parse_();
           if (s4 !== peg$FAILED) {
             if (input.charCodeAt(peg$currPos) === 44) {
@@ -1085,27 +1089,27 @@ module.exports = (function() {
             if (s5 !== peg$FAILED) {
               s6 = peg$parse_();
               if (s6 !== peg$FAILED) {
-                s7 = peg$parseOperand9();
-                if (s7 !== peg$FAILED) {
-                  s4 = [s4, s5, s6, s7];
-                  s3 = s4;
-                } else {
-                  peg$currPos = s3;
-                  s3 = peg$c3;
-                }
+                s3 = [s3, s4, s5, s6];
+                s2 = s3;
               } else {
-                peg$currPos = s3;
-                s3 = peg$c3;
+                peg$currPos = s2;
+                s2 = peg$c3;
               }
             } else {
-              peg$currPos = s3;
-              s3 = peg$c3;
+              peg$currPos = s2;
+              s2 = peg$c3;
             }
           } else {
-            peg$currPos = s3;
-            s3 = peg$c3;
+            peg$currPos = s2;
+            s2 = peg$c3;
           }
+        } else {
+          peg$currPos = s2;
+          s2 = peg$c3;
         }
+      }
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parseOperand9();
         if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
           s1 = peg$c34(s1, s2);
@@ -2352,12 +2356,6 @@ module.exports = (function() {
       var UnionTypeSyntax = meta.UnionTypeSyntax;
       var VariadicTypeSyntax = meta.VariadicTypeSyntax;
       var NodeType = require('../lib/NodeType.js');
-
-      var FunctionModifierType = {
-        NONE: "NONE",
-        CONTEXT: "CONTEXT",
-        NEW: "NEW",
-      };
 
       function reverse(array) {
         var reversed = [].concat(array);

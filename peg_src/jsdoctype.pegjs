@@ -21,7 +21,10 @@
 }
 
 
-TypeExpr = Operand9
+TopLevelTypeExpr = OperandT2
+
+
+TypeExpr = Operand7
 
 
 /*
@@ -42,6 +45,9 @@ _  = [ \t\r\n ]*
 JsIdentifier = $([a-zA-Z_$][a-zA-Z0-9_$]*)
 
 
+NamepathExpr = TypeNameExpr
+
+
 Operand = FuncTypeExpr
         / RecordTypeExpr
         / ParenthesisTypeExpr
@@ -50,7 +56,8 @@ Operand = FuncTypeExpr
         / ModuleNameExpr
         / ValueExpr
         / ExternalNameExpr
-        / TypeNameExpr
+        / GenericTypeExpr
+        / NamepathExpr
 
 
 
@@ -102,7 +109,7 @@ TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-FuncTypeExpr = "function" _ paramsPart:FuncTypeExprParamsPart _ returnedTypePart:(":" _ Operand7)? {
+FuncTypeExpr = "function" _ paramsPart:FuncTypeExprParamsPart _ returnedTypePart:(":" _ TypeExpr)? {
                var returnedTypeNode = returnedTypePart ? returnedTypePart[2] : null;
 
                return {
@@ -133,16 +140,16 @@ FuncTypeExprParamsPart = "(" _ modifier:FuncTypeExprModifier _ "," _ params: Fun
 // See https://github.com/google/closure-compiler/blob/
 //       91cf3603d5b0b0dc289ba73adcd0f2741aa90d89/src/
 //       com/google/javascript/jscomp/parsing/JsDocInfoParser.java#L2158-L2171
-FuncTypeExprModifier = modifierThis:("this" _ ":" _ Operand7) {
+FuncTypeExprModifier = modifierThis:("this" _ ":" _ TypeExpr) {
                          return { nodeThis: modifierThis[4], nodeNew: null };
                        }
-                     / modifierNew:("new" _ ":" _ Operand7) {
+                     / modifierNew:("new" _ ":" _ TypeExpr) {
                          return { nodeThis: null, nodeNew: modifierNew[4] };
                        }
 
 
 // Variadic type is only allowed on the last parameter.
-FuncTypeExprParams = paramsWithComma:(Operand7 _ "," _)* lastParam:Operand9 {
+FuncTypeExprParams = paramsWithComma:(TypeExpr _ "," _)* lastParam:OperandT2 {
                      var params = paramsWithComma.map(function(tokens) {
                        var operand7 = tokens[0];
                        return operand7;
@@ -174,7 +181,7 @@ RecordTypeExpr = "{" _ firstEntry:RecordEntry? restEntriesWithComma:(_ "," _ Rec
                }
 
 
-RecordEntry = key:JsIdentifier valueWithColon:(_ ":" _ Operand7)? {
+RecordEntry = key:JsIdentifier valueWithColon:(_ ":" _ TypeExpr)? {
               var value = valueWithColon ? valueWithColon[3] : null;
 
               return {
@@ -183,6 +190,52 @@ RecordEntry = key:JsIdentifier valueWithColon:(_ ":" _ Operand7)? {
                 value: value
               };
             }
+
+
+
+/*
+ * Generic type expressions.
+ *
+ * Examples:
+ *   - Function<T>
+ *   - Array.<string> (Legacy Closure Library style and JSDoc3 style)
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
+ *   - http://usejsdoc.org/tags-type.html
+ */
+GenericTypeExpr = operand:NamepathExpr _ syntax:GenericTypeStartToken _
+                  objects:GenericTypeExprObjectivePart _ GenericTypeEndToken {
+                  return {
+                    type: NodeType.GENERIC,
+                    subject: operand,
+                    objects: objects,
+                    meta: { syntax: syntax },
+                  };
+                }
+
+
+GenericTypeExprObjectivePart = first:TypeExpr restsWithComma:(_ "," _ TypeExpr)* {
+                               var objects = buildByFirstAndRest(first, restsWithComma, 3);
+                               return objects;
+                             }
+
+
+GenericTypeStartToken = GenericTypeEcmaScriptFlavoredStartToken
+                      / GenericTypeTypeScriptFlavoredStartToken
+
+
+GenericTypeEcmaScriptFlavoredStartToken = ".<" {
+                                          return GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT;
+                                        }
+
+
+GenericTypeTypeScriptFlavoredStartToken = "<" {
+                                          return GenericTypeSyntax.ANGLE_BRACKET;
+                                        }
+
+
+GenericTypeEndToken = ">"
 
 
 
@@ -196,7 +249,7 @@ RecordEntry = key:JsIdentifier valueWithColon:(_ ":" _ Operand7)? {
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-ParenthesisTypeExpr = "(" _ wrapped:Operand7 _ ")" {
+ParenthesisTypeExpr = "(" _ wrapped:TypeExpr _ ")" {
                       return wrapped;
                     }
 
@@ -487,21 +540,32 @@ Operand7 = operand:Operand6 operators:ArrayOfGenericTypeOperatorJsDocFlavored* {
          }
 
 
-Operand8 = operator:PrefixVariadicTypeOperator operand:Operand7 {
+Operand8 = FuncTypeExpr
+         / RecordTypeExpr
+         / ParenthesisTypeExpr
+         / AnyTypeExpr
+         / UnknownTypeExpr
+         / ModuleNameExpr
+         / ValueExpr
+         / ExternalNameExpr
+         / TypeNameExpr
+
+
+OperandT1 = operator:PrefixVariadicTypeOperator operand:TypeExpr {
              return {
                type: NodeType.VARIADIC,
                value: operand,
                meta: { syntax: VariadicTypeSyntax.PREFIX_DOTS },
              };
            }
-         / Operand7
+         / TypeExpr
 
 
-Operand9 = operand:Operand8 operator:SuffixVariadicTypeOperator {
+OperandT2 = operand:OperandT1 operator:SuffixVariadicTypeOperator {
              return {
                type: NodeType.VARIADIC,
                value: operand,
                meta: { syntax: VariadicTypeSyntax.SUFFIX_DOTS },
              };
            }
-         / Operand8
+         / OperandT1

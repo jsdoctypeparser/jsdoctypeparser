@@ -24,7 +24,8 @@
 TopLevelTypeExpr = OperandT2
 
 
-TypeExpr = Operand7
+TypeExpr = UnionTypeExpr
+         / Operand7
 
 
 /*
@@ -469,6 +470,38 @@ ArrayOfGenericTypeOperatorJsDocFlavored = "[" _ "]"
 
 
 
+/*
+ * Union type expressions.
+ *
+ * Examples:
+ *   - number|undefined
+ *   - Foo|Bar|Baz
+ */
+UnionTypeExpr = left:Operand7 _ syntax:UnionTypeOperator _ right:TypeExpr {
+                return {
+                    type: NodeType.UNION,
+                    left: left,
+                    right: right,
+                    meta: { syntax: syntax },
+                };
+              }
+
+// https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
+UnionTypeOperator = UnionTypeOperatorClosureLibraryFlavored
+                  / UnionTypeOperatorJSDuckFlavored
+
+
+UnionTypeOperatorClosureLibraryFlavored = "|" {
+                                          return UnionTypeSyntax.PIPE;
+                                        }
+
+
+UnionTypeOperatorJSDuckFlavored = "/" {
+                                  return UnionTypeSyntax.SLASH;
+                                }
+
+
+
 // OperandN is for operator precedence.
 // See https://github.com/Kuniwak/jsdoctypeparser/issues/34
 
@@ -546,17 +579,6 @@ Operand7 = operand:Operand6 operators:ArrayOfGenericTypeOperatorJsDocFlavored* {
              };
            }, operand);
          }
-
-
-Operand8 = FuncTypeExpr
-         / RecordTypeExpr
-         / ParenthesisTypeExpr
-         / AnyTypeExpr
-         / UnknownTypeExpr
-         / ModuleNameExpr
-         / ValueExpr
-         / ExternalNameExpr
-         / TypeNameExpr
 
 
 OperandT1 = operator:PrefixVariadicTypeOperator operand:TypeExpr {

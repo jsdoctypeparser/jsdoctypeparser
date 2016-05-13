@@ -362,19 +362,27 @@ ExternalNameExprAddressExpr = TypeNameExpr
  * Examples:
  *   - module:path/to/file
  *   - module:path/to/file.js
+ *   - module:MyModule~Foo (TODO: support it)
  *
  * Spec:
- *   - http://usejsdoc.org/about-namepaths.html
+ *   - http://usejsdoc.org/tags-module.html
+ *   - http://usejsdoc.org/howto-commonjs-modules.html
  */
-ModuleNameExpr = "module" _ ":" _ filePath:ModuleNameFilePathPart {
+ModuleNameExpr = "module" _ ":" _ filePathExpr:FilePathExpr {
                  return {
                    type: NodeType.MODULE,
-                   path: filePath
+                   path: filePathExpr.path,
                  };
                }
 
 
-ModuleNameFilePathPart = $([a-zA-Z_0-9_$./-]+)
+
+FilePathExpr = filePath:$([a-zA-Z0-9_$./-]+) {
+               return {
+                 type: NodeType.FILE_PATH,
+                 path: filePath,
+               };
+             }
 
 
 

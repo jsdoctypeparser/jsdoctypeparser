@@ -21,7 +21,7 @@ gulp.task('watch', function() {
 
 gulp.task('peg', function() {
   return gulp.src(PEG_FILES)
-    .pipe(peg().on('error', gutil.log))
+    .pipe(peg())
     .pipe(gulp.dest(COMPILED_PEG_FILE));
 });
 

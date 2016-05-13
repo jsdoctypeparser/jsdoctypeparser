@@ -472,7 +472,7 @@ Operand6 = operator:DeprecatedOptionalTypeOperator operand:Operand5 {
          / Operand5
 
 
-// TODO: We should care complex type expressin like "Some[]![]"
+// TODO: We should care complex type expression like "Some[]![]"
 Operand7 = operand:Operand6 operators:ArrayOfGenericTypeOperatorJsDocFlavored* {
            return operators.reduce(function(prev, operator) {
              return {

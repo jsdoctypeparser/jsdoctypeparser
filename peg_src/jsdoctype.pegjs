@@ -6,6 +6,12 @@
   var VariadicTypeSyntax = meta.VariadicTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
+  var NamepathOperatorType = {
+    MEMBER: 'MEMBER',
+    INNER_MEMBER: 'INNER_MEMBER',
+    INSTANCE_MEMBER: 'INSTANCE_MEMBER',
+  };
+
   function reverse(array) {
     var reversed = [].concat(array);
     reversed.reverse();
@@ -46,19 +52,35 @@ _  = [ \t\r\n ]*
 JsIdentifier = $([a-zA-Z_$][a-zA-Z0-9_$]*)
 
 
-NamepathExpr = TypeNameExpr
+NamepathExpr = rootOwner:TypeNameExpr memberPartWithOperators:(_ InfixNamepathOperator _ JsIdentifier)* {
+               return memberPartWithOperators.reduce(function(owner, tokens) {
+                 var operatorType = tokens[1];
+                 var memberName = tokens[3];
 
-
-Operand = FuncTypeExpr
-        / RecordTypeExpr
-        / ParenthesisTypeExpr
-        / AnyTypeExpr
-        / UnknownTypeExpr
-        / ModuleNameExpr
-        / ValueExpr
-        / ExternalNameExpr
-        / GenericTypeExpr
-        / NamepathExpr
+                 switch (operatorType) {
+                   case NamepathOperatorType.MEMBER:
+                     return {
+                       type: NodeType.MEMBER,
+                       owner: owner,
+                       name: memberName,
+                     };
+                   case NamepathOperatorType.INSTANCE_MEMBER:
+                     return {
+                       type: NodeType.INSTANCE_MEMBER,
+                       owner: owner,
+                       name: memberName,
+                     };
+                   case NamepathOperatorType.INNER_MEMBER:
+                     return {
+                       type: NodeType.INNER_MEMBER,
+                       owner: owner,
+                       name: memberName,
+                     };
+                   default:
+                     throw new Error('Unexpected operator type: "' + operatorType + '"');
+                 }
+               }, rootOwner);
+             }
 
 
 
@@ -95,6 +117,60 @@ TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
                               name: name
                             };
                           }
+
+
+InfixNamepathOperator = MemberTypeOperator
+                      / InstanceMemberTypeOperator
+                      / InnerMemberTypeOperator
+
+
+/*
+ * Member type expressions.
+ *
+ * Examples:
+ *   - owner.member
+ *   - superOwner.owner.member
+ */
+MemberTypeOperator = "." {
+                     return NamepathOperatorType.MEMBER;
+                   }
+
+
+/*
+ * Inner member type expressions.
+ *
+ * Examples:
+ *   - owner~innerMember
+ *   - superOwner~owner~innerMember
+ */
+InnerMemberTypeOperator = "~" {
+                          return NamepathOperatorType.INNER_MEMBER;
+                        }
+
+
+/*
+ * Instance member type expressions.
+ *
+ * Examples:
+ *   - owner#instanceMember
+ *   - superOwner#owner#instanceMember
+ */
+InstanceMemberTypeOperator = "#" {
+                             return NamepathOperatorType.INSTANCE_MEMBER;
+                           }
+
+
+
+Operand = FuncTypeExpr
+        / RecordTypeExpr
+        / ParenthesisTypeExpr
+        / AnyTypeExpr
+        / UnknownTypeExpr
+        / ModuleNameExpr
+        / ValueExpr
+        / ExternalNameExpr
+        / GenericTypeExpr
+        / NamepathExpr
 
 
 /*
@@ -168,6 +244,7 @@ FuncTypeExprParams = paramsWithComma:(TypeExpr _ "," _)* lastParam:OperandT2 {
  *   - {length}
  *   - {length:number}
  *   - {toString:Function,valueOf:Function}
+ *   - {'foo':*}
  *
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
@@ -182,7 +259,7 @@ RecordTypeExpr = "{" _ firstEntry:RecordEntry? restEntriesWithComma:(_ "," _ Rec
                }
 
 
-RecordEntry = key:JsIdentifier valueWithColon:(_ ":" _ TypeExpr)? {
+RecordEntry = key:RecordKey valueWithColon:(_ ":" _ TypeExpr)? {
               var value = valueWithColon ? valueWithColon[3] : null;
 
               return {
@@ -191,6 +268,15 @@ RecordEntry = key:JsIdentifier valueWithColon:(_ ":" _ TypeExpr)? {
                 value: value
               };
             }
+
+
+RecordKey = '"' key:$([^"]*) '"' {
+              return key;
+            }
+          / "'" key:$([^']*) "'" {
+              return key;
+            }
+          / JsIdentifier
 
 
 
@@ -344,16 +430,12 @@ HexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
  * Spec:
  *   - http://usejsdoc.org/tags-external.html
  */
-ExternalNameExpr = "external" _ ":" _ value:ExternalNameExprAddressExpr {
+ExternalNameExpr = "external" _ ":" _ value:NamepathExpr {
                    return {
                      type: NodeType.EXTERNAL,
                      value: value
                    };
                  }
-
-
-// TODO: It should allow several member operators.
-ExternalNameExprAddressExpr = TypeNameExpr
 
 
 

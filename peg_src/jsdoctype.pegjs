@@ -27,11 +27,11 @@
 }
 
 
-TopLevelTypeExpr = OperandT2
+TopLevelTypeExpr = SuffixVariadicTypeExpr
 
 
 TypeExpr = UnionTypeExpr
-         / Operand7
+         / ArrayOfGenericTypeExprJsDocFlavored
 
 
 /*
@@ -226,7 +226,7 @@ FuncTypeExprModifier = modifierThis:("this" _ ":" _ TypeExpr) {
 
 
 // Variadic type is only allowed on the last parameter.
-FuncTypeExprParams = paramsWithComma:(TypeExpr _ "," _)* lastParam:OperandT2 {
+FuncTypeExprParams = paramsWithComma:(TypeExpr _ "," _)* lastParam:SuffixVariadicTypeExpr {
                      var params = paramsWithComma.map(function(tokens) {
                        var operand7 = tokens[0];
                        return operand7;
@@ -479,10 +479,29 @@ FilePathExpr = filePath:$([a-zA-Z0-9_$./-]+) {
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-NullableTypeOperator = "?"
+NullableTypeExpr = operator:"?" operand:OptionalTypeExpr {
+                     return {
+                       type: NodeType.NULLABLE,
+                       value: operand,
+                     };
+                   }
+                 / OptionalTypeExpr
 
 
-DeprecatedNullableTypeOperator = NullableTypeOperator
+// Deprecated optional type operators should be placed before optional operators.
+// https://github.com/google/closure-library/blob/
+//   47f9c92bb4c7de9a3d46f9921a427402910073fb/closure/goog/net/tmpnetwork.js#L50
+DeprecatedNullableTypeExpr = operand:Operand operator:"?"? {
+                             // "Operand Operator?" is faster than "Operand Operator / Operand".
+                             // Because the operand will not be tried twice when the suffix
+                             // operator is failed.
+                             return operator
+                               ? {
+                                   type: NodeType.NULLABLE,
+                                   value: operand,
+                                 }
+                               : operand;
+                           }
 
 
 
@@ -496,10 +515,26 @@ DeprecatedNullableTypeOperator = NullableTypeOperator
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-NotNullableTypeOperator = "!"
+NotNullableTypeExpr = operator:"!" operand:NullableTypeExpr {
+                        return {
+                          type: NodeType.NOT_NULLABLE,
+                          value: operand,
+                        };
+                      }
+                    / NullableTypeExpr
 
 
-DeprecatedNotNullableTypeOperator = NotNullableTypeOperator
+DeprecatedNotNullableTypeExpr = operand:DeprecatedNullableTypeExpr operator:"!"? {
+                                // "Operand Operator?" is faster than "Operand Operator / Operand".
+                                // Because the operand will not be tried twice when the suffix
+                                // operator is failed.
+                                return operator
+                                  ? {
+                                      type: NodeType.NOT_NULLABLE,
+                                      value: operand,
+                                    }
+                                  : operand;
+                              }
 
 
 
@@ -513,10 +548,28 @@ DeprecatedNotNullableTypeOperator = NotNullableTypeOperator
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-OptionalTypeOperator = "="
+OptionalTypeExpr = operand:DeprecatedNotNullableTypeExpr operator:"="? {
+                   // "Operand Operator?" is faster than "Operand Operator / Operand".
+                   // Because the operand will not be tried twice when the suffix
+                   // operator is failed.
+                   return operator 
+                     ? {
+                         type: NodeType.OPTIONAL,
+                         value: operand,
+                       }
+                     : operand;
+                 }
 
 
-DeprecatedOptionalTypeOperator = OptionalTypeOperator
+DeprecatedOptionalTypeExpr = operator:"=" operand:NotNullableTypeExpr {
+                               return {
+                                 type: NodeType.OPTIONAL,
+                                 value: operand,
+                               };
+                             }
+                           / NotNullableTypeExpr
+
+
 
 
 
@@ -531,10 +584,25 @@ DeprecatedOptionalTypeOperator = OptionalTypeOperator
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions
  */
-PrefixVariadicTypeOperator = "..."
+PrefixVariadicTypeExpr = operator:"..." operand:TypeExpr {
+             return {
+               type: NodeType.VARIADIC,
+               value: operand,
+               meta: { syntax: VariadicTypeSyntax.PREFIX_DOTS },
+             };
+           }
+         / TypeExpr
 
 
-SuffixVariadicTypeOperator = PrefixVariadicTypeOperator
+SuffixVariadicTypeExpr = operand:PrefixVariadicTypeExpr operator:"..."? {
+                         return operator
+                           ? {
+                               type: NodeType.VARIADIC,
+                               value: operand,
+                               meta: { syntax: VariadicTypeSyntax.SUFFIX_DOTS },
+                             }
+                           : operand;
+                       }
 
 
 
@@ -548,7 +616,20 @@ SuffixVariadicTypeOperator = PrefixVariadicTypeOperator
  * Spec:
  *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions#the-basic-syntax
  */
-ArrayOfGenericTypeOperatorJsDocFlavored = "[" _ "]"
+// TODO: We should care complex type expression like "Some[]![]"
+ArrayOfGenericTypeExprJsDocFlavored = operand:DeprecatedOptionalTypeExpr operators:"[]"* {
+                                      return operators.reduce(function(prev, operator) {
+                                        return {
+                                          type: NodeType.GENERIC,
+                                          subject: {
+                                            type: NodeType.NAME,
+                                            name: 'Array'
+                                          },
+                                          objects: [ prev ],
+                                          meta: { syntax: GenericTypeSyntax.SQUARE_BRACKET },
+                                        };
+                                      }, operand);
+                                    }
 
 
 
@@ -559,7 +640,7 @@ ArrayOfGenericTypeOperatorJsDocFlavored = "[" _ "]"
  *   - number|undefined
  *   - Foo|Bar|Baz
  */
-UnionTypeExpr = left:Operand7 _ syntax:UnionTypeOperator _ right:TypeExpr {
+UnionTypeExpr = left:ArrayOfGenericTypeExprJsDocFlavored _ syntax:UnionTypeOperator _ right:TypeExpr {
                 return {
                     type: NodeType.UNION,
                     left: left,
@@ -581,103 +662,3 @@ UnionTypeOperatorClosureLibraryFlavored = "|" {
 UnionTypeOperatorJSDuckFlavored = "/" {
                                   return UnionTypeSyntax.SLASH;
                                 }
-
-
-
-// OperandN is for operator precedence.
-// See https://github.com/Kuniwak/jsdoctypeparser/issues/34
-
-// Deprecated optional type operators should be placed before optional operators.
-// https://github.com/google/closure-library/blob/
-//   47f9c92bb4c7de9a3d46f9921a427402910073fb/closure/goog/net/tmpnetwork.js#L50
-Operand1 = operand:Operand operator:DeprecatedNullableTypeOperator {
-             return operator
-               ? {
-                   type: NodeType.NULLABLE,
-                   value: operand,
-                 }
-               : operand;
-           }
-         / Operand
-
-
-Operand2 = operand:Operand1 operator:DeprecatedNotNullableTypeOperator {
-             return {
-               type: NodeType.NOT_NULLABLE,
-               value: operand,
-             };
-           }
-         / Operand1
-
-
-Operand3 = operand:Operand2 operator:OptionalTypeOperator {
-             return {
-               type: NodeType.OPTIONAL,
-               value: operand,
-             };
-           }
-         / Operand2
-
-
-Operand4 = operator:NullableTypeOperator operand:Operand3 {
-             return {
-               type: NodeType.NULLABLE,
-               value: operand,
-             };
-           }
-         / Operand3
-
-
-Operand5 = operator:NotNullableTypeOperator operand:Operand4 {
-             return {
-               type: NodeType.NOT_NULLABLE,
-               value: operand,
-             };
-           }
-         / Operand4
-
-
-
-Operand6 = operator:DeprecatedOptionalTypeOperator operand:Operand5 {
-             return {
-               type: NodeType.OPTIONAL,
-               value: operand,
-             };
-           }
-         / Operand5
-
-
-// TODO: We should care complex type expression like "Some[]![]"
-Operand7 = operand:Operand6 operators:ArrayOfGenericTypeOperatorJsDocFlavored* {
-           return operators.reduce(function(prev, operator) {
-             return {
-               type: NodeType.GENERIC,
-               subject: {
-                 type: NodeType.NAME,
-                 name: 'Array'
-               },
-               objects: [ prev ],
-               meta: { syntax: GenericTypeSyntax.SQUARE_BRACKET },
-             };
-           }, operand);
-         }
-
-
-OperandT1 = operator:PrefixVariadicTypeOperator operand:TypeExpr {
-             return {
-               type: NodeType.VARIADIC,
-               value: operand,
-               meta: { syntax: VariadicTypeSyntax.PREFIX_DOTS },
-             };
-           }
-         / TypeExpr
-
-
-OperandT2 = operand:OperandT1 operator:SuffixVariadicTypeOperator {
-             return {
-               type: NodeType.VARIADIC,
-               value: operand,
-               meta: { syntax: VariadicTypeSyntax.SUFFIX_DOTS },
-             };
-           }
-         / OperandT1

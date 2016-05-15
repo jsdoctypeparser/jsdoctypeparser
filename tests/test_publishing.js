@@ -51,7 +51,7 @@ describe('publish', function() {
 
   it('Build a informal type union', function() {
     var node = parse('number|boolean');
-    expect(publish(node)).to.equal('(number|boolean)');
+    expect(publish(node)).to.equal('number|boolean');
   });
 
 

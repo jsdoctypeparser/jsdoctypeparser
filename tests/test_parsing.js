@@ -104,7 +104,9 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createMemberTypeNode(
-      createModuleNameNode(createFilePathNode('path/to/file')),
+      createParenthesizedNode(
+        createModuleNameNode(createFilePathNode('path/to/file'))
+      ),
       'member'
     );
     expect(node).to.deep.equal(expectedNode);
@@ -342,9 +344,11 @@ describe('Parser', function() {
     var typeExprStr = '(LeftType|RightType)';
     var node = Parser.parse(typeExprStr);
 
-    var expectedNode = createUnionTypeNode(
-      createTypeNameNode('LeftType'),
-      createTypeNameNode('RightType')
+    var expectedNode = createParenthesizedNode(
+      createUnionTypeNode(
+        createTypeNameNode('LeftType'),
+        createTypeNameNode('RightType')
+      )
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -355,9 +359,11 @@ describe('Parser', function() {
     var typeExprStr = '( LeftType | RightType )';
     var node = Parser.parse(typeExprStr);
 
-    var expectedNode = createUnionTypeNode(
-      createTypeNameNode('LeftType'),
-      createTypeNameNode('RightType')
+    var expectedNode = createParenthesizedNode(
+      createUnionTypeNode(
+        createTypeNameNode('LeftType'),
+        createTypeNameNode('RightType')
+      )
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -1394,5 +1400,12 @@ function createFilePathNode(filePath) {
   return {
     type: NodeType.FILE_PATH,
     path: filePath,
+  };
+}
+
+function createParenthesizedNode(value) {
+  return {
+    type: NodeType.PARENTHESIS,
+    value: value,
   };
 }

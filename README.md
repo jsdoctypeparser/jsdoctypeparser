@@ -505,7 +505,7 @@ Structure:
 
 ```javascript
 {
-  "type": "MODULE",
+  "type": "FILE_PATH",
   "path": string
 }
 ```

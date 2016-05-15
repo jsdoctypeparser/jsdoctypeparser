@@ -21,7 +21,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "prepublidh": "npm-run-all build",
+    "prepublish": "npm-run-all build",
     "pretest": "npm-run-all lint build",
     "test": "mocha tests",
     "lint": "eslint lib tests",

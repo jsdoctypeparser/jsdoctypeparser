@@ -19,19 +19,22 @@
 }
 
 
-TopLevel = PrefixVariadicTypeExpr
-         / SuffixVariadicTypeExpr
-         / UnionTypeExpr
-         / UnaryUnionTypeExpr
-         / ArrayTypeExpr
-         / GenericTypeExpr
-         / RecordTypeExpr
-         / FunctionTypeExpr
-         / BroadNamepathExpr
-         / ParenthesizedExpr
-         / ValueExpr
-         / AnyTypeExpr
-         / UnknownTypeExpr
+TopLevel = _ expr:( PrefixVariadicTypeExpr
+                  / SuffixVariadicTypeExpr
+                  / UnionTypeExpr
+                  / UnaryUnionTypeExpr
+                  / ArrayTypeExpr
+                  / GenericTypeExpr
+                  / RecordTypeExpr
+                  / FunctionTypeExpr
+                  / BroadNamepathExpr
+                  / ParenthesizedExpr
+                  / ValueExpr
+                  / AnyTypeExpr
+                  / UnknownTypeExpr
+                  ) _ {
+           return expr;
+         }
 
 
 /*
@@ -306,11 +309,17 @@ ValueExpr = StringLiteralExpr / NumberLiteralExpr
 
 
 StringLiteralExpr = '"' value:$([^\\"] / "\\".)* '"' {
-                    return {
-                      type: NodeType.STRING_VALUE,
-                      string: value.replace(/\\"/g, '"')
-                    };
-                  }
+                      return {
+                        type: NodeType.STRING_VALUE,
+                        string: value.replace(/\\"/g, '"')
+                      };
+                    }
+                  / "'" value:$([^\\'] / "\\".)* "'" {
+                      return {
+                        type: NodeType.STRING_VALUE,
+                        string: value.replace(/\\'/g, "'")
+                      };
+                    }
 
 
 NumberLiteralExpr = value:(BinNumberLiteralExpr / OctNumberLiteralExpr / HexNumberLiteralExpr / DecimalNumberLiteralExpr) {
@@ -779,7 +788,7 @@ RecordTypeExprEntryKey = '"' key:$([^"]*) '"' {
                        / "'" key:$([^']*) "'" {
                            return key;
                          }
-                       / JsIdentifier
+                       / $([a-zA-Z0-9_$]+)
 
 
 RecordTypeExprEntryOperand = UnionTypeExpr

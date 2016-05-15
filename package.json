@@ -41,7 +41,5 @@
     "rimraf": "^2.5.2"
   },
   "license": "MIT",
-  "dependencies": {
-    "lodash": "^3.7.0"
-  }
+  "dependencies": {}
 }

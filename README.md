@@ -97,19 +97,16 @@ And we can override default behavior by using `createDefaultPublisher`.
 
 
 ```javascript
-const {publish, createDefaultPublisher} = require('jsdoctypeparser').publish;
+const {publish, createDefaultPublisher} = require('jsdoctypeparser');
 
 const ast = {
   type: 'NAME',
-  name: 'MyClass'
+  name: 'MyClass',
 };
 
-const defaultPublisher = createDefaultPublisher();
-const customPublisher = Object.create(defaultPublisher, {
-  NAME: (node, pub) => {
-    return `<a href="./types/${node.name}.html">${node.name}</a>`;
-  },
-});
+const customPublisher = createDefaultPublisher();
+customPublisher.NAME = (node, pub) => 
+  `<a href="./types/${node.name}.html">${node.name}</a>`;
 
 const string = publish(ast, customPublisher);
 ```

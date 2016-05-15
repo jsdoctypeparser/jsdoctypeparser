@@ -4,7 +4,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var NodeType = require('../lib/NodeType.js');
 var traverse = require('../lib/traversing.js').traverse;
-var lodash = require('lodash');
 
 
 describe('traversing', function() {
@@ -335,7 +334,9 @@ describe('traversing', function() {
     },
   };
 
-  lodash.forEach(testCases, function(testCaseInfo, testCaseName) {
+  Object.keys(testCases).forEach(function(testCaseName) {
+    var testCaseInfo = testCases[testCaseName];
+
     it(testCaseName, function() {
       var visitedOrder = [];
       var onEnterSpy = createEventSpy('enter', visitedOrder);

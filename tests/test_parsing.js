@@ -66,31 +66,51 @@ describe('Parser', function() {
   });
 
 
-  it('should return a module name node when "module:path/to/file.js" arrived', function() {
-    var typeExprStr = 'module:path/to/file.js';
+  it('should return an optional unknown type node when "?=" arrived', function() {
+    var typeExprStr = '?=';
     var node = Parser.parse(typeExprStr);
 
-    var expectedNode = createModuleNameNode('path/to/file.js');
+    var expectedNode = createOptionalTypeNode(createUnknownTypeNode());
     expect(node).to.deep.equal(expectedNode);
   });
 
 
-  it('should return a module name node when "module : path/to/file.js" arrived', function() {
-    var typeExprStr = 'module : path/to/file.js';
+  it('should return a module name node when "module:path/to/file" arrived', function() {
+    var typeExprStr = 'module:path/to/file';
     var node = Parser.parse(typeExprStr);
 
-    var expectedNode = createModuleNameNode('path/to/file.js');
+    var expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
     expect(node).to.deep.equal(expectedNode);
   });
 
 
-  it('should return a member node when "(module:path/to/file.js).member" arrived', function() {
-    var typeExprStr = '(module:path/to/file.js).member';
+  it('should return a module name node when "module : path/to/file" arrived', function() {
+    var typeExprStr = 'module : path/to/file';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a member node when "(module:path/to/file).member" arrived', function() {
+    var typeExprStr = '(module:path/to/file).member';
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createMemberTypeNode(
-      createModuleNameNode('path/to/file.js'),
+      createModuleNameNode(createFilePathNode('path/to/file')),
       'member'
+    );
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a member node when "module:path/to/file.member" arrived', function() {
+    var typeExprStr = 'module:path/to/file.member';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createModuleNameNode(
+      createMemberTypeNode(createFilePathNode('path/to/file'), 'member')
     );
     expect(node).to.deep.equal(expectedNode);
   });
@@ -436,6 +456,19 @@ describe('Parser', function() {
   });
 
 
+  it('should return a record type node when "{\'quoted-key\':ValueType}"' +
+     ' arrived', function() {
+    var typeExprStr = '{\'quoted-key\':ValueType}';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createRecordTypeNode([
+      createRecordEntryNode('quoted-key', createTypeNameNode('ValueType')),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a generic type node when "Generic<ParamType>" arrived', function() {
     var typeExprStr = 'Generic<ParamType>';
     var node = Parser.parse(typeExprStr);
@@ -566,6 +599,22 @@ describe('Parser', function() {
   });
 
 
+  it('should return a generic type node when "ParamType [ ] [ ]" arrived', function() {
+    var typeExprStr = 'ParamType [ ] [ ]';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createGenericTypeNode(
+      createTypeNameNode('Array'), [
+        createGenericTypeNode(
+          createTypeNameNode('Array'), [
+            createTypeNameNode('ParamType'),
+        ], GenericTypeSyntax.SQUARE_BRACKET),
+      ], GenericTypeSyntax.SQUARE_BRACKET);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return an optional type node when "string=" arrived', function() {
     var typeExprStr = 'string=';
     var node = Parser.parse(typeExprStr);
@@ -614,15 +663,93 @@ describe('Parser', function() {
   });
 
 
+  it('should return an optional type node when "string =" arrived', function() {
+    var typeExprStr = 'string =';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createOptionalTypeNode(
+      createTypeNameNode('string')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return an optional type node when "= string" arrived (deprecated)', function() {
+    var typeExprStr = '= string';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createOptionalTypeNode(
+      createTypeNameNode('string')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a nullable type node when "? string" arrived', function() {
+    var typeExprStr = '? string';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNullableTypeNode(
+      createTypeNameNode('string')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a nullable type node when "string ?" arrived (deprecated)', function() {
+    var typeExprStr = 'string ?';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNullableTypeNode(
+      createTypeNameNode('string')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return an optional type node when "?string=" arrived', function() {
     var typeExprStr = '?string=';
     var node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNullableTypeNode(
-      createOptionalTypeNode(createTypeNameNode('string'))
+    var expectedNode = createOptionalTypeNode(
+      createNullableTypeNode(createTypeNameNode('string'))
     );
 
     expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return an optional type node when "string?=" arrived', function() {
+    var typeExprStr = 'string?=';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createOptionalTypeNode(
+      createNullableTypeNode(createTypeNameNode('string'))
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should throw an error when "?!string" arrived', function() {
+    var typeExprStr = '?!string';
+
+    expect(function() {
+      Parser.parse(typeExprStr);
+    }).to.throw(Parser.SyntaxError);
+  });
+
+
+  it('should throw an error when "!?string" arrived', function() {
+    var typeExprStr = '!?string';
+
+    expect(function() {
+      Parser.parse(typeExprStr);
+    }).to.throw(Parser.SyntaxError);
   });
 
 
@@ -682,6 +809,42 @@ describe('Parser', function() {
   });
 
 
+  it('should return a not nullable type node when "Object!" arrived', function() {
+    var typeExprStr = 'Object!';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNotNullableTypeNode(
+      createTypeNameNode('Object')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a not nullable type node when "! Object" arrived', function() {
+    var typeExprStr = '! Object';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNotNullableTypeNode(
+      createTypeNameNode('Object')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a not nullable type node when "Object !" arrived', function() {
+    var typeExprStr = 'Object !';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createNotNullableTypeNode(
+      createTypeNameNode('Object')
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a function type node when "function()" arrived', function() {
     var typeExprStr = 'function()';
     var node = Parser.parse(typeExprStr);
@@ -719,6 +882,47 @@ describe('Parser', function() {
     );
 
     expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a function type node with variadic params when "function(...VariadicParam)"' +
+     ' arrived', function() {
+    var typeExprStr = 'function(...VariadicParam)';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createFunctionTypeNode(
+      [ createVariadicTypeNode(createTypeNameNode('VariadicParam'), VariadicTypeSyntax.PREFIX_DOTS) ],
+      null, { 'this': null, 'new': null }
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a function type node with variadic params when "function(Param,...VariadicParam)"' +
+     ' arrived', function() {
+    var typeExprStr = 'function(Param,...VariadicParam)';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createFunctionTypeNode(
+      [
+        createTypeNameNode('Param'),
+        createVariadicTypeNode(createTypeNameNode('VariadicParam'), VariadicTypeSyntax.PREFIX_DOTS),
+      ],
+      null, { 'this': null, 'new': null }
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should throw an error when "function(...VariadicParam, UnexpectedLastParam)"' +
+     ' arrived', function() {
+    var typeExprStr = 'function(...VariadicParam, UnexpectedLastParam)';
+
+    expect(function() {
+      Parser.parse(typeExprStr);
+    }).to.throw(Parser.SyntaxError);
   });
 
 
@@ -794,20 +998,23 @@ describe('Parser', function() {
   });
 
 
-  it('should return a function type node as a constructor when ' +
-     '"function(new:NewObject, this:ThisObject, param1)" arrived', function() {
-    var typeExprStr = 'function(new:NewObject, this:ThisObject, param1)';
-    var node = Parser.parse(typeExprStr);
+  it('should throw an error when "function(new:NewObject, this:ThisObject)" ' +
+     'arrived', function() {
+    var typeExprStr = 'function(new:NewObject, this:ThisObject)';
 
-    var expectedNode = createFunctionTypeNode(
-      [ createTypeNameNode('param1') ], null,
-      {
-        'this': createTypeNameNode('ThisObject'),
-        'new': createTypeNameNode('NewObject'),
-      }
-    );
+    expect(function() {
+      Parser.parse(typeExprStr);
+    }).to.throw(Parser.SyntaxError);
+  });
 
-    expect(node).to.deep.equal(expectedNode);
+
+  it('should throw an error when "function(this:ThisObject, new:NewObject)" ' +
+     'arrived', function() {
+    var typeExprStr = 'function(this:ThisObject, new:NewObject)';
+
+    expect(function() {
+      Parser.parse(typeExprStr);
+    }).to.throw(Parser.SyntaxError);
   });
 
 
@@ -952,13 +1159,36 @@ describe('Parser', function() {
   });
 
 
-
   it('should throw a syntax error when "..." arrived', function() {
     var typeExprStr = '...';
 
     expect(function() {
       Parser.parse(typeExprStr);
     }).to.throw(Parser.SyntaxError);
+  });
+
+
+  describe('operator precedence', function() {
+    context('when "Foo|function():Returned?" arrived', function() {
+      it('should parse as "Foo|((function():Returned)?)"', function() {
+        var typeExprStr = 'Foo|function():Returned?';
+        var node = Parser.parse(typeExprStr);
+
+        var expectedNode = createUnionTypeNode(
+          createTypeNameNode('Foo'),
+          createNullableTypeNode(
+            createFunctionTypeNode(
+              [],
+              createTypeNameNode('Returned'),
+            { 'this': null, 'new': null }
+            )
+          ),
+          UnionTypeSyntax.PIPE
+        );
+
+        expect(node).to.deep.equal(expectedNode);
+      });
+    });
   });
 });
 
@@ -982,10 +1212,10 @@ function createUnknownTypeNode() {
   };
 }
 
-function createModuleNameNode(moduleName) {
+function createModuleNameNode(value) {
   return {
     type: NodeType.MODULE,
-    path: moduleName,
+    value: value,
   };
 }
 
@@ -1103,5 +1333,12 @@ function createStringValueNode(stringLiteral) {
   return {
     type: NodeType.STRING_VALUE,
     string: stringLiteral,
+  };
+}
+
+function createFilePathNode(filePath) {
+  return {
+    type: NodeType.FILE_PATH,
+    path: filePath,
   };
 }

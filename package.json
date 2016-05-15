@@ -21,27 +21,25 @@
   },
   "main": "index.js",
   "scripts": {
-    "prepublidh": "npm run build",
-    "pretest": "npm run lint",
+    "prepublidh": "npm-run-all build",
+    "pretest": "npm-run-all lint build",
     "test": "mocha tests",
-    "lint": "eslint lib tests && jscs lib tests",
-    "build": "gulp build"
+    "lint": "eslint lib tests",
+    "clean": "rimraf ./peg_lib",
+    "postclean": "mkdirp ./peg_lib",
+    "prebuild": "npm-run-all clean",
+    "build": "pegjs --cache ./peg_src/jsdoctype.pegjs ./peg_lib/jsdoctype.js"
   },
   "readmeFilename": "README.md",
   "devDependencies": {
     "chai": "^2.2.0",
     "eslint": "^0.20.0",
-    "gulp": "^3.8.11",
-    "gulp-debug": "^2.0.1",
-    "gulp-peg": "^0.1.2",
-    "gulp-plumber": "^0.6.6",
-    "gulp-util": "^3.0.6",
-    "gulp-watch": "^4.3.5",
-    "jscs": "^1.13.1",
-    "mocha": "^2.2.4"
+    "mkdirp": "^0.5.1",
+    "mocha": "^2.2.4",
+    "npm-run-all": "^2.1.0",
+    "pegjs": "^0.9.0",
+    "rimraf": "^2.5.2"
   },
   "license": "MIT",
-  "dependencies": {
-    "lodash": "^3.7.0"
-  }
+  "dependencies": {}
 }

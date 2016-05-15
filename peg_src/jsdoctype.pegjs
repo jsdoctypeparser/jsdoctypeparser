@@ -1,28 +1,14 @@
 {
-  var lodash = require('lodash');
   var meta = require('../lib/SyntaxType.js');
   var GenericTypeSyntax = meta.GenericTypeSyntax;
   var UnionTypeSyntax = meta.UnionTypeSyntax;
   var VariadicTypeSyntax = meta.VariadicTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
-  var OperatorType = {
-    UNION: 0,
-    MEMBER: 1,
-    GENERIC: 2,
-    ARRAY: 3,
-    OPTIONAL: 4,
-    NULLABLE: 5,
-    NOT_NULLABLE: 6,
-    VARIADIC: 7,
-    INNER_MEMBER: 8,
-    INSTANCE_MEMBER: 9,
-  };
-
-  var FunctionModifierType = {
-    NONE: 0,
-    CONTEXT: 1,
-    NEW: 2,
+  var NamepathOperatorType = {
+    MEMBER: 'MEMBER',
+    INNER_MEMBER: 'INNER_MEMBER',
+    INSTANCE_MEMBER: 'INSTANCE_MEMBER',
   };
 
   function reverse(array) {
@@ -30,168 +16,73 @@
     reversed.reverse();
     return reversed;
   }
-
-  function buildByFirstAndRest(first, restsWithComma, restIndex) {
-    if (!first) return [];
-
-    var rests = restsWithComma ? lodash.pluck(restsWithComma, restIndex) : [];
-    return [first].concat(rests);
-  }
-
-  function reportSemanticIssue(msg) {
-    console.warn(msg);
-  }
 }
 
 
-typeExpr = prefixModifiers:prefixModifiers? modifieeAndPostfixModifiers:modifieeAndPostfixModifiers {
-    var prefixModifiers = prefixModifiers || [];
-    var modifiee = modifieeAndPostfixModifiers.modifiee;
-    var postfixModifiers = modifieeAndPostfixModifiers.postfixModifiers;
-
-    var modifiersOrderedByPriority = postfixModifiers.concat(reverse(prefixModifiers));
-    var rootNode = modifiersOrderedByPriority.reduce(function(prevNode, operator) {
-      switch (operator.operatorType) {
-        case OperatorType.UNION:
-          var unionOperator = operator;
-          return {
-            type: NodeType.UNION,
-            left: prevNode,
-            right: unionOperator.right,
-            meta: { syntax: unionOperator.syntax },
-          };
-        case OperatorType.MEMBER:
-          var memberOperator = operator;
-          return {
-            type: NodeType.MEMBER,
-            owner: prevNode,
-            name: memberOperator.memberName,
-          };
-        case OperatorType.INNER_MEMBER:
-          var memberOperator = operator;
-          return {
-            type: NodeType.INNER_MEMBER,
-            owner: prevNode,
-            name: memberOperator.memberName,
-          };
-        case OperatorType.INSTANCE_MEMBER:
-          var memberOperator = operator;
-          return {
-            type: NodeType.INSTANCE_MEMBER,
-            owner: prevNode,
-            name: memberOperator.memberName,
-          };
-        case OperatorType.GENERIC:
-          var genericOperator = operator;
-          return {
-            type: NodeType.GENERIC,
-            subject: prevNode,
-            objects: genericOperator.objects,
-            meta: { syntax: genericOperator.syntax },
-          }
-        case OperatorType.ARRAY:
-          var arrayOperator = operator;
-          return {
-            type: NodeType.GENERIC,
-            subject: {
-              type: NodeType.NAME,
-              name: 'Array'
-            },
-            objects: [ prevNode ],
-            meta: { syntax: GenericTypeSyntax.SQUARE_BRACKET },
-          };
-        case OperatorType.OPTIONAL:
-          return {
-            type: NodeType.OPTIONAL,
-            value: prevNode,
-          };
-        case OperatorType.NULLABLE:
-          return {
-            type: NodeType.NULLABLE,
-            value: prevNode,
-          };
-        case OperatorType.NOT_NULLABLE:
-          return {
-            type: NodeType.NOT_NULLABLE,
-            value: prevNode,
-          };
-        case OperatorType.VARIADIC:
-          return {
-            type: NodeType.VARIADIC,
-            value: prevNode,
-            meta: { syntax: operator.syntax },
-          };
-        default:
-          throw Error('Unexpected token: ' + token);
-      }
-    }, modifiee);
-
-
-    return rootNode;
-  }
-
-
-// "?" is a ambiguous token. It has 2 meanings. The first meaning is a prefix
-// nullable operator. Another meaning is an unknown type keyword.
-// In fact, we cannot use geedy quantifiers to parsing prefix operators,
-// because it mistakenly take an unknown type as a nullable operator.
-prefixModifiers = prefixModifier:prefixModifier _ restPrefixModifiers:(prefixModifiers / & modifieeAndPostfixModifiers) {
-      if (!prefixModifier) return [];
-      if (!restPrefixModifiers) return [prefixModifier];
-
-      restPrefixModifiers.unshift(prefixModifier);
-      return restPrefixModifiers;
-    }
-
-modifieeAndPostfixModifiers = 
-    modifieeWithWhiteSpaces:modifiee _
-    postfixModifiersWithWhiteSpaces:(postfixModifier _)* {
-      return {
-        modifiee: modifieeWithWhiteSpaces,
-        postfixModifiers: lodash.pluck(postfixModifiersWithWhiteSpaces, 0),
-      };
-    }
-
-prefixModifier =
-    nullableTypeOperator
-    / notNullableTypeOperator
-    / prefixVariadicTypeOperator
-    / deprecatedOptionalTypeOperator
-
-modifiee =
-    funcTypeExpr
-    / recordTypeExpr
-    / parenthesisTypeExpr
-    / anyTypeExpr
-    / unknownTypeExpr
-    / moduleNameExpr
-    / valueExpr
-    / externalNameExpr
-    / typeNameExpr
-
-postfixModifier =
-    optionalTypeOperator
-    / arrayOfGenericTypeOperatorJsDocFlavored
-    / genericTypeExpr
-    / memberTypeExpr
-    / innerMemberTypeExpr
-    / instanceMemberTypeExpr
-    / unionTypeExpr
-    / suffixVariadicTypeOperator
-    / deprecatedNullableTypeOperator
-    / deprecatedNotNullableTypeOperator
+TopLevel = PrefixVariadicTypeExpr
+         / SuffixVariadicTypeExpr
+         / UnionTypeExpr
+         / UnaryUnionTypeExpr
+         / ArrayTypeExpr
+         / GenericTypeExpr
+         / RecordTypeExpr
+         / FunctionTypeExpr
+         / BroadNamepathExpr
+         / ParenthesizedExpr
+         / ValueExpr
+         / AnyTypeExpr
+         / UnknownTypeExpr
 
 
 /*
- * Parenthesis expressions.
- *
- * Examples:
- *   - (Foo|Bar)
- *   - (module: path/to/file).Module
+ * White spaces.
  */
-parenthesisTypeExpr = "(" _ wrapped:typeExpr _ ")" {
-    return wrapped;
-  }
+_  = [ \t\r\n ]*
+
+
+/*
+ * JavaScript identifier names.
+ *
+ * NOTE: We does not support UnicodeIDStart and \UnicodeEscapeSequence yet.
+ *
+ * Spec:
+ *   - http://www.ecma-international.org/ecma-262/6.0/index.html#sec-names-and-keywords
+ *   - http://unicode.org/reports/tr31/#Table_Lexical_Classes_for_Identifiers
+ */
+JsIdentifier = $([a-zA-Z_$][a-zA-Z0-9_$]*)
+
+
+// It is transformed to remove left recursion.
+// See https://en.wikipedia.org/wiki/Left_recursion#Removing_left_recursion
+NamepathExpr = rootOwner:(ParenthesizedExpr / TypeNameExpr) memberPartWithOperators:(_ InfixNamepathOperator _ MemberName)* {
+               return memberPartWithOperators.reduce(function(owner, tokens) {
+                 var operatorType = tokens[1];
+                 var memberName = tokens[3];
+
+                 switch (operatorType) {
+                   case NamepathOperatorType.MEMBER:
+                     return {
+                       type: NodeType.MEMBER,
+                       owner: owner,
+                       name: memberName,
+                     };
+                   case NamepathOperatorType.INSTANCE_MEMBER:
+                     return {
+                       type: NodeType.INSTANCE_MEMBER,
+                       owner: owner,
+                       name: memberName,
+                     };
+                   case NamepathOperatorType.INNER_MEMBER:
+                     return {
+                       type: NodeType.INNER_MEMBER,
+                       owner: owner,
+                       name: memberName,
+                     };
+                   default:
+                     throw new Error('Unexpected operator type: "' + operatorType + '"');
+                 }
+               }, rootOwner);
+             }
 
 
 /*
@@ -203,18 +94,105 @@ parenthesisTypeExpr = "(" _ wrapped:typeExpr _ ")" {
  *   - Error
  *   - $
  *   - _
+ *   - custom-type (JSDoc compatible)
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-typeNameExpr = name:$(jsIdentifierWithHyphen) {
-    return {
-      type: NodeType.NAME,
-      name: name
-    };
-  }
+TypeNameExpr = TypeNameExprJsDocFlavored
+             / TypeNameExprStrict
 
-jsIdentifier = [a-zA-Z_$][a-zA-Z0-9_$]*
 
-// https://github.com/Kuniwak/jsdoctypeparser/issues/15
-jsIdentifierWithHyphen = [a-zA-Z_$][a-zA-Z0-9_$-]*
+TypeNameExprStrict = name:JsIdentifier {
+                     return {
+                       type: NodeType.NAME,
+                       name: name
+                     };
+                   }
+
+
+// JSDoc allow to use hyphens in identifier contexts.
+// See https://github.com/Kuniwak/jsdoctypeparser/issues/15
+TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
+                            return {
+                              type: NodeType.NAME,
+                              name: name
+                            };
+                          }
+
+
+// TODO: Care escaped strings
+MemberName = "'" name:$([^']*) "'" {
+               return name;
+             }
+           / '"' name:$([^"]*) '"' {
+               return name;
+             }
+           / JsIdentifier
+
+
+InfixNamepathOperator = MemberTypeOperator
+                      / InstanceMemberTypeOperator
+                      / InnerMemberTypeOperator
+
+
+/*
+ * Member type expressions.
+ *
+ * Examples:
+ *   - owner.member
+ *   - superOwner.owner.member
+ */
+MemberTypeOperator = "." {
+                     return NamepathOperatorType.MEMBER;
+                   }
+
+
+/*
+ * Inner member type expressions.
+ *
+ * Examples:
+ *   - owner~innerMember
+ *   - superOwner~owner~innerMember
+ */
+InnerMemberTypeOperator = "~" {
+                          return NamepathOperatorType.INNER_MEMBER;
+                        }
+
+
+/*
+ * Instance member type expressions.
+ *
+ * Examples:
+ *   - owner#instanceMember
+ *   - superOwner#owner#instanceMember
+ */
+InstanceMemberTypeOperator = "#" {
+                             return NamepathOperatorType.INSTANCE_MEMBER;
+                           }
+
+
+BroadNamepathExpr = ExternalNameExpr
+                  / ModuleNameExpr
+                  / NamepathExpr
+
+
+/*
+ * External name expressions.
+ *
+ * Examples:
+ *   - external:path/to/file
+ *   - external:path/to/file.js
+ *
+ * Spec:
+ *   - http://usejsdoc.org/tags-external.html
+ */
+ExternalNameExpr = "external" _ ":" _ value:NamepathExpr {
+                   return {
+                     type: NodeType.EXTERNAL,
+                     value: value
+                   };
+                 }
 
 
 /*
@@ -222,20 +200,95 @@ jsIdentifierWithHyphen = [a-zA-Z_$][a-zA-Z0-9_$-]*
  *
  * Examples:
  *   - module:path/to/file
- *   - module:path/to/file.js
+ *   - module:path/to/file.MyModule~Foo
+ *
+ * Spec:
+ *   - http://usejsdoc.org/tags-module.html
+ *   - http://usejsdoc.org/howto-commonjs-modules.html
  */
-moduleNameExpr = "module" _ ":" _ filePath:$(moduleNameFilePathPart) {
-    return {
-      type: NodeType.MODULE,
-      path: filePath
-    };
-  }
-moduleNameFilePathPart = [a-zA-Z_0-9_$./-]+
+ModuleNameExpr = "module" _ ":" _ value:ModulePathExpr {
+                 return {
+                   type: NodeType.MODULE,
+                   value: value,
+                 };
+               }
+
+
+
+// It is transformed to remove left recursion
+ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepathOperator _ MemberName)* {
+                 return memberPartWithOperators.reduce(function(owner, tokens) {
+                   var operatorType = tokens[1];
+                   var memberName = tokens[3];
+  
+                   switch (operatorType) {
+                     case NamepathOperatorType.MEMBER:
+                       return {
+                         type: NodeType.MEMBER,
+                         owner: owner,
+                         name: memberName,
+                       };
+                     case NamepathOperatorType.INSTANCE_MEMBER:
+                       return {
+                         type: NodeType.INSTANCE_MEMBER,
+                         owner: owner,
+                         name: memberName,
+                       };
+                     case NamepathOperatorType.INNER_MEMBER:
+                       return {
+                         type: NodeType.INNER_MEMBER,
+                         owner: owner,
+                         name: memberName,
+                       };
+                     default:
+                       throw new Error('Unexpected operator type: "' + operatorType + '"');
+                   }
+                 }, rootOwner);
+               }
+
+
+
+FilePathExpr = filePath:$([a-zA-Z0-9_$/-]+) {
+               return {
+                 type: NodeType.FILE_PATH,
+                 path: filePath,
+               };
+             }
+
+
+/*
+ * Any type expressions.
+ *
+ * Examples:
+ *   - *
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
+ */
+AnyTypeExpr = "*" {
+              return { type: NodeType.ANY };
+            }
+
+
+
+/*
+ * Unknown type expressions.
+ *
+ * Examples:
+ *   - ?
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
+ */
+UnknownTypeExpr = "?" {
+                  return { type: NodeType.UNKNOWN };
+                }
 
 
 
 /*
  * Value type expressions.
+ *
  * Example:
  *   - 123
  *   - 0.0
@@ -246,65 +299,334 @@ moduleNameFilePathPart = [a-zA-Z_0-9_$./-]+
  *   - "foo"
  *   - "foo\"bar\nbuz"
  *
- * Spec: https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
+ * Spec:
+ *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
  */
-valueExpr = stringLiteralExpr / numberLiteralExpr
-stringLiteralExpr = '"' value:$([^\\"] / "\\".)* '"' {
-    return {
-      type: NodeType.STRING_VALUE,
-      string: value.replace(/\\"/g, '"')
-    };
-  }
-numberLiteralExpr = value:(binNumberLiteralExpr / octNumberLiteralExpr / hexNumberLiteralExpr / decimalNumberLiteralExpr) {
-    return {
-      type: NodeType.NUMBER_VALUE,
-      number: value
-    };
-  }
-decimalNumberLiteralExpr = $("-"? [0-9]+ ("." [0-9]+)?)
-binNumberLiteralExpr = $("-"? "0b"[01]+)
-octNumberLiteralExpr = $("-"? "0o"[0-7]+)
-hexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
+ValueExpr = StringLiteralExpr / NumberLiteralExpr
+
+
+StringLiteralExpr = '"' value:$([^\\"] / "\\".)* '"' {
+                    return {
+                      type: NodeType.STRING_VALUE,
+                      string: value.replace(/\\"/g, '"')
+                    };
+                  }
+
+
+NumberLiteralExpr = value:(BinNumberLiteralExpr / OctNumberLiteralExpr / HexNumberLiteralExpr / DecimalNumberLiteralExpr) {
+                    return {
+                      type: NodeType.NUMBER_VALUE,
+                      number: value
+                    };
+                  }
+
+
+DecimalNumberLiteralExpr = $("-"? [0-9]+ ("." [0-9]+)?)
+
+
+BinNumberLiteralExpr = $("-"? "0b"[01]+)
+
+
+OctNumberLiteralExpr = $("-"? "0o"[0-7]+)
+
+
+HexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
 
 
 
 /*
- * External name expressions.
+ * Union type expressions.
  *
  * Examples:
- *   - external:path/to/file
- *   - external:path/to/file.js
- *
- * Spec: http://usejsdoc.org/tags-external.html
+ *   - number|undefined
+ *   - Foo|Bar|Baz
  */
-externalNameExpr = "external" _ ":" _ value:typeExpr {
-    return {
-      type: NodeType.EXTERNAL,
-      value: value
-    };
-  }
+UnionTypeExpr = left:UnionTypeExprOperand _ syntax:UnionTypeOperator _ right:(UnionTypeExpr / UnionTypeExprOperand) {
+                return {
+                    type: NodeType.UNION,
+                    left: left,
+                    right: right,
+                    meta: { syntax: syntax },
+                };
+              }
+
+// https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
+UnionTypeOperator = UnionTypeOperatorClosureLibraryFlavored
+                  / UnionTypeOperatorJSDuckFlavored
+
+
+UnionTypeOperatorClosureLibraryFlavored = "|" {
+                                          return UnionTypeSyntax.PIPE;
+                                        }
+
+
+UnionTypeOperatorJSDuckFlavored = "/" {
+                                  return UnionTypeSyntax.SLASH;
+                                }
+
+
+UnionTypeExprOperand = UnaryUnionTypeExpr
+                     / RecordTypeExpr
+                     / FunctionTypeExpr
+                     / ParenthesizedExpr
+                     / GenericTypeExpr
+                     / ArrayTypeExpr
+                     / BroadNamepathExpr
+                     / ValueExpr
+                     / AnyTypeExpr
+                     / UnknownTypeExpr
+
+
+UnaryUnionTypeExpr = SuffixUnaryUnionTypeExpr
+                   / PrefixUnaryUnionTypeExpr
+
+
+PrefixUnaryUnionTypeExpr = PrefixOptionalTypeExpr
+                         / PrefixNotNullableTypeExpr
+                         / PrefixNullableTypeExpr
+
+
+PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
+                                / RecordTypeExpr
+                                / FunctionTypeExpr
+                                / ParenthesizedExpr
+                                / BroadNamepathExpr
+                                / ValueExpr
+                                / AnyTypeExpr
+                                / UnknownTypeExpr
+
 
 
 /*
- * Any type expressions.
+ * Prefix nullable type expressions.
  *
  * Examples:
- *   - *
+ *   - ?string
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-anyTypeExpr = "*" {
-    return { type: NodeType.ANY };
-  }
+PrefixNullableTypeExpr = operator:"?" _ operand:PrefixUnaryUnionTypeExprOperand {
+                         return {
+                           type: NodeType.NULLABLE,
+                           value: operand,
+                         };
+                       }
+
 
 
 /*
- * Unknown type expressions.
+ * Prefix not nullable type expressions.
  *
  * Examples:
- *   - ?
+ *   - !Object
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-unknownTypeExpr = "?" {
-    return { type: NodeType.UNKNOWN };
-  }
+PrefixNotNullableTypeExpr = operator:"!" _ operand:PrefixUnaryUnionTypeExprOperand {
+                            return {
+                              type: NodeType.NOT_NULLABLE,
+                              value: operand,
+                            };
+                          }
+
+
+
+/*
+ * Suffix optional type expressions.
+ * This expression is deprecated.
+ *
+ * Examples:
+ *   - =string (deprecated)
+ */
+PrefixOptionalTypeExpr = operator:"=" _ operand:PrefixUnaryUnionTypeExprOperand {
+                         return {
+                           type: NodeType.OPTIONAL,
+                           value: operand,
+                         };
+                       }
+
+
+
+SuffixUnaryUnionTypeExpr = SuffixOptionalTypeExpr
+                         / SuffixNullableTypeExpr
+                         / SuffixNotNullableTypeExpr
+
+
+SuffixUnaryUnionTypeExprOperand = PrefixUnaryUnionTypeExpr
+                                / GenericTypeExpr
+                                / RecordTypeExpr
+                                / FunctionTypeExpr
+                                / ParenthesizedExpr
+                                / BroadNamepathExpr
+                                / ValueExpr
+                                / AnyTypeExpr
+                                / UnknownTypeExpr
+
+
+/*
+ * Suffix nullable type expressions.
+ * This expression is deprecated.
+ *
+ * Examples:
+ *   - string? (deprecated)
+ *
+ * Note:
+ *   Deprecated optional type operators can be placed before optional operators.
+ *   See https://github.com/google/closure-library/blob/
+ *     47f9c92bb4c7de9a3d46f9921a427402910073fb/closure/goog/net/tmpnetwork.js#L50
+ */
+SuffixNullableTypeExpr = operand:SuffixUnaryUnionTypeExprOperand _ operator:"?" {
+                         return {
+                           type: NodeType.NULLABLE,
+                           value: operand,
+                         };
+                       }
+
+
+
+/*
+ * Suffix not nullable type expressions.
+ * This expression is deprecated.
+ *
+ * Examples:
+ *   - Object! (deprecated)
+ */
+SuffixNotNullableTypeExpr = operand:SuffixUnaryUnionTypeExprOperand _ operator:"!" {
+                            return {
+                              type: NodeType.NOT_NULLABLE,
+                              value: operand,
+                            };
+                          }
+
+
+
+/*
+ * Suffix optional type expressions.
+ *
+ * Examples:
+ *   - string=
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
+ */
+SuffixOptionalTypeExpr = operand:( SuffixNullableTypeExpr
+                                 / SuffixNotNullableTypeExpr
+                                 / SuffixUnaryUnionTypeExprOperand
+                                 ) _ operator:"=" {
+                         return {
+                           type: NodeType.OPTIONAL,
+                           value: operand,
+                         };
+                       }
+
+
+
+/*
+ * Generic type expressions.
+ *
+ * Examples:
+ *   - Function<T>
+ *   - Array.<string> (Legacy Closure Library style and JSDoc3 style)
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
+ *   - http://usejsdoc.org/tags-type.html
+ */
+GenericTypeExpr = operand:GenericTypeExprOperand _ syntax:GenericTypeStartToken _
+                  params:GenericTypeExprTypeParamList _ GenericTypeEndToken {
+                  return {
+                    type: NodeType.GENERIC,
+                    subject: operand,
+                    objects: params,
+                    meta: { syntax: syntax },
+                  };
+                }
+
+
+GenericTypeExprOperand = ParenthesizedExpr
+                       / BroadNamepathExpr
+                       / ValueExpr
+                       / AnyTypeExpr
+                       / UnknownTypeExpr
+
+
+GenericTypeExprTypeParamOperand = UnionTypeExpr
+                                / UnaryUnionTypeExpr
+                                / RecordTypeExpr
+                                / FunctionTypeExpr
+                                / ParenthesizedExpr
+                                / ArrayTypeExpr
+                                / GenericTypeExpr
+                                / BroadNamepathExpr
+                                / ValueExpr
+                                / AnyTypeExpr
+                                / UnknownTypeExpr
+
+
+GenericTypeExprTypeParamList = first:GenericTypeExprTypeParamOperand
+                               restsWithComma:(_ "," _ GenericTypeExprTypeParamOperand)* {
+                               return restsWithComma.reduce(function(params, tokens) {
+                                 return params.concat([tokens[3]]);
+                               }, [first]);
+                             }
+
+
+GenericTypeStartToken = GenericTypeEcmaScriptFlavoredStartToken
+                      / GenericTypeTypeScriptFlavoredStartToken
+
+
+GenericTypeEcmaScriptFlavoredStartToken = ".<" {
+                                          return GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT;
+                                        }
+
+
+GenericTypeTypeScriptFlavoredStartToken = "<" {
+                                          return GenericTypeSyntax.ANGLE_BRACKET;
+                                        }
+
+
+GenericTypeEndToken = ">"
+
+
+
+/*
+ * JSDoc style array of a generic type expressions.
+ *
+ * Examples:
+ *   - string[]
+ *   - number[][]
+ *
+ * Spec:
+ *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions#the-basic-syntax
+ */
+// TODO: We should care complex type expression like "Some[]![]"
+ArrayTypeExpr = operand:ArrayTypeExprOperand brackets:(_ "[" _ "]")+ {
+                return brackets.reduce(function(operand) {
+                  return {
+                    type: NodeType.GENERIC,
+                    subject: {
+                      type: NodeType.NAME,
+                      name: 'Array'
+                    },
+                    objects: [ operand ],
+                    meta: { syntax: GenericTypeSyntax.SQUARE_BRACKET },
+                  };
+                }, operand);
+              }
+
+
+ArrayTypeExprOperand = UnaryUnionTypeExpr
+                     / RecordTypeExpr
+                     / FunctionTypeExpr
+                     / ParenthesizedExpr
+                     / GenericTypeExpr
+                     / BroadNamepathExpr
+                     / ValueExpr
+                     / AnyTypeExpr
+                     / UnknownTypeExpr
+
 
 
 /*
@@ -316,81 +638,94 @@ unknownTypeExpr = "?" {
  *   - function():number
  *   - function(this:jQuery):jQuery
  *   - function(new:Error)
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-funcTypeExpr = "function" _ "(" _ paramParts:funcTypeExprParamsPart _ ")" _
-               returnedTypePart:(_ ":" _ typeExpr)? {
-    var modifierGroups = lodash.groupBy(paramParts, lodash.property('modifierType'));
+FunctionTypeExpr = "function" _ paramsPart:FunctionTypeExprParamsList _
+                   returnedTypePart:(":" _ FunctionTypeExprReturnableOperand)? {
+                   var returnedTypeNode = returnedTypePart ? returnedTypePart[2] : null;
 
-    var params = [];
-    var noModifiers = modifierGroups[FunctionModifierType.NONE];
-    if (noModifiers) {
-      params = noModifiers.map(function(paramPartWithNoModifier) {
-        return paramPartWithNoModifier.value;
-      });
-    }
-
-
-    var thisValue = null;
-    var thisValueModifiers = modifierGroups[FunctionModifierType.THIS];
-    if (thisValueModifiers) {
-      if (thisValueModifiers.length > 1) {
-        reportSemanticIssue('"this" keyword should be declared only once');
-      }
-
-      // Enable the only first thisValue modifier.
-      thisValue = thisValueModifiers[0].value;
-    }
+                   return {
+                     type: NodeType.FUNCTION,
+                     params: paramsPart.params,
+                     returns: returnedTypeNode,
+                     this: paramsPart.modifier.nodeThis,
+                     new: paramsPart.modifier.nodeNew,
+                   };
+                 }
 
 
-    var newValue = null;
-    var newModifiers = modifierGroups[FunctionModifierType.NEW];
-    if (newModifiers) {
-      if (newModifiers.length > 1) {
-        reportSemanticIssue('"new" keyword should be declared only once');
-      }
+FunctionTypeExprParamsList = "(" _ modifier:FunctionTypeExprModifier _ "," _ params: FunctionTypeExprParams _ ")" {
+                               return { params: params, modifier: modifier };
+                             }
+                           / "(" _ modifier:FunctionTypeExprModifier _ ")" {
+                               return { params: [], modifier: modifier };
+                             }
+                           / "(" _ params:FunctionTypeExprParams _ ")" {
+                               return { params: params, modifier: { nodeThis: null, nodeNew: null } };
+                             }
+                           / "(" _ ")" {
+                               return { params: [], modifier: { nodeThis: null, nodeNew: null } };
+                             }
 
-      // Enable the only first new instance modifier.
-      newValue = newModifiers[0].value;
-    }
 
-    var returnedTypeNode = returnedTypePart ? returnedTypePart[3] : null;
+// We can specify either "this:" or "new:".
+// See https://github.com/google/closure-compiler/blob/
+//       91cf3603d5b0b0dc289ba73adcd0f2741aa90d89/src/
+//       com/google/javascript/jscomp/parsing/JsDocInfoParser.java#L2158-L2171
+FunctionTypeExprModifier = modifierThis:("this" _ ":" _ FunctionTypeExprParamOperand) {
+                             return { nodeThis: modifierThis[4], nodeNew: null };
+                           }
+                         / modifierNew:("new" _ ":" _ FunctionTypeExprParamOperand) {
+                             return { nodeThis: null, nodeNew: modifierNew[4] };
+                           }
 
-    return {
-      type: NodeType.FUNCTION,
-      params: params,
-      returns: returnedTypeNode,
-      this: thisValue,
-      new: newValue,
-    };
-  }
 
-funcTypeExprParamsPart = firstParam:funcTypeExprParam? restParamsWithComma:(_ "," _ funcTypeExprParam)* {
-    var params = buildByFirstAndRest(firstParam, restParamsWithComma, 3);
-    return params;
-  }
+FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
+                         // Variadic type is only allowed on the last parameter.
+                         lastParam:(VariadicTypeExpr / VariadicTypeExprOperand) {
+                         return paramsWithComma.reduceRight(function(params, tokens) {
+                           var param = tokens[0];
+                           return [param].concat(params);
+                         }, [lastParam]);
+                       }
 
-funcTypeExprParam = thisValueTypeModifier / newTypeModifier / noModifier
 
-thisValueTypeModifier = "this" _ ":" _ value:typeExpr {
-    return {
-      modifierType: FunctionModifierType.THIS,
-      value: value
-    };
-  }
+FunctionTypeExprParamOperand = UnionTypeExpr
+                             / UnaryUnionTypeExpr
+                             / RecordTypeExpr
+                             / FunctionTypeExpr
+                             / ParenthesizedExpr
+                             / ArrayTypeExpr
+                             / GenericTypeExpr
+                             / BroadNamepathExpr
+                             / ValueExpr
+                             / AnyTypeExpr
+                             / UnknownTypeExpr
 
-newTypeModifier = "new" _ ":" _ value:typeExpr {
-    return {
-      modifierType: FunctionModifierType.NEW,
-      value: value
-    };
-  }
 
-noModifier = value:typeExpr {
-    return {
-      modifierType: FunctionModifierType.NONE,
-      value: value
-    };
-  }
+FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
+                                  // Suffix unary union type operators should not be
+                                  // placed here to keep operator precedence. For example,
+                                  // "Foo|function():Returned=" should be parsed as
+                                  // "(Foo|function():Returned)=" instead of
+                                  // "Foo|(function():Returned=)". This result was expected
+                                  // by Closure Library.
+                                  //
+                                  // See https://github.com/google/closure-library/blob/
+                                  //   47f9c92bb4c7de9a3d46f9921a427402910073fb/
+                                  //   closure/goog/ui/zippy.js#L47
+                                  / RecordTypeExpr
+                                  / FunctionTypeExpr
+                                  / ParenthesizedExpr
+                                  / ArrayTypeExpr
+                                  / GenericTypeExpr
+                                  / BroadNamepathExpr
+                                  / ValueExpr
+                                  / AnyTypeExpr
+                                  / UnknownTypeExpr
+
 
 
 /*
@@ -401,232 +736,152 @@ noModifier = value:typeExpr {
  *   - {length}
  *   - {length:number}
  *   - {toString:Function,valueOf:Function}
+ *   - {'foo':*}
+ *
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-recordTypeExpr = "{" _ firstEntry:recordEntry? restEntriesWithComma:(_ "," _ recordEntry)* _ "}" {
-    var entries = buildByFirstAndRest(firstEntry, restEntriesWithComma, 3);
+RecordTypeExpr = "{" _ entries:RecordTypeExprEntries? _ "}" {
+                 return {
+                   type: NodeType.RECORD,
+                   entries: entries || [],
+                 };
+               }
 
-    return {
-      type: NodeType.RECORD,
-      entries: entries
-    };
-  }
 
-recordEntry = key:$(jsIdentifier) valueWithColon:(_ ":" _ typeExpr)? {
-    var value = valueWithColon ? valueWithColon[3] : null;
+RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:(_ "," _ RecordTypeExprEntry)* {
+                        return restWithComma.reduce(function(entries, tokens) {
+                          var entry = tokens[3];
+                          return entries.concat([entry]);
+                        }, [first]);
+                      }
 
-    return {
-      type: NodeType.RECORD_ENTRY,
-      key: key,
-      value: value
-    };
-  }
+
+RecordTypeExprEntry = key:RecordTypeExprEntryKey _ ":" _ value:RecordTypeExprEntryOperand {
+                        return {
+                          type: NodeType.RECORD_ENTRY,
+                          key: key,
+                          value: value
+                        };
+                      }
+                    / key:RecordTypeExprEntryKey {
+                        return {
+                          type: NodeType.RECORD_ENTRY,
+                          key: key,
+                          value: null,
+                        };
+                      }
+
+
+RecordTypeExprEntryKey = '"' key:$([^"]*) '"' {
+                           return key;
+                         }
+                       / "'" key:$([^']*) "'" {
+                           return key;
+                         }
+                       / JsIdentifier
+
+
+RecordTypeExprEntryOperand = UnionTypeExpr
+                           / UnaryUnionTypeExpr
+                           / RecordTypeExpr
+                           / FunctionTypeExpr
+                           / ParenthesizedExpr
+                           / ArrayTypeExpr
+                           / GenericTypeExpr
+                           / BroadNamepathExpr
+                           / ValueExpr
+                           / AnyTypeExpr
+                           / UnknownTypeExpr
+
 
 
 /*
- * Nullable type expressions.
+ * Parenthesis expressions.
  *
  * Examples:
- *   - ?string
- *   - string? (deprecated)
- */
-nullableTypeOperator = "?" {
-    return { operatorType: OperatorType.NULLABLE };
-  }
-
-deprecatedNullableTypeOperator = nullableTypeOperator
-
-
-/*
- * Nullable type expressions.
+ *   - (Foo|Bar)
+ *   - (module: path/to/file).Module
  *
- * Examples:
- *   - !Object
- *   - Object! (deprecated)
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
-notNullableTypeOperator = "!" {
-    return { operatorType: OperatorType.NOT_NULLABLE };
-  }
-
-deprecatedNotNullableTypeOperator = notNullableTypeOperator
+ParenthesizedExpr = "(" _ wrapped:ParenthesizedExprOperand _ ")" {
+                    return wrapped;
+                  }
 
 
-/*
- * Optional type expressions.
- *
- * Examples:
- *   - string=
- *   - =string (deprecated)
- */
-optionalTypeOperator = "=" {
-    return { operatorType: OperatorType.OPTIONAL };
-  }
+ParenthesizedExprOperand = UnionTypeExpr
+                         / UnaryUnionTypeExpr
+                         / RecordTypeExpr
+                         / FunctionTypeExpr
+                         / ArrayTypeExpr
+                         / GenericTypeExpr
+                         / BroadNamepathExpr
+                         / ValueExpr
+                         / AnyTypeExpr
+                         / UnknownTypeExpr
 
-deprecatedOptionalTypeOperator = optionalTypeOperator
 
 
 /*
  * Variadic type expressions.
  *
  * Examples:
- *   - ...string
- */
-prefixVariadicTypeOperator = "..." {
-    return {
-      operatorType: OperatorType.VARIADIC,
-      syntax: VariadicTypeSyntax.PREFIX_DOTS,
-    };
-  }
-
-
-/*
- * Variadic type expressions.
+ *   - ...string (only allow on the top level or the last function parameter)
+ *   - string... (only allow on the top level)
+ *   - ...
  *
- * Examples:
- *   - string...
+ * Note:
+ *   It seems that we can omit the operand.
+ *   See https://github.com/google/closure-library/blob/
+ *       47f9c92bb4c7de9a3d46f9921a427402910073fb/
+ *       closure/goog/base.js#L1847
  *
- * https://github.com/senchalabs/jsduck/wiki/Type-Definitions
+ * Spec:
+ *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
+ *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions
  */
-suffixVariadicTypeOperator = "..." {
-    return {
-      operatorType: OperatorType.VARIADIC,
-      syntax: VariadicTypeSyntax.SUFFIX_DOTS,
-    };
-  }
+VariadicTypeExpr = PrefixVariadicTypeExpr
+                 / SuffixVariadicTypeExpr
+                 / AnyVariadicTypeExpr
 
 
-/*
- * Union type expressions.
- *
- * Examples:
- *   - number|undefined
- *   - Foo|Bar|Baz
- */
-unionTypeExpr = syntax:unionTypeOperator _ right:typeExpr {
-    return {
-      operatorType: OperatorType.UNION,
-      right: right,
-      syntax: syntax,
-    };
-  }
-
-// https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
-unionTypeOperator = unionTypeOperatorClosureLibraryFlavored
-                  / unionTypeOperatorJSDuckFlavored
-
-unionTypeOperatorClosureLibraryFlavored = "|" {
-  return UnionTypeSyntax.PIPE;
-}
-unionTypeOperatorJSDuckFlavored = "/" {
-  return UnionTypeSyntax.SLASH;
-}
+PrefixVariadicTypeExpr = "..." operand:VariadicTypeExprOperand {
+                         return {
+                           type: NodeType.VARIADIC,
+                           value: operand,
+                           meta: { syntax: VariadicTypeSyntax.PREFIX_DOTS },
+                         };
+                       }
 
 
-/*
- * Member type expressions.
- *
- * Examples:
- *   - owner.member
- *   - superOwner.owner.member
- */
-memberTypeExpr = memberTypeOperator _ memberName:memberName {
-    return {
-      operatorType: OperatorType.MEMBER,
-      memberName: memberName,
-    };
-  }
-
-memberTypeOperator = "."
-
-memberName = name:$(jsIdentifier) {
-    return name;
-  }
+SuffixVariadicTypeExpr = operand:VariadicTypeExprOperand "..." {
+                         return {
+                           type: NodeType.VARIADIC,
+                           value: operand,
+                           meta: { syntax: VariadicTypeSyntax.SUFFIX_DOTS },
+                         };
+                       }
 
 
-/*
- * Inner member type expressions.
- *
- * Examples:
- *   - owner~innerMember
- *   - superOwner~owner~innerMember
- */
-innerMemberTypeExpr = innerMemberTypeOperator _ memberName:memberName {
-    return {
-      operatorType: OperatorType.INNER_MEMBER,
-      memberName: memberName,
-    };
-  }
-
-innerMemberTypeOperator = "~"
+AnyVariadicTypeExpr = "..." {
+                      return {
+                        type: NodeType.VARIADIC,
+                        value: null,
+                        meta: { syntax: VariadicTypeSyntax.ONLY_DOTS },
+                      };
+                    }
 
 
-/*
- * Instance member type expressions.
- *
- * Examples:
- *   - owner#instanceMember
- *   - superOwner#owner#instanceMember
- */
-instanceMemberTypeExpr = instanceMemberTypeOperator _ memberName:memberName {
-    return {
-      operatorType: OperatorType.INSTANCE_MEMBER,
-      memberName: memberName,
-    };
-  }
-
-instanceMemberTypeOperator = "#"
-
-
-/*
- * Generic type expressions.
- *
- * Examples:
- *   - Function<T>
- *   - Array.<string>
- */
-genericTypeExpr =
-  syntax:genericTypeStartToken _
-  objects:genericTypeExprObjectivePart _
-  genericTypeEndToken {
-    return {
-      operatorType: OperatorType.GENERIC,
-      objects: objects,
-      syntax: syntax
-    };
-  }
-
-genericTypeStartToken =
-  genericTypeEcmaScriptFlavoredStartToken /
-  genericTypeTypeScriptFlavoredStartToken
-
-genericTypeEcmaScriptFlavoredStartToken = ".<" {
-  return GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT;
-}
-
-genericTypeTypeScriptFlavoredStartToken = "<" {
-  return GenericTypeSyntax.ANGLE_BRACKET;
-}
-
-genericTypeEndToken = ">"
-
-genericTypeExprObjectivePart = first:typeExpr restsWithComma:(_ "," _ typeExpr)* {
-    var objects = buildByFirstAndRest(first, restsWithComma, 3);
-    return objects;
-  }
-
-
-/*
- * JSDoc style array of a generic type expressions.
- *
- * Examples:
- *   - string[]
- *   - number[][]
- */
-arrayOfGenericTypeOperatorJsDocFlavored = "[]" {
-    return { operatorType: OperatorType.ARRAY };
-  }
-
-
-/*
- * White spaces.
- */
-_  = [ \t\r\n ]*
+VariadicTypeExprOperand = UnionTypeExpr
+                        / UnaryUnionTypeExpr
+                        / RecordTypeExpr
+                        / FunctionTypeExpr
+                        / ParenthesizedExpr
+                        / ArrayTypeExpr
+                        / GenericTypeExpr
+                        / BroadNamepathExpr
+                        / ValueExpr
+                        / AnyTypeExpr
+                        / UnknownTypeExpr

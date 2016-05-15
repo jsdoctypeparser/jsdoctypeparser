@@ -453,6 +453,7 @@ Example:
 /**
  * @type {...Variadic}
  * @type {Variadic...}
+ * @type {...}
  */
 ```
 

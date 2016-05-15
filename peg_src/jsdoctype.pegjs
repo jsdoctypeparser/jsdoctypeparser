@@ -3,9 +3,9 @@
   var GenericTypeSyntax = meta.GenericTypeSyntax;
   var UnionTypeSyntax = meta.UnionTypeSyntax;
   var VariadicTypeSyntax = meta.VariadicTypeSyntax;
-	var OptionalTypeSyntax = meta.OptionalTypeSyntax;
-	var NullableTypeSyntax = meta.NullableTypeSyntax;
-	var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
+  var OptionalTypeSyntax = meta.OptionalTypeSyntax;
+  var NullableTypeSyntax = meta.NullableTypeSyntax;
+  var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
   var NamepathOperatorType = {

@@ -153,10 +153,12 @@ describe('traversing', function() {
     'should visit a module node': {
       given: {
         type: NodeType.MODULE,
-        name: 'module',
+        value: createFilePathNode('module'),
       },
       then: [
         ['enter', NodeType.MODULE],
+        ['enter', NodeType.FILE_PATH],
+        ['leave', NodeType.FILE_PATH],
         ['leave', NodeType.MODULE],
       ],
     },
@@ -400,5 +402,12 @@ function createInstanceMemberNode(name, owner) {
 function createEventSpy(eventName, result) {
   return function(node) {
     result.push([eventName, node.type]);
+  };
+}
+
+function createFilePathNode(filePath) {
+  return {
+    type: NodeType.FILE_PATH,
+    path: filePath,
   };
 }

@@ -825,7 +825,10 @@ RecordTypeExprEntryOperand = UnionTypeExpr
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
 ParenthesizedExpr = "(" _ wrapped:ParenthesizedExprOperand _ ")" {
-                    return wrapped;
+                    return {
+                      type: NodeType.PARENTHESIS,
+                      value: wrapped,
+                    };
                   }
 
 

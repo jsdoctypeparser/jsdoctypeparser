@@ -407,7 +407,10 @@ module.exports = (function() {
                                    return key;
                                  },
         peg$c135 = function(wrapped) {
-                            return wrapped;
+                            return {
+                              type: NodeType.PARENTHESIS,
+                              value: wrapped,
+                            };
                           },
         peg$c136 = "...",
         peg$c137 = { type: "literal", value: "...", description: "\"...\"" },

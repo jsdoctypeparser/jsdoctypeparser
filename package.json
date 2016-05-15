@@ -1,7 +1,7 @@
 {
   "name": "jsdoctypeparser",
   "description": "Strict JsDoc type expression parser.",
-  "version": "2.0.0-alpha-7",
+  "version": "2.0.0-alpha-8",
   "author": "Kuniwak <orga.chem.job@gmail.com>",
   "keywords": [
     "jsdoc",

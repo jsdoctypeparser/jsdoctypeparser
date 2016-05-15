@@ -461,9 +461,9 @@ Structure:
 ```javascript
 {
   "type": "VARIADIC",
-  "value": node,
+  "value": node (or null),
   "meta": {
-    "syntax": ("PREFIX_DOTS" or "SUFFIX_DOTS")
+    "syntax": ("PREFIX_DOTS" or "SUFFIX_DOTS" or "ONLY_DOTS")
   }
 }
 ```

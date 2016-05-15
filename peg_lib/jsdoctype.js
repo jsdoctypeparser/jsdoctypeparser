@@ -242,6 +242,7 @@ module.exports = (function() {
                                  return {
                                    type: NodeType.NULLABLE,
                                    value: operand,
+                                   meta: { syntax: NullableTypeSyntax.PREFIX_QUESTION_MARK },
                                  };
                                },
         peg$c82 = "!",
@@ -250,6 +251,7 @@ module.exports = (function() {
                                     return {
                                       type: NodeType.NOT_NULLABLE,
                                       value: operand,
+                                      meta: { syntax: NotNullableTypeSyntax.PREFIX_BANG },
                                     };
                                   },
         peg$c85 = "=",
@@ -258,24 +260,28 @@ module.exports = (function() {
                                  return {
                                    type: NodeType.OPTIONAL,
                                    value: operand,
+                                   meta: { syntax: OptionalTypeSyntax.PREFIX_EQUALS_SIGN },
                                  };
                                },
         peg$c88 = function(operand, operator) {
                                  return {
                                    type: NodeType.NULLABLE,
                                    value: operand,
+                                   meta: { syntax: NullableTypeSyntax.SUFFIX_QUESTION_MARK },
                                  };
                                },
         peg$c89 = function(operand, operator) {
                                     return {
                                       type: NodeType.NOT_NULLABLE,
                                       value: operand,
+                                      meta: { syntax: NotNullableTypeSyntax.SUFFIX_BANG },
                                     };
                                   },
         peg$c90 = function(operand, operator) {
                                  return {
                                    type: NodeType.OPTIONAL,
                                    value: operand,
+                                   meta: { syntax: OptionalTypeSyntax.SUFFIX_EQUALS_SIGN },
                                  };
                                },
         peg$c91 = function(operand, syntax, params) {
@@ -4804,6 +4810,9 @@ module.exports = (function() {
       var GenericTypeSyntax = meta.GenericTypeSyntax;
       var UnionTypeSyntax = meta.UnionTypeSyntax;
       var VariadicTypeSyntax = meta.VariadicTypeSyntax;
+    	var OptionalTypeSyntax = meta.OptionalTypeSyntax;
+    	var NullableTypeSyntax = meta.NullableTypeSyntax;
+    	var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
       var NodeType = require('../lib/NodeType.js');
 
       var NamepathOperatorType = {

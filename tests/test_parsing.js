@@ -8,6 +8,9 @@ var SyntaxType = require('../lib/SyntaxType.js');
 var GenericTypeSyntax = SyntaxType.GenericTypeSyntax;
 var UnionTypeSyntax = SyntaxType.UnionTypeSyntax;
 var VariadicTypeSyntax = SyntaxType.VariadicTypeSyntax;
+var OptionalTypeSyntax = SyntaxType.OptionalTypeSyntax;
+var NullableTypeSyntax = SyntaxType.NullableTypeSyntax;
+var NotNullableTypeSyntax = SyntaxType.NotNullableTypeSyntax;
 var Parser = require('../lib/parsing.js');
 
 
@@ -70,7 +73,10 @@ describe('Parser', function() {
     var typeExprStr = '?=';
     var node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(createUnknownTypeNode());
+    var expectedNode = createOptionalTypeNode(
+      createUnknownTypeNode(),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
+    );
     expect(node).to.deep.equal(expectedNode);
   });
 
@@ -181,7 +187,8 @@ describe('Parser', function() {
         createMemberTypeNode(
           createTypeNameNode('superOwner'),
         'owner'),
-      'Member')
+      'Member'),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -236,7 +243,8 @@ describe('Parser', function() {
         createInnerMemberTypeNode(
           createTypeNameNode('superOwner'),
         'owner'),
-      'innerMember')
+      'innerMember'),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -292,7 +300,8 @@ describe('Parser', function() {
         createInstanceMemberTypeNode(
           createTypeNameNode('superOwner'),
         'owner'),
-      'instanceMember')
+      'instanceMember'),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -374,7 +383,9 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createVariadicTypeNode(
-      createTypeNameNode('variadicType'));
+      createTypeNameNode('variadicType'),
+      VariadicTypeSyntax.PREFIX_DOTS
+    );
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -620,7 +631,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createOptionalTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -632,7 +644,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createOptionalTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      OptionalTypeSyntax.PREFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -644,7 +657,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNullableTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      NullableTypeSyntax.PREFIX_QUESTION_MARK
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -656,7 +670,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNullableTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      NullableTypeSyntax.SUFFIX_QUESTION_MARK
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -668,7 +683,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createOptionalTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -680,7 +696,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createOptionalTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      OptionalTypeSyntax.PREFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -692,7 +709,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNullableTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      NullableTypeSyntax.PREFIX_QUESTION_MARK
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -704,7 +722,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNullableTypeNode(
-      createTypeNameNode('string')
+      createTypeNameNode('string'),
+      NullableTypeSyntax.SUFFIX_QUESTION_MARK
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -716,7 +735,11 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createOptionalTypeNode(
-      createNullableTypeNode(createTypeNameNode('string'))
+      createNullableTypeNode(
+        createTypeNameNode('string'),
+        NullableTypeSyntax.PREFIX_QUESTION_MARK
+      ),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -728,7 +751,11 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createOptionalTypeNode(
-      createNullableTypeNode(createTypeNameNode('string'))
+      createNullableTypeNode(
+        createTypeNameNode('string'),
+        NullableTypeSyntax.SUFFIX_QUESTION_MARK
+      ),
+      OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -758,7 +785,9 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createVariadicTypeNode(
-      createTypeNameNode('PrefixVariadic'), VariadicTypeSyntax.PREFIX_DOTS);
+      createTypeNameNode('PrefixVariadic'),
+      VariadicTypeSyntax.PREFIX_DOTS
+    );
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -769,7 +798,9 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createVariadicTypeNode(
-      createTypeNameNode('SuffixVariadic'), VariadicTypeSyntax.SUFFIX_DOTS);
+      createTypeNameNode('SuffixVariadic'),
+      VariadicTypeSyntax.SUFFIX_DOTS
+    );
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -780,7 +811,11 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createVariadicTypeNode(
-      createNotNullableTypeNode(createTypeNameNode('Object'))
+      createNotNullableTypeNode(
+        createTypeNameNode('Object'),
+        NotNullableTypeSyntax.PREFIX_BANG
+      ),
+      VariadicTypeSyntax.PREFIX_DOTS
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -791,7 +826,10 @@ describe('Parser', function() {
     var typeExprStr = '...?';
     var node = Parser.parse(typeExprStr);
 
-    var expectedNode = createVariadicTypeNode(createUnknownTypeNode());
+    var expectedNode = createVariadicTypeNode(
+      createUnknownTypeNode(),
+      VariadicTypeSyntax.PREFIX_DOTS
+    );
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -802,7 +840,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNotNullableTypeNode(
-      createTypeNameNode('Object')
+      createTypeNameNode('Object'),
+      NotNullableTypeSyntax.PREFIX_BANG
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -814,7 +853,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNotNullableTypeNode(
-      createTypeNameNode('Object')
+      createTypeNameNode('Object'),
+      NotNullableTypeSyntax.SUFFIX_BANG
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -826,7 +866,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNotNullableTypeNode(
-      createTypeNameNode('Object')
+      createTypeNameNode('Object'),
+      NotNullableTypeSyntax.PREFIX_BANG
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -838,7 +879,8 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createNotNullableTypeNode(
-      createTypeNameNode('Object')
+      createTypeNameNode('Object'),
+      NotNullableTypeSyntax.SUFFIX_BANG
     );
 
     expect(node).to.deep.equal(expectedNode);
@@ -891,7 +933,12 @@ describe('Parser', function() {
     var node = Parser.parse(typeExprStr);
 
     var expectedNode = createFunctionTypeNode(
-      [ createVariadicTypeNode(createTypeNameNode('VariadicParam'), VariadicTypeSyntax.PREFIX_DOTS) ],
+      [
+        createVariadicTypeNode(
+          createTypeNameNode('VariadicParam'),
+          VariadicTypeSyntax.PREFIX_DOTS
+        ),
+      ],
       null, { 'this': null, 'new': null }
     );
 
@@ -907,7 +954,10 @@ describe('Parser', function() {
     var expectedNode = createFunctionTypeNode(
       [
         createTypeNameNode('Param'),
-        createVariadicTypeNode(createTypeNameNode('VariadicParam'), VariadicTypeSyntax.PREFIX_DOTS),
+        createVariadicTypeNode(
+          createTypeNameNode('VariadicParam'),
+          VariadicTypeSyntax.PREFIX_DOTS
+        ),
       ],
       null, { 'this': null, 'new': null }
     );
@@ -1181,7 +1231,8 @@ describe('Parser', function() {
               [],
               createTypeNameNode('Returned'),
             { 'this': null, 'new': null }
-            )
+            ),
+            NullableTypeSyntax.SUFFIX_QUESTION_MARK
           ),
           UnionTypeSyntax.PIPE
         );
@@ -1226,24 +1277,27 @@ function createExternalNameNode(value) {
   };
 }
 
-function createOptionalTypeNode(optionalTypeExpr) {
+function createOptionalTypeNode(optionalTypeExpr, syntax) {
   return {
     type: NodeType.OPTIONAL,
     value: optionalTypeExpr,
+    meta: { syntax: syntax },
   };
 }
 
-function createNullableTypeNode(nullableTypeExpr) {
+function createNullableTypeNode(nullableTypeExpr, syntax) {
   return {
     type: NodeType.NULLABLE,
     value: nullableTypeExpr,
+    meta: { syntax: syntax },
   };
 }
 
-function createNotNullableTypeNode(nullableTypeExpr) {
+function createNotNullableTypeNode(nullableTypeExpr, syntax) {
   return {
     type: NodeType.NOT_NULLABLE,
     value: nullableTypeExpr,
+    meta: { syntax: syntax },
   };
 }
 
@@ -1284,7 +1338,7 @@ function createVariadicTypeNode(variadicTypeExpr, syntax) {
   return {
     type: NodeType.VARIADIC,
     value: variadicTypeExpr,
-    meta: { syntax: syntax || VariadicTypeSyntax.PREFIX_DOTS },
+    meta: { syntax: syntax },
   };
 }
 

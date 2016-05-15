@@ -3,6 +3,9 @@
   var GenericTypeSyntax = meta.GenericTypeSyntax;
   var UnionTypeSyntax = meta.UnionTypeSyntax;
   var VariadicTypeSyntax = meta.VariadicTypeSyntax;
+	var OptionalTypeSyntax = meta.OptionalTypeSyntax;
+	var NullableTypeSyntax = meta.NullableTypeSyntax;
+	var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
   var NodeType = require('../lib/NodeType.js');
 
   var NamepathOperatorType = {
@@ -419,6 +422,7 @@ PrefixNullableTypeExpr = operator:"?" _ operand:PrefixUnaryUnionTypeExprOperand 
                          return {
                            type: NodeType.NULLABLE,
                            value: operand,
+                           meta: { syntax: NullableTypeSyntax.PREFIX_QUESTION_MARK },
                          };
                        }
 
@@ -437,6 +441,7 @@ PrefixNotNullableTypeExpr = operator:"!" _ operand:PrefixUnaryUnionTypeExprOpera
                             return {
                               type: NodeType.NOT_NULLABLE,
                               value: operand,
+                              meta: { syntax: NotNullableTypeSyntax.PREFIX_BANG },
                             };
                           }
 
@@ -453,6 +458,7 @@ PrefixOptionalTypeExpr = operator:"=" _ operand:PrefixUnaryUnionTypeExprOperand 
                          return {
                            type: NodeType.OPTIONAL,
                            value: operand,
+                           meta: { syntax: OptionalTypeSyntax.PREFIX_EQUALS_SIGN },
                          };
                        }
 
@@ -490,6 +496,7 @@ SuffixNullableTypeExpr = operand:SuffixUnaryUnionTypeExprOperand _ operator:"?" 
                          return {
                            type: NodeType.NULLABLE,
                            value: operand,
+                           meta: { syntax: NullableTypeSyntax.SUFFIX_QUESTION_MARK },
                          };
                        }
 
@@ -506,6 +513,7 @@ SuffixNotNullableTypeExpr = operand:SuffixUnaryUnionTypeExprOperand _ operator:"
                             return {
                               type: NodeType.NOT_NULLABLE,
                               value: operand,
+                              meta: { syntax: NotNullableTypeSyntax.SUFFIX_BANG },
                             };
                           }
 
@@ -527,6 +535,7 @@ SuffixOptionalTypeExpr = operand:( SuffixNullableTypeExpr
                          return {
                            type: NodeType.OPTIONAL,
                            value: operand,
+                           meta: { syntax: OptionalTypeSyntax.SUFFIX_EQUALS_SIGN },
                          };
                        }
 

@@ -391,7 +391,10 @@ Structure:
 ```javascript
 {
   "type": "OPTIONAL",
-  "value": node
+  "value": node,
+  "meta": {
+    "syntax": ("PREFIX_EQUALS_SIGN" or "SUFFIX_EQUALS_SIGN")
+  }
 }
 ```
 
@@ -411,7 +414,10 @@ Structure:
 ```javascript
 {
   "type": "NULLABLE",
-  "value": node
+  "value": node,
+  "meta": {
+    "syntax": ("PREFIX_QUESTION_MARK" or "SUFFIX_QUESTION_MARK")
+  }
 }
 ```
 
@@ -431,7 +437,10 @@ Structure:
 ```javascript
 {
   "type": "NOT_NULLABLE",
-  "value": node
+  "value": node,
+  "meta": {
+    "syntax": ("PREFIX_BANG" or "SUFFIX_BANG")
+  }
 }
 ```
 
@@ -466,7 +475,28 @@ Example:
 
 ```javascript
 /**
- * @type {module:path/to/file.js}
+ * @type {module:path/to/file.Module}
+ */
+```
+
+Structure:
+
+```javascript
+{
+  "type": "MODULE",
+  "value": node
+}
+```
+
+
+### `FILE_PATH`
+
+Example:
+
+```javascript
+/**
+ * @type {module:path/to/file.Module}
+ *               ^^^^^^^^^^^^
  */
 ```
 
@@ -580,6 +610,27 @@ Structure:
   "type": "UNKNOWN"
 }
 ```
+
+
+### `PARENTHESIS`
+
+Example:
+
+```javascript
+/**
+ * @type {(Foo)}
+ */
+```
+
+Structure:
+
+```javascript
+{
+  "type": "PARENTHESIS",
+  "value": node
+}
+```
+
 
 
 ### Others

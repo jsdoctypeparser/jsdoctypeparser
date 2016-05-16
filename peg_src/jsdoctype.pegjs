@@ -24,6 +24,7 @@
 
 TopLevel = _ expr:( PrefixVariadicTypeExpr
                   / SuffixVariadicTypeExpr
+                  / AnyVariadicTypeExpr
                   / UnionTypeExpr
                   / UnaryUnionTypeExpr
                   / ArrayTypeExpr

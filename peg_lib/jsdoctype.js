@@ -642,27 +642,30 @@ module.exports = (function() {
         if (s2 === peg$FAILED) {
           s2 = peg$parseSuffixVariadicTypeExpr();
           if (s2 === peg$FAILED) {
-            s2 = peg$parseUnionTypeExpr();
+            s2 = peg$parseAnyVariadicTypeExpr();
             if (s2 === peg$FAILED) {
-              s2 = peg$parseUnaryUnionTypeExpr();
+              s2 = peg$parseUnionTypeExpr();
               if (s2 === peg$FAILED) {
-                s2 = peg$parseArrayTypeExpr();
+                s2 = peg$parseUnaryUnionTypeExpr();
                 if (s2 === peg$FAILED) {
-                  s2 = peg$parseGenericTypeExpr();
+                  s2 = peg$parseArrayTypeExpr();
                   if (s2 === peg$FAILED) {
-                    s2 = peg$parseRecordTypeExpr();
+                    s2 = peg$parseGenericTypeExpr();
                     if (s2 === peg$FAILED) {
-                      s2 = peg$parseFunctionTypeExpr();
+                      s2 = peg$parseRecordTypeExpr();
                       if (s2 === peg$FAILED) {
-                        s2 = peg$parseBroadNamepathExpr();
+                        s2 = peg$parseFunctionTypeExpr();
                         if (s2 === peg$FAILED) {
-                          s2 = peg$parseParenthesizedExpr();
+                          s2 = peg$parseBroadNamepathExpr();
                           if (s2 === peg$FAILED) {
-                            s2 = peg$parseValueExpr();
+                            s2 = peg$parseParenthesizedExpr();
                             if (s2 === peg$FAILED) {
-                              s2 = peg$parseAnyTypeExpr();
+                              s2 = peg$parseValueExpr();
                               if (s2 === peg$FAILED) {
-                                s2 = peg$parseUnknownTypeExpr();
+                                s2 = peg$parseAnyTypeExpr();
+                                if (s2 === peg$FAILED) {
+                                  s2 = peg$parseUnknownTypeExpr();
+                                }
                               }
                             }
                           }
@@ -4813,9 +4816,9 @@ module.exports = (function() {
       var GenericTypeSyntax = meta.GenericTypeSyntax;
       var UnionTypeSyntax = meta.UnionTypeSyntax;
       var VariadicTypeSyntax = meta.VariadicTypeSyntax;
-    	var OptionalTypeSyntax = meta.OptionalTypeSyntax;
-    	var NullableTypeSyntax = meta.NullableTypeSyntax;
-    	var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
+      var OptionalTypeSyntax = meta.OptionalTypeSyntax;
+      var NullableTypeSyntax = meta.NullableTypeSyntax;
+      var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
       var NodeType = require('../lib/NodeType.js');
 
       var NamepathOperatorType = {

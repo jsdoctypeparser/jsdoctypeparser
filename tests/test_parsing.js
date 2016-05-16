@@ -384,19 +384,6 @@ describe('Parser', function() {
   });
 
 
-  it('should return a variadic type node when "...variadicType" arrived', function() {
-    var typeExprStr = '...variadicType';
-    var node = Parser.parse(typeExprStr);
-
-    var expectedNode = createVariadicTypeNode(
-      createTypeNameNode('variadicType'),
-      VariadicTypeSyntax.PREFIX_DOTS
-    );
-
-    expect(node).to.deep.equal(expectedNode);
-  });
-
-
   it('should return a record type node when "{}" arrived', function() {
     var typeExprStr = '{}';
     var node = Parser.parse(typeExprStr);
@@ -812,6 +799,19 @@ describe('Parser', function() {
   });
 
 
+  it('should return a variadic type node when "..." arrived', function() {
+    var typeExprStr = '...';
+    var node = Parser.parse(typeExprStr);
+
+    var expectedNode = createVariadicTypeNode(
+      null,
+      VariadicTypeSyntax.ONLY_DOTS
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a variadic type node when "...!Object" arrived', function() {
     var typeExprStr = '...!Object';
     var node = Parser.parse(typeExprStr);
@@ -1208,15 +1208,6 @@ describe('Parser', function() {
 
   it('should throw a syntax error when "(unclosedParenthesis, " arrived', function() {
     var typeExprStr = '(unclosedParenthesis, ';
-
-    expect(function() {
-      Parser.parse(typeExprStr);
-    }).to.throw(Parser.SyntaxError);
-  });
-
-
-  it('should throw a syntax error when "..." arrived', function() {
-    var typeExprStr = '...';
 
     expect(function() {
       Parser.parse(typeExprStr);

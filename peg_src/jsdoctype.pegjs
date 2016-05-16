@@ -22,9 +22,7 @@
 }
 
 
-TopLevel = _ expr:( PrefixVariadicTypeExpr
-                  / SuffixVariadicTypeExpr
-                  / AnyVariadicTypeExpr
+TopLevel = _ expr:( VariadicTypeExpr
                   / UnionTypeExpr
                   / UnaryUnionTypeExpr
                   / ArrayTypeExpr

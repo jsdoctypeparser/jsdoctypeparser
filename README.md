@@ -105,7 +105,7 @@ const ast = {
 };
 
 const customPublisher = createDefaultPublisher();
-customPublisher.NAME = (node, pub) => 
+customPublisher.NAME = (node, pub) =>
   `<a href="./types/${node.name}.html">${node.name}</a>`;
 
 const string = publish(ast, customPublisher);
@@ -201,7 +201,8 @@ Structure:
 {
   "type": "MEMBER",
   "name": string,
-  "owner": node
+  "owner": node,
+  "hasEventPrefix": boolean
 }
 ```
 
@@ -222,7 +223,8 @@ Structure:
 {
   "type": "INNER_MEMBER",
   "name": string,
-  "owner": node
+  "owner": node,
+  "hasEventPrefix": boolean
 }
 ```
 
@@ -244,7 +246,8 @@ Structure:
 {
   "type": "INSTANCE_MEMBER",
   "name": string,
-  "owner": node
+  "owner": node,
+  "hasEventPrefix": boolean
 }
 ```
 

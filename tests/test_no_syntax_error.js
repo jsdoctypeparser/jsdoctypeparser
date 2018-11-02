@@ -15,7 +15,7 @@ var Fixtures = {
 
 
 describe('Parser', function() {
-  it('should not throw any errors when parsing tests/fixutures/*', function() {
+  it('should not throw any errors when parsing tests/fixtures/*', function() {
     Object.keys(Fixtures).forEach(function(fixtureName) {
       Fixtures[fixtureName].forEach(function(fixture) {
         if (fixture.skip) return;

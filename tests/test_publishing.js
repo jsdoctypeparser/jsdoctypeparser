@@ -56,6 +56,11 @@ describe('publish', function() {
     expect(publish(node)).to.equal('number|boolean');
   });
 
+  it("'s Monty Python's flying circus!", function() {
+    var node = parse('typeof x');
+    expect(publish(node)).to.equal('typeof x');
+  });
+
 
   it('should return a record type with an entry', function() {
     var node = parse('{myNum}');

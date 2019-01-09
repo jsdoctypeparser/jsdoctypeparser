@@ -11,6 +11,7 @@ var Fixtures = {
   CLOSURE_LIBRARY: readFixtureSync('closure-library-types'),
   JSDOC3: readFixtureSync('jsdoc-types'),
   JSDUCK: readFixtureSync('jsduck-types'),
+  TYPESCRIPT: readFixtureSync('typescript-types'),
 };
 
 

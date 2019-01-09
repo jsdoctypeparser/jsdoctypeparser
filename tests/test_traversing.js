@@ -50,6 +50,16 @@ describe('traversing', function() {
       ],
     },
 
+    'should visit a type query node': {
+      given: createTypeQueryNode(createNameNode('t')),
+      then: [
+        ['enter', NodeType.TYPE_QUERY],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.TYPE_QUERY],
+      ],
+    },
+
     'should visit a nested union node': {
       given: createUnionNode(
         createUnionNode(
@@ -373,6 +383,13 @@ function createUnionNode(left, right) {
     left: left,
     right: right,
   };
+}
+
+function createTypeQueryNode(expr) {
+    return {
+        type: NodeType.TYPE_QUERY,
+        expr: expr,
+    }
 }
 
 function createRecordEntry(key, node) {

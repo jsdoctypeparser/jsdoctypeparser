@@ -6,10 +6,10 @@
 {Remember}
 {to}
 {add<typeof, everywhere>}
-{[it, needs, to, be]}
-{{ and: also, add: its }}
-{(own: list, of: constituents) => x}
-{{ (own: list, constituents): x }}
-{{ new (own: list, constituents): x }}
-{X extends Y ? U : V}
+//{[it, needs, to, be]}
+//{{ and: also, add: its }}
+//{(own: list, of: constituents) => x}
+//{{ (own: list, constituents): x }}
+//{{ new (own: list, constituents): x }}
+//{X extends Y ? U : V}
 

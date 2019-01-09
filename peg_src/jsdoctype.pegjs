@@ -29,6 +29,7 @@ TopLevel = _ expr:( VariadicTypeExpr
                   / GenericTypeExpr
                   / RecordTypeExpr
                   / FunctionTypeExpr
+                  / TypeQueryExpr
                   / BroadNamepathExpr
                   / ParenthesizedExpr
                   / ValueExpr
@@ -406,7 +407,26 @@ PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
                                 / AnyTypeExpr
                                 / UnknownTypeExpr
 
+TypeQueryExpr = operator:"typeof" _ expr:TypeQueryExprOperand {
+                return {
+                    type: NodeType.TYPE_QUERY,
+                    expr: expr,
+                };
+              }
 
+TypeQueryExprOperand = VariadicTypeExpr
+                     / UnionTypeExpr
+                     / UnaryUnionTypeExpr
+                     / ArrayTypeExpr
+                     / GenericTypeExpr
+                     / RecordTypeExpr
+                     / FunctionTypeExpr
+                     / TypeQueryExpr
+                     / BroadNamepathExpr
+                     / ParenthesizedExpr
+                     / ValueExpr
+                     / AnyTypeExpr
+                     / UnknownTypeExpr
 
 /*
  * Prefix nullable type expressions.
@@ -576,6 +596,7 @@ GenericTypeExprTypeParamOperand = UnionTypeExpr
                                 / ParenthesizedExpr
                                 / ArrayTypeExpr
                                 / GenericTypeExpr
+                                / TypeQueryExpr
                                 / BroadNamepathExpr
                                 / ValueExpr
                                 / AnyTypeExpr

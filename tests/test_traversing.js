@@ -60,6 +60,16 @@ describe('traversing', function() {
       ],
     },
 
+    'should visit an import type node': {
+      given: createImportNode(createStringLiteral('jquery')),
+      then: [
+        ['enter', NodeType.IMPORT],
+        ['enter', NodeType.STRING_VALUE],
+        ['leave', NodeType.STRING_VALUE],
+        ['leave', NodeType.IMPORT],
+      ],
+    },
+
     'should visit a nested union node': {
       given: createUnionNode(
         createUnionNode(
@@ -386,10 +396,24 @@ function createUnionNode(left, right) {
 }
 
 function createTypeQueryNode(expr) {
-    return {
-        type: NodeType.TYPE_QUERY,
-        expr: expr,
-    }
+  return {
+    type: NodeType.TYPE_QUERY,
+    expr: expr,
+  }
+}
+
+function createImportNode(path) {
+  return {
+    type: NodeType.IMPORT,
+    path: path,
+  }
+}
+
+function createStringLiteral(string) {
+  return {
+    type: NodeType.STRING_VALUE,
+    string: string,
+  }
 }
 
 function createRecordEntry(key, node) {

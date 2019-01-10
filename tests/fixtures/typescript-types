@@ -14,14 +14,18 @@
 {function(typeof A, number)}
 {function(number, typeof A)}
 {function(): typeof A}
+{import("x")}
+{import("./x")}
+{import("../x")}
+{import("x").T}
+{import("x").T.U}
+{import("x").T.U<V,W>}
+//{(x: number) => string}
 //{[it, needs, to, be]}
 //{{ and: also, add: its }}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}
+//{{ [T in keyof P]: T[K] }}
 //{X extends Y ? U : V}
-//{import("x")}
-//{import("x").T}
-//{import("x").T.U}
-//{import("x").T.U<V,W>}
 

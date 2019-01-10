@@ -56,11 +56,15 @@ describe('publish', function() {
     expect(publish(node)).to.equal('number|boolean');
   });
 
-  it("'s Monty Python's flying circus!", function() {
+  it('should return a type query node', function() {
     var node = parse('typeof x');
     expect(publish(node)).to.equal('typeof x');
   });
 
+  it('should return an import type node', function() {
+    var node = parse('import("./lodash4ever")');
+    expect(publish(node)).to.equal('import("./lodash4ever")');
+  });
 
   it('should return a record type with an entry', function() {
     var node = parse('{myNum}');

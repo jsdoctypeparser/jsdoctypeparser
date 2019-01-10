@@ -30,6 +30,7 @@ TopLevel = _ expr:( VariadicTypeExpr
                   / RecordTypeExpr
                   / FunctionTypeExpr
                   / TypeQueryExpr
+                  / ImportTypeExpr
                   / BroadNamepathExpr
                   / ParenthesizedExpr
                   / ValueExpr
@@ -428,6 +429,17 @@ TypeQueryExprOperand = VariadicTypeExpr
                      / ValueExpr
                      / AnyTypeExpr
                      / UnknownTypeExpr
+                     
+ImportTypeExpr = operator:"import" _ "(" _ path:StringLiteralExpr _ ")" _ memberPartWithOperators:(MemberTypeOperator _ JsIdentifier)* {
+                 var importType = { type: NodeType.IMPORT, path: path };
+                 return memberPartWithOperators.reduce(function(owner, tokens) {
+                        return {
+                          type: NodeType.MEMBER,
+                          owner: owner,
+                          name: tokens[3],
+                        };
+                     }, importType);
+               }
 
 /*
  * Prefix nullable type expressions.
@@ -584,6 +596,7 @@ GenericTypeExpr = operand:GenericTypeExprOperand _ syntax:GenericTypeStartToken 
 
 
 GenericTypeExprOperand = ParenthesizedExpr
+                       / ImportTypeExpr
                        / BroadNamepathExpr
                        / ValueExpr
                        / AnyTypeExpr

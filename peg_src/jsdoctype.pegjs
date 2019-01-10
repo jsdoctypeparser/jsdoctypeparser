@@ -30,7 +30,6 @@ TopLevel = _ expr:( VariadicTypeExpr
                   / RecordTypeExpr
                   / FunctionTypeExpr
                   / TypeQueryExpr
-                  / ImportTypeExpr
                   / BroadNamepathExpr
                   / ParenthesizedExpr
                   / ValueExpr
@@ -61,7 +60,7 @@ JsIdentifier = $([a-zA-Z_$][a-zA-Z0-9_$]*)
 
 // It is transformed to remove left recursion.
 // See https://en.wikipedia.org/wiki/Left_recursion#Removing_left_recursion
-NamepathExpr = rootOwner:(ParenthesizedExpr / TypeNameExpr) memberPartWithOperators:(_ InfixNamepathOperator _ MemberName)* {
+NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) memberPartWithOperators:(_ InfixNamepathOperator _ MemberName)* {
                return memberPartWithOperators.reduce(function(owner, tokens) {
                  var operatorType = tokens[1];
                  var memberName = tokens[3];
@@ -416,11 +415,7 @@ TypeQueryExpr = operator:"typeof" _ expr:TypeQueryExprOperand {
                 };
               }
 
-TypeQueryExprOperand = VariadicTypeExpr
-                     / UnionTypeExpr
-                     / UnaryUnionTypeExpr
-                     / ArrayTypeExpr
-                     / GenericTypeExpr
+TypeQueryExprOperand = GenericTypeExpr
                      / RecordTypeExpr
                      / FunctionTypeExpr
                      / TypeQueryExpr
@@ -430,15 +425,8 @@ TypeQueryExprOperand = VariadicTypeExpr
                      / AnyTypeExpr
                      / UnknownTypeExpr
                      
-ImportTypeExpr = operator:"import" _ "(" _ path:StringLiteralExpr _ ")" _ memberPartWithOperators:(MemberTypeOperator _ JsIdentifier)* {
-                 var importType = { type: NodeType.IMPORT, path: path };
-                 return memberPartWithOperators.reduce(function(owner, tokens) {
-                        return {
-                          type: NodeType.MEMBER,
-                          owner: owner,
-                          name: tokens[3],
-                        };
-                     }, importType);
+ImportTypeExpr = operator:"import" _ "(" _ path:StringLiteralExpr _ ")" {
+                 return { type: NodeType.IMPORT, path: path };
                }
 
 /*
@@ -596,7 +584,6 @@ GenericTypeExpr = operand:GenericTypeExprOperand _ syntax:GenericTypeStartToken 
 
 
 GenericTypeExprOperand = ParenthesizedExpr
-                       / ImportTypeExpr
                        / BroadNamepathExpr
                        / ValueExpr
                        / AnyTypeExpr

@@ -357,15 +357,8 @@ function peg$parse(input, options) {
       peg$c87 = peg$literalExpectation("(", false),
       peg$c88 = ")",
       peg$c89 = peg$literalExpectation(")", false),
-      peg$c90 = function(operator, path, memberPartWithOperators) {
-                       var importType = { type: NodeType.IMPORT, path: path };
-                       return memberPartWithOperators.reduce(function(owner, tokens) {
-                              return {
-                                type: NodeType.MEMBER,
-                                owner: owner,
-                                name: tokens[3],
-                              };
-                           }, importType);
+      peg$c90 = function(operator, path) {
+                       return { type: NodeType.IMPORT, path: path };
                      },
       peg$c91 = function(operator, operand) {
                                return {
@@ -730,18 +723,15 @@ function peg$parse(input, options) {
                   if (s2 === peg$FAILED) {
                     s2 = peg$parseTypeQueryExpr();
                     if (s2 === peg$FAILED) {
-                      s2 = peg$parseImportTypeExpr();
+                      s2 = peg$parseBroadNamepathExpr();
                       if (s2 === peg$FAILED) {
-                        s2 = peg$parseBroadNamepathExpr();
+                        s2 = peg$parseParenthesizedExpr();
                         if (s2 === peg$FAILED) {
-                          s2 = peg$parseParenthesizedExpr();
+                          s2 = peg$parseValueExpr();
                           if (s2 === peg$FAILED) {
-                            s2 = peg$parseValueExpr();
+                            s2 = peg$parseAnyTypeExpr();
                             if (s2 === peg$FAILED) {
-                              s2 = peg$parseAnyTypeExpr();
-                              if (s2 === peg$FAILED) {
-                                s2 = peg$parseUnknownTypeExpr();
-                              }
+                              s2 = peg$parseUnknownTypeExpr();
                             }
                           }
                         }
@@ -891,7 +881,10 @@ function peg$parse(input, options) {
     s0 = peg$currPos;
     s1 = peg$parseParenthesizedExpr();
     if (s1 === peg$FAILED) {
-      s1 = peg$parseTypeNameExpr();
+      s1 = peg$parseImportTypeExpr();
+      if (s1 === peg$FAILED) {
+        s1 = peg$parseTypeNameExpr();
+      }
     }
     if (s1 !== peg$FAILED) {
       s2 = [];
@@ -2699,35 +2692,23 @@ function peg$parse(input, options) {
       return cached.result;
     }
 
-    s0 = peg$parseVariadicTypeExpr();
+    s0 = peg$parseGenericTypeExpr();
     if (s0 === peg$FAILED) {
-      s0 = peg$parseUnionTypeExpr();
+      s0 = peg$parseRecordTypeExpr();
       if (s0 === peg$FAILED) {
-        s0 = peg$parseUnaryUnionTypeExpr();
+        s0 = peg$parseFunctionTypeExpr();
         if (s0 === peg$FAILED) {
-          s0 = peg$parseArrayTypeExpr();
+          s0 = peg$parseTypeQueryExpr();
           if (s0 === peg$FAILED) {
-            s0 = peg$parseGenericTypeExpr();
+            s0 = peg$parseBroadNamepathExpr();
             if (s0 === peg$FAILED) {
-              s0 = peg$parseRecordTypeExpr();
+              s0 = peg$parseParenthesizedExpr();
               if (s0 === peg$FAILED) {
-                s0 = peg$parseFunctionTypeExpr();
+                s0 = peg$parseValueExpr();
                 if (s0 === peg$FAILED) {
-                  s0 = peg$parseTypeQueryExpr();
+                  s0 = peg$parseAnyTypeExpr();
                   if (s0 === peg$FAILED) {
-                    s0 = peg$parseBroadNamepathExpr();
-                    if (s0 === peg$FAILED) {
-                      s0 = peg$parseParenthesizedExpr();
-                      if (s0 === peg$FAILED) {
-                        s0 = peg$parseValueExpr();
-                        if (s0 === peg$FAILED) {
-                          s0 = peg$parseAnyTypeExpr();
-                          if (s0 === peg$FAILED) {
-                            s0 = peg$parseUnknownTypeExpr();
-                          }
-                        }
-                      }
-                    }
+                    s0 = peg$parseUnknownTypeExpr();
                   }
                 }
               }
@@ -2743,7 +2724,7 @@ function peg$parse(input, options) {
   }
 
   function peg$parseImportTypeExpr() {
-    var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13;
+    var s0, s1, s2, s3, s4, s5, s6, s7;
 
     var key    = peg$currPos * 73 + 36,
         cached = peg$resultsCache[key];
@@ -2787,66 +2768,9 @@ function peg$parse(input, options) {
                   if (peg$silentFails === 0) { peg$fail(peg$c89); }
                 }
                 if (s7 !== peg$FAILED) {
-                  s8 = peg$parse_();
-                  if (s8 !== peg$FAILED) {
-                    s9 = [];
-                    s10 = peg$currPos;
-                    s11 = peg$parseMemberTypeOperator();
-                    if (s11 !== peg$FAILED) {
-                      s12 = peg$parse_();
-                      if (s12 !== peg$FAILED) {
-                        s13 = peg$parseJsIdentifier();
-                        if (s13 !== peg$FAILED) {
-                          s11 = [s11, s12, s13];
-                          s10 = s11;
-                        } else {
-                          peg$currPos = s10;
-                          s10 = peg$FAILED;
-                        }
-                      } else {
-                        peg$currPos = s10;
-                        s10 = peg$FAILED;
-                      }
-                    } else {
-                      peg$currPos = s10;
-                      s10 = peg$FAILED;
-                    }
-                    while (s10 !== peg$FAILED) {
-                      s9.push(s10);
-                      s10 = peg$currPos;
-                      s11 = peg$parseMemberTypeOperator();
-                      if (s11 !== peg$FAILED) {
-                        s12 = peg$parse_();
-                        if (s12 !== peg$FAILED) {
-                          s13 = peg$parseJsIdentifier();
-                          if (s13 !== peg$FAILED) {
-                            s11 = [s11, s12, s13];
-                            s10 = s11;
-                          } else {
-                            peg$currPos = s10;
-                            s10 = peg$FAILED;
-                          }
-                        } else {
-                          peg$currPos = s10;
-                          s10 = peg$FAILED;
-                        }
-                      } else {
-                        peg$currPos = s10;
-                        s10 = peg$FAILED;
-                      }
-                    }
-                    if (s9 !== peg$FAILED) {
-                      peg$savedPos = s0;
-                      s1 = peg$c90(s1, s5, s9);
-                      s0 = s1;
-                    } else {
-                      peg$currPos = s0;
-                      s0 = peg$FAILED;
-                    }
-                  } else {
-                    peg$currPos = s0;
-                    s0 = peg$FAILED;
-                  }
+                  peg$savedPos = s0;
+                  s1 = peg$c90(s1, s5);
+                  s0 = s1;
                 } else {
                   peg$currPos = s0;
                   s0 = peg$FAILED;
@@ -3309,16 +3233,13 @@ function peg$parse(input, options) {
 
     s0 = peg$parseParenthesizedExpr();
     if (s0 === peg$FAILED) {
-      s0 = peg$parseImportTypeExpr();
+      s0 = peg$parseBroadNamepathExpr();
       if (s0 === peg$FAILED) {
-        s0 = peg$parseBroadNamepathExpr();
+        s0 = peg$parseValueExpr();
         if (s0 === peg$FAILED) {
-          s0 = peg$parseValueExpr();
+          s0 = peg$parseAnyTypeExpr();
           if (s0 === peg$FAILED) {
-            s0 = peg$parseAnyTypeExpr();
-            if (s0 === peg$FAILED) {
-              s0 = peg$parseUnknownTypeExpr();
-            }
+            s0 = peg$parseUnknownTypeExpr();
           }
         }
       }

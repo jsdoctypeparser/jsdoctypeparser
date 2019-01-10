@@ -381,6 +381,7 @@ UnionTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
+                     / TypeQueryExpr
                      / GenericTypeExpr
                      / ArrayTypeExpr
                      / BroadNamepathExpr
@@ -660,6 +661,7 @@ ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
                      / GenericTypeExpr
+                     / TypeQueryExpr
                      / BroadNamepathExpr
                      / ValueExpr
                      / AnyTypeExpr
@@ -731,6 +733,7 @@ FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
 
 
 FunctionTypeExprParamOperand = UnionTypeExpr
+                             / TypeQueryExpr
                              / UnaryUnionTypeExpr
                              / RecordTypeExpr
                              / FunctionTypeExpr
@@ -758,6 +761,7 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   / FunctionTypeExpr
                                   / ParenthesizedExpr
                                   / ArrayTypeExpr
+                                  / TypeQueryExpr
                                   / GenericTypeExpr
                                   / BroadNamepathExpr
                                   / ValueExpr
@@ -857,6 +861,7 @@ ParenthesizedExprOperand = UnionTypeExpr
                          / RecordTypeExpr
                          / FunctionTypeExpr
                          / ArrayTypeExpr
+                         / TypeQueryExpr
                          / GenericTypeExpr
                          / BroadNamepathExpr
                          / ValueExpr
@@ -920,6 +925,7 @@ VariadicTypeExprOperand = UnionTypeExpr
                         / RecordTypeExpr
                         / FunctionTypeExpr
                         / ParenthesizedExpr
+                        / TypeQueryExpr
                         / ArrayTypeExpr
                         / GenericTypeExpr
                         / BroadNamepathExpr

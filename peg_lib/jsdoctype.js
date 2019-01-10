@@ -2510,17 +2510,20 @@ function peg$parse(input, options) {
         if (s0 === peg$FAILED) {
           s0 = peg$parseParenthesizedExpr();
           if (s0 === peg$FAILED) {
-            s0 = peg$parseGenericTypeExpr();
+            s0 = peg$parseTypeQueryExpr();
             if (s0 === peg$FAILED) {
-              s0 = peg$parseArrayTypeExpr();
+              s0 = peg$parseGenericTypeExpr();
               if (s0 === peg$FAILED) {
-                s0 = peg$parseBroadNamepathExpr();
+                s0 = peg$parseArrayTypeExpr();
                 if (s0 === peg$FAILED) {
-                  s0 = peg$parseValueExpr();
+                  s0 = peg$parseBroadNamepathExpr();
                   if (s0 === peg$FAILED) {
-                    s0 = peg$parseAnyTypeExpr();
+                    s0 = peg$parseValueExpr();
                     if (s0 === peg$FAILED) {
-                      s0 = peg$parseUnknownTypeExpr();
+                      s0 = peg$parseAnyTypeExpr();
+                      if (s0 === peg$FAILED) {
+                        s0 = peg$parseUnknownTypeExpr();
+                      }
                     }
                   }
                 }
@@ -3574,13 +3577,16 @@ function peg$parse(input, options) {
           if (s0 === peg$FAILED) {
             s0 = peg$parseGenericTypeExpr();
             if (s0 === peg$FAILED) {
-              s0 = peg$parseBroadNamepathExpr();
+              s0 = peg$parseTypeQueryExpr();
               if (s0 === peg$FAILED) {
-                s0 = peg$parseValueExpr();
+                s0 = peg$parseBroadNamepathExpr();
                 if (s0 === peg$FAILED) {
-                  s0 = peg$parseAnyTypeExpr();
+                  s0 = peg$parseValueExpr();
                   if (s0 === peg$FAILED) {
-                    s0 = peg$parseUnknownTypeExpr();
+                    s0 = peg$parseAnyTypeExpr();
+                    if (s0 === peg$FAILED) {
+                      s0 = peg$parseUnknownTypeExpr();
+                    }
                   }
                 }
               }
@@ -4150,25 +4156,28 @@ function peg$parse(input, options) {
 
     s0 = peg$parseUnionTypeExpr();
     if (s0 === peg$FAILED) {
-      s0 = peg$parseUnaryUnionTypeExpr();
+      s0 = peg$parseTypeQueryExpr();
       if (s0 === peg$FAILED) {
-        s0 = peg$parseRecordTypeExpr();
+        s0 = peg$parseUnaryUnionTypeExpr();
         if (s0 === peg$FAILED) {
-          s0 = peg$parseFunctionTypeExpr();
+          s0 = peg$parseRecordTypeExpr();
           if (s0 === peg$FAILED) {
-            s0 = peg$parseParenthesizedExpr();
+            s0 = peg$parseFunctionTypeExpr();
             if (s0 === peg$FAILED) {
-              s0 = peg$parseArrayTypeExpr();
+              s0 = peg$parseParenthesizedExpr();
               if (s0 === peg$FAILED) {
-                s0 = peg$parseGenericTypeExpr();
+                s0 = peg$parseArrayTypeExpr();
                 if (s0 === peg$FAILED) {
-                  s0 = peg$parseBroadNamepathExpr();
+                  s0 = peg$parseGenericTypeExpr();
                   if (s0 === peg$FAILED) {
-                    s0 = peg$parseValueExpr();
+                    s0 = peg$parseBroadNamepathExpr();
                     if (s0 === peg$FAILED) {
-                      s0 = peg$parseAnyTypeExpr();
+                      s0 = peg$parseValueExpr();
                       if (s0 === peg$FAILED) {
-                        s0 = peg$parseUnknownTypeExpr();
+                        s0 = peg$parseAnyTypeExpr();
+                        if (s0 === peg$FAILED) {
+                          s0 = peg$parseUnknownTypeExpr();
+                        }
                       }
                     }
                   }
@@ -4207,15 +4216,18 @@ function peg$parse(input, options) {
           if (s0 === peg$FAILED) {
             s0 = peg$parseArrayTypeExpr();
             if (s0 === peg$FAILED) {
-              s0 = peg$parseGenericTypeExpr();
+              s0 = peg$parseTypeQueryExpr();
               if (s0 === peg$FAILED) {
-                s0 = peg$parseBroadNamepathExpr();
+                s0 = peg$parseGenericTypeExpr();
                 if (s0 === peg$FAILED) {
-                  s0 = peg$parseValueExpr();
+                  s0 = peg$parseBroadNamepathExpr();
                   if (s0 === peg$FAILED) {
-                    s0 = peg$parseAnyTypeExpr();
+                    s0 = peg$parseValueExpr();
                     if (s0 === peg$FAILED) {
-                      s0 = peg$parseUnknownTypeExpr();
+                      s0 = peg$parseAnyTypeExpr();
+                      if (s0 === peg$FAILED) {
+                        s0 = peg$parseUnknownTypeExpr();
+                      }
                     }
                   }
                 }
@@ -4767,15 +4779,18 @@ function peg$parse(input, options) {
           if (s0 === peg$FAILED) {
             s0 = peg$parseArrayTypeExpr();
             if (s0 === peg$FAILED) {
-              s0 = peg$parseGenericTypeExpr();
+              s0 = peg$parseTypeQueryExpr();
               if (s0 === peg$FAILED) {
-                s0 = peg$parseBroadNamepathExpr();
+                s0 = peg$parseGenericTypeExpr();
                 if (s0 === peg$FAILED) {
-                  s0 = peg$parseValueExpr();
+                  s0 = peg$parseBroadNamepathExpr();
                   if (s0 === peg$FAILED) {
-                    s0 = peg$parseAnyTypeExpr();
+                    s0 = peg$parseValueExpr();
                     if (s0 === peg$FAILED) {
-                      s0 = peg$parseUnknownTypeExpr();
+                      s0 = peg$parseAnyTypeExpr();
+                      if (s0 === peg$FAILED) {
+                        s0 = peg$parseUnknownTypeExpr();
+                      }
                     }
                   }
                 }
@@ -4949,17 +4964,20 @@ function peg$parse(input, options) {
           if (s0 === peg$FAILED) {
             s0 = peg$parseParenthesizedExpr();
             if (s0 === peg$FAILED) {
-              s0 = peg$parseArrayTypeExpr();
+              s0 = peg$parseTypeQueryExpr();
               if (s0 === peg$FAILED) {
-                s0 = peg$parseGenericTypeExpr();
+                s0 = peg$parseArrayTypeExpr();
                 if (s0 === peg$FAILED) {
-                  s0 = peg$parseBroadNamepathExpr();
+                  s0 = peg$parseGenericTypeExpr();
                   if (s0 === peg$FAILED) {
-                    s0 = peg$parseValueExpr();
+                    s0 = peg$parseBroadNamepathExpr();
                     if (s0 === peg$FAILED) {
-                      s0 = peg$parseAnyTypeExpr();
+                      s0 = peg$parseValueExpr();
                       if (s0 === peg$FAILED) {
-                        s0 = peg$parseUnknownTypeExpr();
+                        s0 = peg$parseAnyTypeExpr();
+                        if (s0 === peg$FAILED) {
+                          s0 = peg$parseUnknownTypeExpr();
+                        }
                       }
                     }
                   }

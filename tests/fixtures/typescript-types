@@ -3,13 +3,25 @@
 {typeof}
 {X<typeof>}
 {X<typeof A>}
-{Remember}
-{to}
-{add<typeof, everywhere>}
+{typeof X<A>}
+{(typeof A)}
+{...typeof A}
+{typeof A...}
+{typeof A | number}
+{number | typeof A}
+{typeof N[]}
+{function(typeof A)}
+{function(typeof A, number)}
+{function(number, typeof A)}
+{function(): typeof A}
 //{[it, needs, to, be]}
 //{{ and: also, add: its }}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}
 //{X extends Y ? U : V}
+//{import("x")}
+//{import("x").T}
+//{import("x").T.U}
+//{import("x").T.U<V,W>}
 

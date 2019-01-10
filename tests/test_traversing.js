@@ -395,10 +395,10 @@ function createUnionNode(left, right) {
   };
 }
 
-function createTypeQueryNode(expr) {
+function createTypeQueryNode(name) {
   return {
     type: NodeType.TYPE_QUERY,
-    expr: expr,
+    name: name,
   }
 }
 

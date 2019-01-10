@@ -22,10 +22,11 @@
 {import("x").T.U<V,W>}
 //{(x: number) => string}
 //{[it, needs, to, be]}
-//{{ and: also, add: its }}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}
+//{{ [n: number]: number }}
+//{{ [s: string]: string }}
 //{{ [T in keyof P]: T[K] }}
 //{X extends Y ? U : V}
 

@@ -140,6 +140,16 @@ MemberName = "'" name:$([^']*) "'" {
 InfixNamepathOperator = MemberTypeOperator
                       / InstanceMemberTypeOperator
                       / InnerMemberTypeOperator
+                      
+QualifiedMemberName = rootOwner:TypeNameExpr memberPart:(_ "." _ TypeNameExpr)* {
+                      return memberPart.reduce(function(owner, tokens) {
+                        return {
+                          type: NodeType.MEMBER,
+                          owner: owner,
+                          name: tokens[3]
+                        }
+                      }, rootOwner);
+                    }
 
 
 /*
@@ -408,23 +418,13 @@ PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
                                 / AnyTypeExpr
                                 / UnknownTypeExpr
 
-TypeQueryExpr = operator:"typeof" _ expr:TypeQueryExprOperand {
+TypeQueryExpr = operator:"typeof" _ name:QualifiedMemberName {
                 return {
                     type: NodeType.TYPE_QUERY,
-                    expr: expr,
+                    name: name,
                 };
               }
 
-TypeQueryExprOperand = GenericTypeExpr
-                     / RecordTypeExpr
-                     / FunctionTypeExpr
-                     / TypeQueryExpr
-                     / BroadNamepathExpr
-                     / ParenthesizedExpr
-                     / ValueExpr
-                     / AnyTypeExpr
-                     / UnknownTypeExpr
-                     
 ImportTypeExpr = operator:"import" _ "(" _ path:StringLiteralExpr _ ")" {
                  return { type: NodeType.IMPORT, path: path };
                }

@@ -3,7 +3,7 @@
 {typeof}
 {X<typeof>}
 {X<typeof A>}
-{typeof X<A>}
+{(typeof X)<A>}
 {(typeof A)}
 {...typeof A}
 {typeof A...}

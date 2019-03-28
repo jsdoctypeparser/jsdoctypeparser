@@ -161,6 +161,30 @@ describe('publish', function() {
     expect(publish(node)).to.equal('function(?string=, number=)');
   });
 
+  it('should return an arrow type with no parameters', function() {
+    var node = parse('() => string');
+    expect(publish(node)).to.equal('() => string');
+  });
+
+  it('should return an arrow type with two parameters', function() {
+    var node = parse('(x: true, y: false) => string');
+    expect(publish(node)).to.equal('(x: true, y: false) => string');
+  });
+
+  it('should return an arrow type with one parameter', function() {
+    var node = parse('(x: true) => string');
+    expect(publish(node)).to.equal('(x: true) => string');
+  });
+
+  it('should return an arrow type with one variadic parameter', function() {
+    var node = parse('(...x: any[]) => string');
+    expect(publish(node)).to.equal('(...x: Array<any>) => string');
+  });
+
+  it('should return an construct signature with one parameter', function() {
+    var node = parse('new (x: true) => string');
+    expect(publish(node)).to.equal('new (x: true) => string');
+  });
 
   it('should return a goog.ui.Component#forEachChild', function() {
     var node = parse('function(this:T,?,number):?');

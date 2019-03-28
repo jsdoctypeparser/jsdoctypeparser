@@ -263,6 +263,60 @@ describe('traversing', function() {
       ],
     },
 
+    'should visit an arrow function that has two params and a returns': {
+      given: {
+        type: NodeType.ARROW,
+        params: [
+          { type: NodeType.NAMED_PARAMETER, name: 'param1', typeName: createNameNode('type1') },
+          { type: NodeType.NAMED_PARAMETER, name: 'param2', typeName: createNameNode('type2') },
+        ],
+        returns: createNameNode('return'),
+      },
+      then: [
+        ['enter', NodeType.ARROW],
+        ['enter', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.ARROW],
+      ],
+    },
+
+    'should visit an arrow function that has one variadic param and a returns': {
+      given: {
+        type: NodeType.ARROW,
+        params: [
+          {
+            type: NodeType.VARIADIC,
+            value: {
+              type: NodeType.NAMED_PARAMETER,
+              name: 'param1',
+              typeName: createNameNode('type1'),
+            },
+          },
+        ],
+        returns: createNameNode('return'),
+      },
+      then: [
+        ['enter', NodeType.ARROW],
+        ['enter', NodeType.VARIADIC],
+        ['enter', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.NAMED_PARAMETER],
+        ['leave', NodeType.VARIADIC],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.ARROW],
+      ],
+    },
+
     'should visit an any node': {
       given: {
         type: NodeType.ANY,
@@ -451,4 +505,7 @@ function createFilePathNode(filePath) {
     type: NodeType.FILE_PATH,
     path: filePath,
   };
+}
+
+function create() {
 }

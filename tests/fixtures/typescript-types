@@ -20,7 +20,14 @@
 {import("x").T}
 {import("x").T.U}
 {import("x").T.U<V,W>}
-//{(x: number) => string}
+{(x: *) => *}
+{(x: number) => string}
+{(x: number, y: string, z: Class) => string}
+{() => string}
+{function(): () => string}
+{function(() => string): void}
+{X<() => string>}
+{new (x: number) => string}
 //{[it, needs, to, be]}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}

@@ -22,12 +22,32 @@
 }
 
 
+
+TopTypeExpr = _ expr:( VariadicTypeExpr
+                  / UnionTypeExpr
+                  / UnaryUnionTypeExpr
+                  / ArrayTypeExpr
+                  / GenericTypeExpr
+                  / RecordTypeExpr
+                  / ArrowTypeExpr
+                  / FunctionTypeExpr
+                  / TypeQueryExpr
+                  / BroadNamepathExpr
+                  / ParenthesizedExpr
+                  / ValueExpr
+                  / AnyTypeExpr
+                  / UnknownTypeExpr
+                  ) _ {
+           return expr;
+         }
+
 TopLevel = _ expr:( VariadicTypeExpr
                   / UnionTypeExpr
                   / UnaryUnionTypeExpr
                   / ArrayTypeExpr
                   / GenericTypeExpr
                   / RecordTypeExpr
+                  / ArrowTypeExpr
                   / FunctionTypeExpr
                   / TypeQueryExpr
                   / BroadNamepathExpr
@@ -389,6 +409,7 @@ UnionTypeOperatorJSDuckFlavored = "/" {
 
 UnionTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
+                     / ArrowTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
                      / TypeQueryExpr
@@ -411,6 +432,7 @@ PrefixUnaryUnionTypeExpr = PrefixOptionalTypeExpr
 
 PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
                                 / RecordTypeExpr
+                                / ArrowTypeExpr
                                 / FunctionTypeExpr
                                 / ParenthesizedExpr
                                 / BroadNamepathExpr
@@ -492,6 +514,7 @@ SuffixUnaryUnionTypeExpr = SuffixOptionalTypeExpr
 SuffixUnaryUnionTypeExprOperand = PrefixUnaryUnionTypeExpr
                                 / GenericTypeExpr
                                 / RecordTypeExpr
+                                / ArrowTypeExpr
                                 / FunctionTypeExpr
                                 / ParenthesizedExpr
                                 / BroadNamepathExpr
@@ -593,6 +616,7 @@ GenericTypeExprOperand = ParenthesizedExpr
 GenericTypeExprTypeParamOperand = UnionTypeExpr
                                 / UnaryUnionTypeExpr
                                 / RecordTypeExpr
+                                / ArrowTypeExpr
                                 / FunctionTypeExpr
                                 / ParenthesizedExpr
                                 / ArrayTypeExpr
@@ -658,6 +682,7 @@ ArrayTypeExpr = operand:ArrayTypeExprOperand brackets:(_ "[" _ "]")+ {
 
 ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
+                     / ArrowTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
                      / GenericTypeExpr
@@ -667,7 +692,41 @@ ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / AnyTypeExpr
                      / UnknownTypeExpr
 
+ArrowTypeExpr = newModifier:"new"? _ paramsPart:ArrowTypeExprParamsList _ "=>" _ returnedTypeNode:FunctionTypeExprReturnableOperand {
+                   return {
+                     type: NodeType.ARROW,
+                     params: paramsPart,
+                     returns: returnedTypeNode,
+                     new: newModifier
+                   };
+}
 
+ArrowTypeExprParamsList = "(" _ params:ArrowTypeExprParams _ ")" {
+                            return params;
+                          }
+                        / "(" _ ")" {
+                            return [];
+                          }
+ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr {
+  return paramsWithComma.reduceRight(function(params, tokens) {
+    var param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
+    return [param].concat(params);
+  }, [lastParam]);
+}
+
+VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExprParamOperand? _ ","? {
+  var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type }; 
+  if (spread) {
+  return {
+    type: NodeType.VARIADIC,
+    value: operand,
+    meta: { syntax: VariadicTypeSyntax.PREFIX_DOTS },
+  };
+  }
+  else {
+    return operand;
+  }
+}
 
 /*
  * Function type expressions.
@@ -736,6 +795,7 @@ FunctionTypeExprParamOperand = UnionTypeExpr
                              / TypeQueryExpr
                              / UnaryUnionTypeExpr
                              / RecordTypeExpr
+                             / ArrowTypeExpr
                              / FunctionTypeExpr
                              / ParenthesizedExpr
                              / ArrayTypeExpr
@@ -758,6 +818,7 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   //   47f9c92bb4c7de9a3d46f9921a427402910073fb/
                                   //   closure/goog/ui/zippy.js#L47
                                   / RecordTypeExpr
+                                  / ArrowTypeExpr
                                   / FunctionTypeExpr
                                   / ParenthesizedExpr
                                   / ArrayTypeExpr
@@ -827,6 +888,7 @@ RecordTypeExprEntryKey = '"' key:$([^"]*) '"' {
 RecordTypeExprEntryOperand = UnionTypeExpr
                            / UnaryUnionTypeExpr
                            / RecordTypeExpr
+                           / ArrowTypeExpr
                            / FunctionTypeExpr
                            / ParenthesizedExpr
                            / ArrayTypeExpr
@@ -859,6 +921,7 @@ ParenthesizedExpr = "(" _ wrapped:ParenthesizedExprOperand _ ")" {
 ParenthesizedExprOperand = UnionTypeExpr
                          / UnaryUnionTypeExpr
                          / RecordTypeExpr
+                         / ArrowTypeExpr
                          / FunctionTypeExpr
                          / ArrayTypeExpr
                          / TypeQueryExpr
@@ -923,6 +986,7 @@ AnyVariadicTypeExpr = "..." {
 VariadicTypeExprOperand = UnionTypeExpr
                         / UnaryUnionTypeExpr
                         / RecordTypeExpr
+                        / ArrowTypeExpr
                         / FunctionTypeExpr
                         / ParenthesizedExpr
                         / TypeQueryExpr

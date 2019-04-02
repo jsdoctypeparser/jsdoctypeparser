@@ -13,6 +13,7 @@ var Fixtures = {
 
 describe('Parser', function() {
   it('should not hang when parsing tests/fixtures/*', function() {
+    this.timeout(50 * 1000);
     Object.keys(Fixtures).forEach(function(fixtureName) {
       Fixtures[fixtureName].forEach(function(fixture) {
         if (fixture.skip) return;

@@ -50,6 +50,26 @@ describe('traversing', function() {
       ],
     },
 
+    'should visit a type query node': {
+      given: createTypeQueryNode(createNameNode('t')),
+      then: [
+        ['enter', NodeType.TYPE_QUERY],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.TYPE_QUERY],
+      ],
+    },
+
+    'should visit an import type node': {
+      given: createImportNode(createStringLiteral('jquery')),
+      then: [
+        ['enter', NodeType.IMPORT],
+        ['enter', NodeType.STRING_VALUE],
+        ['leave', NodeType.STRING_VALUE],
+        ['leave', NodeType.IMPORT],
+      ],
+    },
+
     'should visit a nested union node': {
       given: createUnionNode(
         createUnionNode(
@@ -243,6 +263,60 @@ describe('traversing', function() {
       ],
     },
 
+    'should visit an arrow function that has two params and a returns': {
+      given: {
+        type: NodeType.ARROW,
+        params: [
+          { type: NodeType.NAMED_PARAMETER, name: 'param1', typeName: createNameNode('type1') },
+          { type: NodeType.NAMED_PARAMETER, name: 'param2', typeName: createNameNode('type2') },
+        ],
+        returns: createNameNode('return'),
+      },
+      then: [
+        ['enter', NodeType.ARROW],
+        ['enter', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.ARROW],
+      ],
+    },
+
+    'should visit an arrow function that has one variadic param and a returns': {
+      given: {
+        type: NodeType.ARROW,
+        params: [
+          {
+            type: NodeType.VARIADIC,
+            value: {
+              type: NodeType.NAMED_PARAMETER,
+              name: 'param1',
+              typeName: createNameNode('type1'),
+            },
+          },
+        ],
+        returns: createNameNode('return'),
+      },
+      then: [
+        ['enter', NodeType.ARROW],
+        ['enter', NodeType.VARIADIC],
+        ['enter', NodeType.NAMED_PARAMETER],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.NAMED_PARAMETER],
+        ['leave', NodeType.VARIADIC],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.ARROW],
+      ],
+    },
+
     'should visit an any node': {
       given: {
         type: NodeType.ANY,
@@ -375,6 +449,27 @@ function createUnionNode(left, right) {
   };
 }
 
+function createTypeQueryNode(name) {
+  return {
+    type: NodeType.TYPE_QUERY,
+    name: name,
+  }
+}
+
+function createImportNode(path) {
+  return {
+    type: NodeType.IMPORT,
+    path: path,
+  }
+}
+
+function createStringLiteral(string) {
+  return {
+    type: NodeType.STRING_VALUE,
+    string: string,
+  }
+}
+
 function createRecordEntry(key, node) {
   return {
     type: NodeType.RECORD_ENTRY,
@@ -410,4 +505,7 @@ function createFilePathNode(filePath) {
     type: NodeType.FILE_PATH,
     path: filePath,
   };
+}
+
+function create() {
 }

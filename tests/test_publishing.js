@@ -181,7 +181,7 @@ describe('publish', function() {
     expect(publish(node)).to.equal('(...x: Array<any>) => string');
   });
 
-  it('should return an construct signature with one parameter', function() {
+  it('should return a construct signature with one parameter', function() {
     var node = parse('new (x: true) => string');
     expect(publish(node)).to.equal('new (x: true) => string');
   });

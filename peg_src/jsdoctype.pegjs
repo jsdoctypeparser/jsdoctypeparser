@@ -80,10 +80,11 @@ JsIdentifier = $([a-zA-Z_$][a-zA-Z0-9_$]*)
 
 // It is transformed to remove left recursion.
 // See https://en.wikipedia.org/wiki/Left_recursion#Removing_left_recursion
-NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) memberPartWithOperators:(_ InfixNamepathOperator _ MemberName)* {
+NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) memberPartWithOperators:(_ InfixNamepathOperator _ "event:"? _ MemberName)* {
                return memberPartWithOperators.reduce(function(owner, tokens) {
                  var operatorType = tokens[1];
-                 var memberName = tokens[3];
+                 var eventNamespace = tokens[3];
+                 var memberName = tokens[5];
 
                  switch (operatorType) {
                    case NamepathOperatorType.MEMBER:
@@ -91,18 +92,21 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
                        type: NodeType.MEMBER,
                        owner: owner,
                        name: memberName,
+                       hasEventPrefix: Boolean(eventNamespace),
                      };
                    case NamepathOperatorType.INSTANCE_MEMBER:
                      return {
                        type: NodeType.INSTANCE_MEMBER,
                        owner: owner,
                        name: memberName,
+                       hasEventPrefix: Boolean(eventNamespace),
                      };
                    case NamepathOperatorType.INNER_MEMBER:
                      return {
                        type: NodeType.INNER_MEMBER,
                        owner: owner,
                        name: memberName,
+                       hasEventPrefix: Boolean(eventNamespace),
                      };
                    default:
                      throw new Error('Unexpected operator type: "' + operatorType + '"');
@@ -160,7 +164,7 @@ MemberName = "'" name:$([^']*) "'" {
 InfixNamepathOperator = MemberTypeOperator
                       / InstanceMemberTypeOperator
                       / InnerMemberTypeOperator
-                      
+
 QualifiedMemberName = rootOwner:TypeNameExpr memberPart:(_ "." _ TypeNameExpr)* {
                       return memberPart.reduce(function(owner, tokens) {
                         return {
@@ -252,29 +256,33 @@ ModuleNameExpr = "module" _ ":" _ value:ModulePathExpr {
 
 
 // It is transformed to remove left recursion
-ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepathOperator _ MemberName)* {
+ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepathOperator _ "event:"? _ MemberName)* {
                  return memberPartWithOperators.reduce(function(owner, tokens) {
                    var operatorType = tokens[1];
-                   var memberName = tokens[3];
-  
+                   var eventNamespace = tokens[3];
+                   var memberName = tokens[5];
+
                    switch (operatorType) {
                      case NamepathOperatorType.MEMBER:
                        return {
                          type: NodeType.MEMBER,
                          owner: owner,
                          name: memberName,
+                         hasEventPrefix: Boolean(eventNamespace),
                        };
                      case NamepathOperatorType.INSTANCE_MEMBER:
                        return {
                          type: NodeType.INSTANCE_MEMBER,
                          owner: owner,
                          name: memberName,
+                         hasEventPrefix: Boolean(eventNamespace),
                        };
                      case NamepathOperatorType.INNER_MEMBER:
                        return {
                          type: NodeType.INNER_MEMBER,
                          owner: owner,
                          name: memberName,
+                         hasEventPrefix: Boolean(eventNamespace),
                        };
                      default:
                        throw new Error('Unexpected operator type: "' + operatorType + '"');
@@ -715,7 +723,7 @@ ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprPara
 }
 
 VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExprParamOperand? _ ","? {
-  var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type }; 
+  var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
   if (spread) {
   return {
     type: NodeType.VARIADIC,

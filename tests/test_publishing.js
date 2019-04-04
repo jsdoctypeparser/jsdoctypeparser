@@ -239,6 +239,16 @@ describe('publish', function() {
     expect(publish(node)).to.equal('module:foo/bar');
   });
 
+  it('should return a module type with member', function() {
+    var node = parse('module:foo/bar#abc');
+    expect(publish(node)).to.equal('module:foo/bar#abc');
+  });
+
+  it('should return a module type with event member', function() {
+    var node = parse('module:foo/bar#event:abc');
+    expect(publish(node)).to.equal('module:foo/bar#event:abc');
+  });
+
 
   it('should return a module type with a prefix nullable type operator', function() {
     var node = parse('?module:foo/bar');

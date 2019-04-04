@@ -138,7 +138,7 @@ TypeNameExprStrict = name:JsIdentifier {
 
 
 // JSDoc allow to use hyphens in identifier contexts.
-// See https://github.com/Kuniwak/jsdoctypeparser/issues/15
+// See https://github.com/jsdoctypeparser/jsdoctypeparser/issues/15
 TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
                             return {
                               type: NodeType.NAME,
@@ -160,7 +160,7 @@ MemberName = "'" name:$([^']*) "'" {
 InfixNamepathOperator = MemberTypeOperator
                       / InstanceMemberTypeOperator
                       / InnerMemberTypeOperator
-                      
+
 QualifiedMemberName = rootOwner:TypeNameExpr memberPart:(_ "." _ TypeNameExpr)* {
                       return memberPart.reduce(function(owner, tokens) {
                         return {
@@ -256,7 +256,7 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
                  return memberPartWithOperators.reduce(function(owner, tokens) {
                    var operatorType = tokens[1];
                    var memberName = tokens[3];
-  
+
                    switch (operatorType) {
                      case NamepathOperatorType.MEMBER:
                        return {
@@ -715,7 +715,7 @@ ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprPara
 }
 
 VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExprParamOperand? _ ","? {
-  var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type }; 
+  var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
   if (spread) {
   return {
     type: NodeType.VARIADIC,

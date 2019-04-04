@@ -250,7 +250,7 @@ function peg$parse(input, options) {
                        return memberPartWithOperators.reduce(function(owner, tokens) {
                          var operatorType = tokens[1];
                          var memberName = tokens[3];
-        
+
                          switch (operatorType) {
                            case NamepathOperatorType.MEMBER:
                              return {
@@ -486,7 +486,7 @@ function peg$parse(input, options) {
       peg$c127 = "...",
       peg$c128 = peg$literalExpectation("...", false),
       peg$c129 = function(spread, id, type) {
-        var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type }; 
+        var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
         if (spread) {
         return {
           type: NodeType.VARIADIC,

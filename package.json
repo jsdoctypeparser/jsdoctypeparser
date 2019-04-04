@@ -14,15 +14,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/Kuniwak/jsdoctypeparser.git"
+    "url": "git://github.com/jsdoctypeparser/jsdoctypeparser.git"
   },
   "engines": {
     "node": ">=6"
   },
-  "homepage": "http://kuniwak.github.io/jsdoctypeparser/",
+  "homepage": "https://jsdoctypeparser.github.io/jsdoctypeparser/",
   "bugs": {
     "mail": "orga.chem.job@gmail.com",
-    "url": "https://github.com/Kuniwak/jsdoctypeparser/issues"
+    "url": "https://github.com/jsdoctypeparser/jsdoctypeparser/issues"
   },
   "directories": {
     "test": "test"

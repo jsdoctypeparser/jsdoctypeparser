@@ -1,7 +1,7 @@
 jsdoctypeparser
 ===============
 
-[![Build Status](https://travis-ci.org/Kuniwak/jsdoctypeparser.svg?branch=master)](https://travis-ci.org/Kuniwak/jsdoctypeparser)
+[![Build Status](https://travis-ci.org/jsdoctypeparser/jsdoctypeparser.svg?branch=master)](https://travis-ci.org/jsdoctypeparser/jsdoctypeparser)
 [![NPM version](https://badge.fury.io/js/jsdoctypeparser.svg)](http://badge.fury.io/js/jsdoctypeparser)
 
 The parser can parse:
@@ -19,7 +19,7 @@ The parser can parse:
 Live demo
 ---------
 
-The [live demo](http://kuniwak.github.io/jsdoctypeparser/) is available.
+The [live demo](https://jsdoctypeparser.github.io/jsdoctypeparser/) is available.
 
 
 Usage
@@ -648,4 +648,4 @@ We can use a parenthesis to change operator orders.
 License
 -------
 
-[This script licensed under the MIT](http://kuniwak.mit-license.org).
+[This script is licensed under the MIT](./LICENSE-MIT.txt).

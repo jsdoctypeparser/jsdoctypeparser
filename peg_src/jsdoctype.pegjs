@@ -142,7 +142,7 @@ TypeNameExprStrict = name:JsIdentifier {
 
 
 // JSDoc allow to use hyphens in identifier contexts.
-// See https://github.com/Kuniwak/jsdoctypeparser/issues/15
+// See https://github.com/jsdoctypeparser/jsdoctypeparser/issues/15
 TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
                             return {
                               type: NodeType.NAME,

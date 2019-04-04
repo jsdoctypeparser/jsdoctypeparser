@@ -12,6 +12,8 @@ The parser can parse:
   * `Array<string>`, `function(arg1, arg2): ret`
 * [JSDuck type definitions](https://github.com/senchalabs/jsduck/wiki/Type-Definitions)
   * `Boolean/"top"/"bottom"`
+* [some Typescript types](https://github.com/Microsoft/TypeScript)
+  * `(x: number) => string`, `typeof x`, `import("./some-module")`
 * Complex type expressions
   * `Array<Array<string>>`, `function(function(Function))`
 

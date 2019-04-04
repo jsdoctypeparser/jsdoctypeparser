@@ -1,5 +1,5 @@
 {
-  "excludeFiles": ["node_modules/**", "lib/legacy/**"],
+  "excludeFiles": ["node_modules/**", "lib/legacy/**", "peg_lib/**"],
 
   "disallowEmptyBlocks": true,
   "disallowImplicitTypeConversion": ["numeric", "boolean", "binary", "string"],

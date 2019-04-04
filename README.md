@@ -645,4 +645,4 @@ We can use a parenthesis to change operator orders.
 License
 -------
 
-[This script licensed under the MIT](http://kuniwak.mit-license.org).
+[This script is licensed under the MIT](./LICENSE-MIT.txt).

@@ -1,12 +1,10 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
-var jsdoctypeparser = require('../index.js');
-
+const {expect} = require('chai');
+const jsdoctypeparser = require('../index.js');
 
 describe('jsdoctypeparser', function() {
-  var expectedTypeMap = {
+  const expectedTypeMap = {
     parse: 'function',
     SyntaxError: 'function',
     publish: 'function',
@@ -16,9 +14,8 @@ describe('jsdoctypeparser', function() {
     SyntaxType: 'object',
   };
 
-
   Object.keys(expectedTypeMap).forEach(function(key) {
-    var expectedType = expectedTypeMap[key];
+    const expectedType = expectedTypeMap[key];
     describe('.' + key, function() {
       it('should be exported', function() {
         expect(jsdoctypeparser[key]).to.be.a(expectedType);

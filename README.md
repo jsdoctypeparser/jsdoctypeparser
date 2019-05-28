@@ -1,5 +1,4 @@
-jsdoctypeparser
-===============
+# jsdoctypeparser
 
 [![Build Status](https://travis-ci.org/jsdoctypeparser/jsdoctypeparser.svg?branch=master)](https://travis-ci.org/jsdoctypeparser/jsdoctypeparser)
 [![NPM version](https://badge.fury.io/js/jsdoctypeparser.svg)](http://badge.fury.io/js/jsdoctypeparser)
@@ -18,21 +17,18 @@ The parser can parse:
   * `Array<Array<string>>`, `function(function(Function))`
 
 
-Live demo
----------
+## Live demo
 
 The [live demo](https://jsdoctypeparser.github.io/jsdoctypeparser/) is available.
 
-
-Usage
------
+## Usage
 
 ### Parsing
 
 ```javascript
-var parse = require('jsdoctypeparser').parse;
+const {parse} = require('jsdoctypeparser');
 
-var ast = parse('Array<MyClass>');
+const ast = parse('Array<MyClass>');
 ```
 
 The `ast` becomes:
@@ -64,9 +60,9 @@ See the [AST specifications](https://github.com/Kuniwak/jsdoctypeparser/blob/upd
 We can stringify the AST nodes by using `publish`.
 
 ```javascript
-var publish = require('jsdoctypeparser').publish;
+const {publish} = require('jsdoctypeparser');
 
-var ast = {
+const ast = {
   type: 'GENERIC',
   subject: {
     type: 'NAME',
@@ -80,7 +76,7 @@ var ast = {
   ]
 };
 
-var string = publish(ast);
+const string = publish(ast);
 ```
 
 The `string` becomes:
@@ -163,8 +159,7 @@ leave GENERIC
 ```
 
 
-AST Specifications
-------------------
+## AST Specifications
 
 ### `NAME`
 
@@ -647,7 +642,6 @@ We can use a parenthesis to change operator orders.
 ```
 
 
-License
--------
+## License
 
 [This script is licensed under the MIT](./LICENSE-MIT.txt).

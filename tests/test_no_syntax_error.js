@@ -1,12 +1,11 @@
 'use strict';
 
-var util = require('util');
-var Parser = require('../lib/parsing.js');
-var Fs = require('fs');
-var Path = require('path');
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
+const Parser = require('../lib/parsing.js');
 
-
-var Fixtures = {
+const Fixtures = {
   CATHARSIS: readFixtureSync('catharsis-types'),
   CLOSURE_LIBRARY: readFixtureSync('closure-library-types'),
   JSDOC3: readFixtureSync('jsdoc-types'),
@@ -14,21 +13,20 @@ var Fixtures = {
   TYPESCRIPT: readFixtureSync('typescript-types'),
 };
 
-
 describe('Parser', function() {
   it('should not throw any errors when parsing tests/fixtures/*', function() {
     Object.keys(Fixtures).forEach(function(fixtureName) {
-      Fixtures[fixtureName].forEach(function(fixture) {
-        if (fixture.skip) return;
+      Fixtures[fixtureName].forEach(function({skip, typeExprStr, position}) {
+        if (skip) return;
 
         try {
-          Parser.parse(fixture.typeExprStr);
+          Parser.parse(typeExprStr);
         }
         catch (e) {
-          var debugMessage = util.format('parsing %s at %s:%d\n\n%s',
-                                         fixture.typeExprStr,
-                                         fixture.position.filePath,
-                                         fixture.position.lineno,
+          const debugMessage = util.format('parsing %s at %s:%d\n\n%s',
+                                         typeExprStr,
+                                         position.filePath,
+                                         position.lineno,
                                          e.stack);
 
           throw new Error(debugMessage);
@@ -40,9 +38,9 @@ describe('Parser', function() {
 
 
 function readFixtureSync(fileName) {
-  var filePath = Path.resolve(__dirname, 'fixtures', fileName);
+  const filePath = path.resolve(__dirname, 'fixtures', fileName);
 
-  return Fs.readFileSync(filePath, 'utf8')
+  return fs.readFileSync(filePath, 'utf8')
     .trim()
     .split(/\n/)
     .map(function(line, lineIdx) {
@@ -52,7 +50,7 @@ function readFixtureSync(fileName) {
 
         typeExprStr: line.trim().replace(/^\{(.*)\}$/, '$1'),
         position: {
-          filePath: filePath,
+          filePath,
           lineno: lineIdx + 1,
         },
       };

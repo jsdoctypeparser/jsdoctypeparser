@@ -1,11 +1,10 @@
 'use strict';
 
-
-var parsing = require('./lib/parsing.js');
-var publishing = require('./lib/publishing.js');
-var traversing = require('./lib/traversing.js');
-var NodeType = require('./lib/NodeType.js');
-var SyntaxType = require('./lib/SyntaxType.js');
+const {parse, SyntaxError} = require('./lib/parsing.js');
+const {publish, createDefaultPublisher} = require('./lib/publishing.js');
+const {traverse} = require('./lib/traversing.js');
+const NodeType = require('./lib/NodeType.js');
+const SyntaxType = require('./lib/SyntaxType.js');
 
 
 /**
@@ -14,11 +13,11 @@ var SyntaxType = require('./lib/SyntaxType.js');
  * @exports jsdoctypeparser
  */
 module.exports = {
-  parse: parsing.parse,
-  SyntaxError: parsing.SyntaxError,
-  publish: publishing.publish,
-  createDefaultPublisher: publishing.createDefaultPublisher,
-  traverse: traversing.traverse,
-  NodeType: NodeType,
-  SyntaxType: SyntaxType,
+  parse,
+  SyntaxError,
+  publish,
+  createDefaultPublisher,
+  traverse,
+  NodeType,
+  SyntaxType,
 };

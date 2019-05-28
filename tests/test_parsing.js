@@ -1,79 +1,76 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const {expect} = require('chai');
 
-var NodeType = require('../lib/NodeType.js');
-var SyntaxType = require('../lib/SyntaxType.js');
-var GenericTypeSyntax = SyntaxType.GenericTypeSyntax;
-var UnionTypeSyntax = SyntaxType.UnionTypeSyntax;
-var VariadicTypeSyntax = SyntaxType.VariadicTypeSyntax;
-var OptionalTypeSyntax = SyntaxType.OptionalTypeSyntax;
-var NullableTypeSyntax = SyntaxType.NullableTypeSyntax;
-var NotNullableTypeSyntax = SyntaxType.NotNullableTypeSyntax;
-var Parser = require('../lib/parsing.js');
+const NodeType = require('../lib/NodeType.js');
+const Parser = require('../lib/parsing.js');
+const SyntaxType = require('../lib/SyntaxType.js');
 
+const {
+  GenericTypeSyntax, UnionTypeSyntax, VariadicTypeSyntax,
+  OptionalTypeSyntax, NullableTypeSyntax, NotNullableTypeSyntax,
+} = SyntaxType;
 
 describe('Parser', function() {
   it('should return a type name node when "TypeName" arrived', function() {
-    var typeExprStr = 'TypeName';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'TypeName';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createTypeNameNode(typeExprStr);
+    const expectedNode = createTypeNameNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a type name node when "my-type" arrived', function() {
-    var typeExprStr = 'my-type';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'my-type';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createTypeNameNode(typeExprStr);
+    const expectedNode = createTypeNameNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a type name node when "$" arrived', function() {
-    var typeExprStr = '$';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '$';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createTypeNameNode(typeExprStr);
+    const expectedNode = createTypeNameNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a type name node when "_" arrived', function() {
-    var typeExprStr = '_';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '_';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createTypeNameNode(typeExprStr);
+    const expectedNode = createTypeNameNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return an any type node when "*" arrived', function() {
-    var typeExprStr = '*';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '*';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createAnyTypeNode();
+    const expectedNode = createAnyTypeNode();
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return an unknown type node when "?" arrived', function() {
-    var typeExprStr = '?';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '?';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createUnknownTypeNode();
+    const expectedNode = createUnknownTypeNode();
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return an optional unknown type node when "?=" arrived', function() {
-    var typeExprStr = '?=';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '?=';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createUnknownTypeNode(),
       OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
@@ -82,28 +79,28 @@ describe('Parser', function() {
 
 
   it('should return a module name node when "module:path/to/file" arrived', function() {
-    var typeExprStr = 'module:path/to/file';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'module:path/to/file';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
+    const expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a module name node when "module : path/to/file" arrived', function() {
-    var typeExprStr = 'module : path/to/file';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'module : path/to/file';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
+    const expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a member node when "(module:path/to/file).member" arrived', function() {
-    var typeExprStr = '(module:path/to/file).member';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '(module:path/to/file).member';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createMemberTypeNode(
+    const expectedNode = createMemberTypeNode(
       createParenthesizedNode(
         createModuleNameNode(createFilePathNode('path/to/file'))
       ),
@@ -114,30 +111,30 @@ describe('Parser', function() {
 
 
   it('should return a member node when "module:path/to/file.member" arrived', function() {
-    var typeExprStr = 'module:path/to/file.member';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'module:path/to/file.member';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createModuleNameNode(
+    const expectedNode = createModuleNameNode(
       createMemberTypeNode(createFilePathNode('path/to/file'), 'member')
     );
     expect(node).to.deep.equal(expectedNode);
   });
 
   it('should return a member node when "module:path/to/file.event:member" arrived', function() {
-    var typeExprStr = 'module:path/to/file.event:member';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'module:path/to/file.event:member';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createModuleNameNode(
+    const expectedNode = createModuleNameNode(
       createMemberTypeNode(createFilePathNode('path/to/file'), 'member', true)
     );
     expect(node).to.deep.equal(expectedNode);
   });
 
   it('should return a member type node when "owner.event:Member" arrived', function() {
-    var typeExprStr = 'owner.event:Member';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'owner.event:Member';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createMemberTypeNode(
+    const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
       'Member',
       true);
@@ -146,29 +143,29 @@ describe('Parser', function() {
   });
 
   it('should return a module name node when "external:string" arrived', function() {
-    var typeExprStr = 'external:string';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'external:string';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createExternalNameNode(createTypeNameNode('string'));
+    const expectedNode = createExternalNameNode(createTypeNameNode('string'));
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a module name node when "external : String#rot13" arrived', function() {
-    var typeExprStr = 'external : String#rot13';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'external : String#rot13';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createExternalNameNode(
+    const expectedNode = createExternalNameNode(
       createInstanceMemberTypeNode(createTypeNameNode('String'), 'rot13'));
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a member type node when "owner.Member" arrived', function() {
-    var typeExprStr = 'owner.Member';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'owner.Member';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createMemberTypeNode(
+    const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
       'Member');
 
@@ -177,10 +174,10 @@ describe('Parser', function() {
 
 
   it('should return a member type node when "owner . Member" arrived', function() {
-    var typeExprStr = 'owner . Member';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'owner . Member';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createMemberTypeNode(
+    const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
       'Member');
 
@@ -189,10 +186,10 @@ describe('Parser', function() {
 
 
   it('should return a member type node when "superOwner.owner.Member" arrived', function() {
-    var typeExprStr = 'superOwner.owner.Member';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'superOwner.owner.Member';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createMemberTypeNode(
+    const expectedNode = createMemberTypeNode(
         createMemberTypeNode(
           createTypeNameNode('superOwner'), 'owner'),
         'Member');
@@ -202,10 +199,10 @@ describe('Parser', function() {
 
 
   it('should return a member type node when "superOwner.owner.Member=" arrived', function() {
-    var typeExprStr = 'superOwner.owner.Member=';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'superOwner.owner.Member=';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createMemberTypeNode(
         createMemberTypeNode(
           createTypeNameNode('superOwner'),
@@ -219,10 +216,10 @@ describe('Parser', function() {
 
 
   it('should return an inner member type node when "owner~innerMember" arrived', function() {
-    var typeExprStr = 'owner~innerMember';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'owner~innerMember';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createInnerMemberTypeNode(
+    const expectedNode = createInnerMemberTypeNode(
       createTypeNameNode('owner'),
       'innerMember');
 
@@ -231,10 +228,10 @@ describe('Parser', function() {
 
 
   it('should return an inner member type node when "owner ~ innerMember" arrived', function() {
-    var typeExprStr = 'owner ~ innerMember';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'owner ~ innerMember';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createInnerMemberTypeNode(
+    const expectedNode = createInnerMemberTypeNode(
       createTypeNameNode('owner'),
       'innerMember');
 
@@ -244,10 +241,10 @@ describe('Parser', function() {
 
   it('should return an inner member type node when "superOwner~owner~innerMember" ' +
      'arrived', function() {
-    var typeExprStr = 'superOwner~owner~innerMember';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'superOwner~owner~innerMember';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createInnerMemberTypeNode(
+    const expectedNode = createInnerMemberTypeNode(
         createInnerMemberTypeNode(
           createTypeNameNode('superOwner'), 'owner'),
         'innerMember');
@@ -258,10 +255,10 @@ describe('Parser', function() {
 
   it('should return an inner member type node when "superOwner~owner~innerMember=" ' +
      'arrived', function() {
-    var typeExprStr = 'superOwner~owner~innerMember=';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'superOwner~owner~innerMember=';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createInnerMemberTypeNode(
         createInnerMemberTypeNode(
           createTypeNameNode('superOwner'),
@@ -275,10 +272,10 @@ describe('Parser', function() {
 
 
   it('should return an instance member type node when "owner#instanceMember" arrived', function() {
-    var typeExprStr = 'owner#instanceMember';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'owner#instanceMember';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createInstanceMemberTypeNode(
+    const expectedNode = createInstanceMemberTypeNode(
       createTypeNameNode('owner'),
       'instanceMember');
 
@@ -288,10 +285,10 @@ describe('Parser', function() {
 
   it('should return an instance member type node when "owner # instanceMember" ' +
      'arrived', function() {
-    var typeExprStr = 'owner # instanceMember';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'owner # instanceMember';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createInstanceMemberTypeNode(
+    const expectedNode = createInstanceMemberTypeNode(
       createTypeNameNode('owner'),
       'instanceMember');
 
@@ -301,10 +298,10 @@ describe('Parser', function() {
 
   it('should return an instance member type node when "superOwner#owner#instanceMember" ' +
      'arrived', function() {
-    var typeExprStr = 'superOwner#owner#instanceMember';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'superOwner#owner#instanceMember';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createInstanceMemberTypeNode(
+    const expectedNode = createInstanceMemberTypeNode(
         createInstanceMemberTypeNode(
           createTypeNameNode('superOwner'), 'owner'),
         'instanceMember');
@@ -315,10 +312,10 @@ describe('Parser', function() {
 
   it('should return an instance member type node when "superOwner#owner#instanceMember=" ' +
      'arrived', function() {
-    var typeExprStr = 'superOwner#owner#instanceMember=';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'superOwner#owner#instanceMember=';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createInstanceMemberTypeNode(
         createInstanceMemberTypeNode(
           createTypeNameNode('superOwner'),
@@ -332,10 +329,10 @@ describe('Parser', function() {
 
 
   it('should return an union type when "LeftType|RightType" arrived', function() {
-    var typeExprStr = 'LeftType|RightType';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'LeftType|RightType';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createUnionTypeNode(
+    const expectedNode = createUnionTypeNode(
       createTypeNameNode('LeftType'),
       createTypeNameNode('RightType'),
       UnionTypeSyntax.PIPE
@@ -346,10 +343,10 @@ describe('Parser', function() {
 
 
   it('should return an union type when "LeftType|MiddleType|RightType" arrived', function() {
-    var typeExprStr = 'LeftType|MiddleType|RightType';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'LeftType|MiddleType|RightType';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createUnionTypeNode(
+    const expectedNode = createUnionTypeNode(
       createTypeNameNode('LeftType'),
       createUnionTypeNode(
         createTypeNameNode('MiddleType'),
@@ -362,10 +359,10 @@ describe('Parser', function() {
 
 
   it('should return an union type when "(LeftType|RightType)" arrived', function() {
-    var typeExprStr = '(LeftType|RightType)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '(LeftType|RightType)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createParenthesizedNode(
+    const expectedNode = createParenthesizedNode(
       createUnionTypeNode(
         createTypeNameNode('LeftType'),
         createTypeNameNode('RightType')
@@ -377,10 +374,10 @@ describe('Parser', function() {
 
 
   it('should return an union type when "( LeftType | RightType )" arrived', function() {
-    var typeExprStr = '( LeftType | RightType )';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '( LeftType | RightType )';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createParenthesizedNode(
+    const expectedNode = createParenthesizedNode(
       createUnionTypeNode(
         createTypeNameNode('LeftType'),
         createTypeNameNode('RightType')
@@ -392,10 +389,10 @@ describe('Parser', function() {
 
 
   it('should return an union type when "LeftType/RightType" arrived', function() {
-    var typeExprStr = 'LeftType/RightType';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'LeftType/RightType';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createUnionTypeNode(
+    const expectedNode = createUnionTypeNode(
       createTypeNameNode('LeftType'),
       createTypeNameNode('RightType'),
       UnionTypeSyntax.SLASH
@@ -406,20 +403,20 @@ describe('Parser', function() {
 
 
   it('should return a record type node when "{}" arrived', function() {
-    var typeExprStr = '{}';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '{}';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createRecordTypeNode([]);
+    const expectedNode = createRecordTypeNode([]);
 
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a record type node when "{key:ValueType}" arrived', function() {
-    var typeExprStr = '{key:ValueType}';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '{key:ValueType}';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createRecordTypeNode([
+    const expectedNode = createRecordTypeNode([
       createRecordEntryNode('key', createTypeNameNode('ValueType')),
     ]);
 
@@ -428,10 +425,10 @@ describe('Parser', function() {
 
 
   it('should return a record type node when "{keyOnly}" arrived', function() {
-    var typeExprStr = '{keyOnly}';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '{keyOnly}';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createRecordTypeNode([
+    const expectedNode = createRecordTypeNode([
       createRecordEntryNode('keyOnly', null),
     ]);
 
@@ -441,10 +438,10 @@ describe('Parser', function() {
 
   it('should return a record type node when "{key1:ValueType1,key2:ValueType2}"' +
      ' arrived', function() {
-    var typeExprStr = '{key1:ValueType1,key2:ValueType2}';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '{key1:ValueType1,key2:ValueType2}';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createRecordTypeNode([
+    const expectedNode = createRecordTypeNode([
       createRecordEntryNode('key1', createTypeNameNode('ValueType1')),
       createRecordEntryNode('key2', createTypeNameNode('ValueType2')),
     ]);
@@ -455,10 +452,10 @@ describe('Parser', function() {
 
   it('should return a record type node when "{key:ValueType1,keyOnly}"' +
      ' arrived', function() {
-    var typeExprStr = '{key:ValueType1,keyOnly}';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '{key:ValueType1,keyOnly}';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createRecordTypeNode([
+    const expectedNode = createRecordTypeNode([
       createRecordEntryNode('key', createTypeNameNode('ValueType1')),
       createRecordEntryNode('keyOnly', null),
     ]);
@@ -469,10 +466,10 @@ describe('Parser', function() {
 
   it('should return a record type node when "{ key1 : ValueType1 , key2 : ValueType2 }"' +
      ' arrived', function() {
-    var typeExprStr = '{ key1 : ValueType1 , key2 : ValueType2 }';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '{ key1 : ValueType1 , key2 : ValueType2 }';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createRecordTypeNode([
+    const expectedNode = createRecordTypeNode([
       createRecordEntryNode('key1', createTypeNameNode('ValueType1')),
       createRecordEntryNode('key2', createTypeNameNode('ValueType2')),
     ]);
@@ -483,10 +480,10 @@ describe('Parser', function() {
 
   it('should return a record type node when "{\'quoted-key\':ValueType}"' +
      ' arrived', function() {
-    var typeExprStr = '{\'quoted-key\':ValueType}';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '{\'quoted-key\':ValueType}';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createRecordTypeNode([
+    const expectedNode = createRecordTypeNode([
       createRecordEntryNode('quoted-key', createTypeNameNode('ValueType')),
     ]);
 
@@ -495,10 +492,10 @@ describe('Parser', function() {
 
 
   it('should return a generic type node when "Generic<ParamType>" arrived', function() {
-    var typeExprStr = 'Generic<ParamType>';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Generic<ParamType>';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType'),
     ], GenericTypeSyntax.ANGLE_BRACKET);
@@ -508,10 +505,10 @@ describe('Parser', function() {
 
 
   it('should return a generic type node when "Generic<Inner<ParamType>>" arrived', function() {
-    var typeExprStr = 'Generic<Inner<ParamType>>';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Generic<Inner<ParamType>>';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createGenericTypeNode(
           createTypeNameNode('Inner'), [ createTypeNameNode('ParamType') ]
@@ -524,10 +521,10 @@ describe('Parser', function() {
 
   it('should return a generic type node when "Generic<ParamType1,ParamType2>"' +
      ' arrived', function() {
-    var typeExprStr = 'Generic<ParamType1,ParamType2>';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Generic<ParamType1,ParamType2>';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
@@ -539,10 +536,10 @@ describe('Parser', function() {
 
   it('should return a generic type node when "Generic < ParamType1 , ParamType2 >"' +
      ' arrived', function() {
-    var typeExprStr = 'Generic < ParamType1, ParamType2 >';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Generic < ParamType1, ParamType2 >';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
@@ -553,10 +550,10 @@ describe('Parser', function() {
 
 
   it('should return a generic type node when "Generic.<ParamType>" arrived', function() {
-    var typeExprStr = 'Generic.<ParamType>';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Generic.<ParamType>';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType'),
     ], GenericTypeSyntax.ANGLE_BRACKET_WITH_DOT);
@@ -567,10 +564,10 @@ describe('Parser', function() {
 
   it('should return a generic type node when "Generic.<ParamType1,ParamType2>"' +
      ' arrived', function() {
-    var typeExprStr = 'Generic.<ParamType1,ParamType2>';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Generic.<ParamType1,ParamType2>';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
@@ -582,10 +579,10 @@ describe('Parser', function() {
 
   it('should return a generic type node when "Generic .< ParamType1 , ParamType2 >"' +
      ' arrived', function() {
-    var typeExprStr = 'Generic .< ParamType1 , ParamType2 >';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Generic .< ParamType1 , ParamType2 >';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Generic'), [
         createTypeNameNode('ParamType1'),
         createTypeNameNode('ParamType2'),
@@ -596,10 +593,10 @@ describe('Parser', function() {
 
 
   it('should return a generic type node when "ParamType[]" arrived', function() {
-    var typeExprStr = 'ParamType[]';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'ParamType[]';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Array'), [
         createTypeNameNode('ParamType'),
       ], GenericTypeSyntax.SQUARE_BRACKET);
@@ -609,10 +606,10 @@ describe('Parser', function() {
 
 
   it('should return a generic type node when "ParamType[][]" arrived', function() {
-    var typeExprStr = 'ParamType[][]';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'ParamType[][]';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Array'), [
         createGenericTypeNode(
           createTypeNameNode('Array'), [
@@ -625,10 +622,10 @@ describe('Parser', function() {
 
 
   it('should return a generic type node when "ParamType [ ] [ ]" arrived', function() {
-    var typeExprStr = 'ParamType [ ] [ ]';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'ParamType [ ] [ ]';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createGenericTypeNode(
+    const expectedNode = createGenericTypeNode(
       createTypeNameNode('Array'), [
         createGenericTypeNode(
           createTypeNameNode('Array'), [
@@ -641,10 +638,10 @@ describe('Parser', function() {
 
 
   it('should return an optional type node when "string=" arrived', function() {
-    var typeExprStr = 'string=';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'string=';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createTypeNameNode('string'),
       OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
@@ -654,10 +651,10 @@ describe('Parser', function() {
 
 
   it('should return an optional type node when "=string" arrived (deprecated)', function() {
-    var typeExprStr = '=string';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '=string';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createTypeNameNode('string'),
       OptionalTypeSyntax.PREFIX_EQUALS_SIGN
     );
@@ -667,10 +664,10 @@ describe('Parser', function() {
 
 
   it('should return a nullable type node when "?string" arrived', function() {
-    var typeExprStr = '?string';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '?string';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNullableTypeNode(
+    const expectedNode = createNullableTypeNode(
       createTypeNameNode('string'),
       NullableTypeSyntax.PREFIX_QUESTION_MARK
     );
@@ -680,10 +677,10 @@ describe('Parser', function() {
 
 
   it('should return a nullable type node when "string?" arrived (deprecated)', function() {
-    var typeExprStr = 'string?';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'string?';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNullableTypeNode(
+    const expectedNode = createNullableTypeNode(
       createTypeNameNode('string'),
       NullableTypeSyntax.SUFFIX_QUESTION_MARK
     );
@@ -693,10 +690,10 @@ describe('Parser', function() {
 
 
   it('should return an optional type node when "string =" arrived', function() {
-    var typeExprStr = 'string =';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'string =';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createTypeNameNode('string'),
       OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
@@ -706,10 +703,10 @@ describe('Parser', function() {
 
 
   it('should return an optional type node when "= string" arrived (deprecated)', function() {
-    var typeExprStr = '= string';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '= string';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createTypeNameNode('string'),
       OptionalTypeSyntax.PREFIX_EQUALS_SIGN
     );
@@ -719,10 +716,10 @@ describe('Parser', function() {
 
 
   it('should return a nullable type node when "? string" arrived', function() {
-    var typeExprStr = '? string';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '? string';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNullableTypeNode(
+    const expectedNode = createNullableTypeNode(
       createTypeNameNode('string'),
       NullableTypeSyntax.PREFIX_QUESTION_MARK
     );
@@ -732,10 +729,10 @@ describe('Parser', function() {
 
 
   it('should return a nullable type node when "string ?" arrived (deprecated)', function() {
-    var typeExprStr = 'string ?';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'string ?';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNullableTypeNode(
+    const expectedNode = createNullableTypeNode(
       createTypeNameNode('string'),
       NullableTypeSyntax.SUFFIX_QUESTION_MARK
     );
@@ -745,10 +742,10 @@ describe('Parser', function() {
 
 
   it('should return an optional type node when "?string=" arrived', function() {
-    var typeExprStr = '?string=';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '?string=';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createNullableTypeNode(
         createTypeNameNode('string'),
         NullableTypeSyntax.PREFIX_QUESTION_MARK
@@ -761,10 +758,10 @@ describe('Parser', function() {
 
 
   it('should return an optional type node when "string?=" arrived', function() {
-    var typeExprStr = 'string?=';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'string?=';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createOptionalTypeNode(
+    const expectedNode = createOptionalTypeNode(
       createNullableTypeNode(
         createTypeNameNode('string'),
         NullableTypeSyntax.SUFFIX_QUESTION_MARK
@@ -777,7 +774,7 @@ describe('Parser', function() {
 
 
   it('should throw an error when "?!string" arrived', function() {
-    var typeExprStr = '?!string';
+    const typeExprStr = '?!string';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -786,7 +783,7 @@ describe('Parser', function() {
 
 
   it('should throw an error when "!?string" arrived', function() {
-    var typeExprStr = '!?string';
+    const typeExprStr = '!?string';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -795,10 +792,10 @@ describe('Parser', function() {
 
 
   it('should return a variadic type node when "...PrefixVariadic" arrived', function() {
-    var typeExprStr = '...PrefixVariadic';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '...PrefixVariadic';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createVariadicTypeNode(
+    const expectedNode = createVariadicTypeNode(
       createTypeNameNode('PrefixVariadic'),
       VariadicTypeSyntax.PREFIX_DOTS
     );
@@ -808,10 +805,10 @@ describe('Parser', function() {
 
 
   it('should return a variadic type node when "SuffixVariadic..." arrived', function() {
-    var typeExprStr = 'SuffixVariadic...';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'SuffixVariadic...';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createVariadicTypeNode(
+    const expectedNode = createVariadicTypeNode(
       createTypeNameNode('SuffixVariadic'),
       VariadicTypeSyntax.SUFFIX_DOTS
     );
@@ -821,10 +818,10 @@ describe('Parser', function() {
 
 
   it('should return a variadic type node when "..." arrived', function() {
-    var typeExprStr = '...';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '...';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createVariadicTypeNode(
+    const expectedNode = createVariadicTypeNode(
       null,
       VariadicTypeSyntax.ONLY_DOTS
     );
@@ -834,10 +831,10 @@ describe('Parser', function() {
 
 
   it('should return a variadic type node when "...!Object" arrived', function() {
-    var typeExprStr = '...!Object';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '...!Object';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createVariadicTypeNode(
+    const expectedNode = createVariadicTypeNode(
       createNotNullableTypeNode(
         createTypeNameNode('Object'),
         NotNullableTypeSyntax.PREFIX_BANG
@@ -850,10 +847,10 @@ describe('Parser', function() {
 
 
   it('should return a variadic type node when "...?" arrived', function() {
-    var typeExprStr = '...?';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '...?';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createVariadicTypeNode(
+    const expectedNode = createVariadicTypeNode(
       createUnknownTypeNode(),
       VariadicTypeSyntax.PREFIX_DOTS
     );
@@ -863,10 +860,10 @@ describe('Parser', function() {
 
 
   it('should return a not nullable type node when "!Object" arrived', function() {
-    var typeExprStr = '!Object';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '!Object';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNotNullableTypeNode(
+    const expectedNode = createNotNullableTypeNode(
       createTypeNameNode('Object'),
       NotNullableTypeSyntax.PREFIX_BANG
     );
@@ -876,10 +873,10 @@ describe('Parser', function() {
 
 
   it('should return a not nullable type node when "Object!" arrived', function() {
-    var typeExprStr = 'Object!';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Object!';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNotNullableTypeNode(
+    const expectedNode = createNotNullableTypeNode(
       createTypeNameNode('Object'),
       NotNullableTypeSyntax.SUFFIX_BANG
     );
@@ -889,10 +886,10 @@ describe('Parser', function() {
 
 
   it('should return a not nullable type node when "! Object" arrived', function() {
-    var typeExprStr = '! Object';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '! Object';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNotNullableTypeNode(
+    const expectedNode = createNotNullableTypeNode(
       createTypeNameNode('Object'),
       NotNullableTypeSyntax.PREFIX_BANG
     );
@@ -902,10 +899,10 @@ describe('Parser', function() {
 
 
   it('should return a not nullable type node when "Object !" arrived', function() {
-    var typeExprStr = 'Object !';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'Object !';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNotNullableTypeNode(
+    const expectedNode = createNotNullableTypeNode(
       createTypeNameNode('Object'),
       NotNullableTypeSyntax.SUFFIX_BANG
     );
@@ -915,10 +912,10 @@ describe('Parser', function() {
 
 
   it('should return a function type node when "function()" arrived', function() {
-    var typeExprStr = 'function()';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function()';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [], null,
       { 'this': null, 'new': null }
     );
@@ -928,10 +925,10 @@ describe('Parser', function() {
 
 
   it('should return a function type node with a param when "function(Param)" arrived', function() {
-    var typeExprStr = 'function(Param)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(Param)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [ createTypeNameNode('Param') ], null,
       { 'this': null, 'new': null }
     );
@@ -942,10 +939,10 @@ describe('Parser', function() {
 
   it('should return a function type node with several params when "function(Param1,Param2)"' +
      ' arrived', function() {
-    var typeExprStr = 'function(Param1,Param2)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(Param1,Param2)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [ createTypeNameNode('Param1'), createTypeNameNode('Param2') ], null,
       { 'this': null, 'new': null }
     );
@@ -956,10 +953,10 @@ describe('Parser', function() {
 
   it('should return a function type node with variadic params when "function(...VariadicParam)"' +
      ' arrived', function() {
-    var typeExprStr = 'function(...VariadicParam)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(...VariadicParam)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [
         createVariadicTypeNode(
           createTypeNameNode('VariadicParam'),
@@ -975,10 +972,10 @@ describe('Parser', function() {
 
   it('should return a function type node with variadic params when "function(Param,...VariadicParam)"' +
      ' arrived', function() {
-    var typeExprStr = 'function(Param,...VariadicParam)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(Param,...VariadicParam)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [
         createTypeNameNode('Param'),
         createVariadicTypeNode(
@@ -995,7 +992,7 @@ describe('Parser', function() {
 
   it('should throw an error when "function(...VariadicParam, UnexpectedLastParam)"' +
      ' arrived', function() {
-    var typeExprStr = 'function(...VariadicParam, UnexpectedLastParam)';
+    const typeExprStr = 'function(...VariadicParam, UnexpectedLastParam)';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -1005,10 +1002,10 @@ describe('Parser', function() {
 
   it('should return a function type node with returns when "function():Returned"' +
      ' arrived', function() {
-    var typeExprStr = 'function():Returned';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function():Returned';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [], createTypeNameNode('Returned'),
       { 'this': null, 'new': null }
     );
@@ -1019,10 +1016,10 @@ describe('Parser', function() {
 
   it('should return a function type node with a context type when "function(this:ThisObject)"' +
      ' arrived', function() {
-    var typeExprStr = 'function(this:ThisObject)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(this:ThisObject)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [], null,
       { 'this': createTypeNameNode('ThisObject'), 'new': null }
     );
@@ -1033,10 +1030,10 @@ describe('Parser', function() {
 
   it('should return a function type node with a context type when ' +
      '"function(this:ThisObject, param1)" arrived', function() {
-    var typeExprStr = 'function(this:ThisObject, param1)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(this:ThisObject, param1)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [createTypeNameNode('param1')],
       null,
       { 'this': createTypeNameNode('ThisObject'), 'new': null }
@@ -1048,10 +1045,10 @@ describe('Parser', function() {
 
   it('should return a function type node as a constructor when "function(new:NewObject)"' +
      ' arrived', function() {
-    var typeExprStr = 'function(new:NewObject)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(new:NewObject)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [], null,
       { 'this': null, 'new': createTypeNameNode('NewObject') }
     );
@@ -1062,10 +1059,10 @@ describe('Parser', function() {
 
   it('should return a function type node as a constructor when ' +
      '"function(new:NewObject, param1)" arrived', function() {
-    var typeExprStr = 'function(new:NewObject, param1)';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function(new:NewObject, param1)';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [createTypeNameNode('param1')],
       null,
       { 'this': null, 'new': createTypeNameNode('NewObject') }
@@ -1077,7 +1074,7 @@ describe('Parser', function() {
 
   it('should throw an error when "function(new:NewObject, this:ThisObject)" ' +
      'arrived', function() {
-    var typeExprStr = 'function(new:NewObject, this:ThisObject)';
+    const typeExprStr = 'function(new:NewObject, this:ThisObject)';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -1087,7 +1084,7 @@ describe('Parser', function() {
 
   it('should throw an error when "function(this:ThisObject, new:NewObject)" ' +
      'arrived', function() {
-    var typeExprStr = 'function(this:ThisObject, new:NewObject)';
+    const typeExprStr = 'function(this:ThisObject, new:NewObject)';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -1097,10 +1094,10 @@ describe('Parser', function() {
 
   it('should return a function type node when "function( Param1 , Param2 ) : Returned"' +
      ' arrived', function() {
-    var typeExprStr = 'function( Param1 , Param2 ) : Returned';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = 'function( Param1 , Param2 ) : Returned';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createFunctionTypeNode(
+    const expectedNode = createFunctionTypeNode(
       [ createTypeNameNode('Param1'), createTypeNameNode('Param2') ],
       createTypeNameNode('Returned'),
       { 'this': null, 'new': null }
@@ -1111,97 +1108,97 @@ describe('Parser', function() {
 
 
   it('should return a number value type node when "0123456789" arrived', function() {
-    var typeExprStr = '0123456789';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '0123456789';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNumberValueNode(typeExprStr);
+    const expectedNode = createNumberValueNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a number value type node when "0.0" arrived', function() {
-    var typeExprStr = '0.0';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '0.0';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNumberValueNode(typeExprStr);
+    const expectedNode = createNumberValueNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a number value type node when "-0" arrived', function() {
-    var typeExprStr = '-0';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '-0';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNumberValueNode(typeExprStr);
+    const expectedNode = createNumberValueNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a number value type node when "0b01" arrived', function() {
-    var typeExprStr = '0b01';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '0b01';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNumberValueNode(typeExprStr);
+    const expectedNode = createNumberValueNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a number value type node when "0o01234567" arrived', function() {
-    var typeExprStr = '0o01234567';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '0o01234567';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNumberValueNode(typeExprStr);
+    const expectedNode = createNumberValueNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a number value type node when "0x0123456789abcdef" arrived', function() {
-    var typeExprStr = '0x0123456789abcdef';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '0x0123456789abcdef';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createNumberValueNode(typeExprStr);
+    const expectedNode = createNumberValueNode(typeExprStr);
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a string value type node when \'""\' arrived', function() {
-    var typeExprStr = '""';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '""';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createStringValueNode('');
+    const expectedNode = createStringValueNode('');
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a string value type node when \'"string"\' arrived', function() {
-    var typeExprStr = '"string"';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '"string"';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createStringValueNode('string');
+    const expectedNode = createStringValueNode('string');
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a string value type node when \'"マルチバイト"\' arrived', function() {
-    var typeExprStr = '"マルチバイト"';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '"マルチバイト"';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createStringValueNode('マルチバイト');
+    const expectedNode = createStringValueNode('マルチバイト');
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should return a string value type node when \'"\\n\\"\\t"\' arrived', function() {
-    var typeExprStr = '"\\n\\"\\t"';
-    var node = Parser.parse(typeExprStr);
+    const typeExprStr = '"\\n\\"\\t"';
+    const node = Parser.parse(typeExprStr);
 
-    var expectedNode = createStringValueNode('\\n"\\t');
+    const expectedNode = createStringValueNode('\\n"\\t');
     expect(node).to.deep.equal(expectedNode);
   });
 
 
   it('should throw a syntax error when "" arrived', function() {
-    var typeExprStr = '';
+    const typeExprStr = '';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -1210,7 +1207,7 @@ describe('Parser', function() {
 
 
   it('should throw a syntax error when "Invalid type" arrived', function() {
-    var typeExprStr = 'Invalid type';
+    const typeExprStr = 'Invalid type';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -1219,7 +1216,7 @@ describe('Parser', function() {
 
 
   it('should throw a syntax error when "Promise*Error" arrived', function() {
-    var typeExprStr = 'Promise*Error';
+    const typeExprStr = 'Promise*Error';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -1228,7 +1225,7 @@ describe('Parser', function() {
 
 
   it('should throw a syntax error when "(unclosedParenthesis, " arrived', function() {
-    var typeExprStr = '(unclosedParenthesis, ';
+    const typeExprStr = '(unclosedParenthesis, ';
 
     expect(function() {
       Parser.parse(typeExprStr);
@@ -1239,10 +1236,10 @@ describe('Parser', function() {
   describe('operator precedence', function() {
     context('when "Foo|function():Returned?" arrived', function() {
       it('should parse as "Foo|((function():Returned)?)"', function() {
-        var typeExprStr = 'Foo|function():Returned?';
-        var node = Parser.parse(typeExprStr);
+        const typeExprStr = 'Foo|function():Returned?';
+        const node = Parser.parse(typeExprStr);
 
-        var expectedNode = createUnionTypeNode(
+        const expectedNode = createUnionTypeNode(
           createTypeNameNode('Foo'),
           createNullableTypeNode(
             createFunctionTypeNode(

@@ -1,15 +1,13 @@
 'use strict';
 
-var util = require('util');
-var Parser = require('../lib/parsing.js');
-var Fs = require('fs');
-var Path = require('path');
+const fs = require('fs');
+const util = require('util');
+const path = require('path');
+const Parser = require('../lib/parsing.js');
 
-
-var Fixtures = {
+const Fixtures = {
   DEFINITELY_TYPED: readFixtureSync('definitely-typed-types'),
 };
-
 
 describe('Parser', function() {
   it('should not hang when parsing tests/fixtures/*', function() {
@@ -20,8 +18,7 @@ describe('Parser', function() {
 
         try {
           Parser.parse(fixture.typeExprStr);
-        }
-        catch (e) {
+        } catch (e) {
           if (e.name !== 'SyntaxError') {
             throw e;
           }
@@ -33,9 +30,9 @@ describe('Parser', function() {
 
 
 function readFixtureSync(fileName) {
-  var filePath = Path.resolve(__dirname, 'fixtures', fileName);
+  const filePath = path.resolve(__dirname, 'fixtures', fileName);
 
-  return Fs.readFileSync(filePath, 'utf8')
+  return fs.readFileSync(filePath, 'utf8')
     .trim()
     .split(/\n/)
     .map(function(line, lineIdx) {

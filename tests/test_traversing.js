@@ -1,13 +1,11 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
-var NodeType = require('../lib/NodeType.js');
-var traverse = require('../lib/traversing.js').traverse;
-
+const {expect} = require('chai');
+const NodeType = require('../lib/NodeType.js');
+const {traverse} = require('../lib/traversing.js');
 
 describe('traversing', function() {
-  var testCases = {
+  const testCases = {
     'should visit a name node': {
       given: createNameNode('name'),
       then: [
@@ -411,12 +409,12 @@ describe('traversing', function() {
   };
 
   Object.keys(testCases).forEach(function(testCaseName) {
-    var testCaseInfo = testCases[testCaseName];
+    const testCaseInfo = testCases[testCaseName];
 
     it(testCaseName, function() {
-      var visitedOrder = [];
-      var onEnterSpy = createEventSpy('enter', visitedOrder);
-      var onLeaveSpy = createEventSpy('leave', visitedOrder);
+      const visitedOrder = [];
+      const onEnterSpy = createEventSpy('enter', visitedOrder);
+      const onLeaveSpy = createEventSpy('leave', visitedOrder);
 
       traverse(testCaseInfo.given, onEnterSpy, onLeaveSpy);
 

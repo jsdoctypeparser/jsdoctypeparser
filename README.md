@@ -16,7 +16,6 @@ The parser can parse:
 * Complex type expressions
   * `Array<Array<string>>`, `function(function(Function))`
 
-
 ## Live demo
 
 The [live demo](https://jsdoctypeparser.github.io/jsdoctypeparser/) is available.
@@ -54,7 +53,6 @@ The `ast` becomes:
 
 See the [AST specifications](https://github.com/Kuniwak/jsdoctypeparser/blob/update-readme/README.md#ast-specifications).
 
-
 ### Publishing
 
 We can stringify the AST nodes by using `publish`.
@@ -85,14 +83,12 @@ The `string` becomes:
 "Array<MyClass>"
 ```
 
-
 #### Custom publishing
 
 We can change the stringification strategy by using the 2nd parameter of `publish(node, publisher)`.
 The `publisher` MUST have handlers for all node types (see `lib/NodeType.js`).
 
 And we can override default behavior by using `createDefaultPublisher`.
-
 
 ```javascript
 const {publish, createDefaultPublisher} = require('jsdoctypeparser');
@@ -115,7 +111,6 @@ The `string` becomes:
 <a href="./types/MyClass.html">MyClass</a>
 ```
 
-
 ### Traversing
 
 We can traverse the AST by using `traverse`.
@@ -126,12 +121,12 @@ The handlers take a visiting node.
 const {parse, traverse} = require('jsdoctypeparser');
 const ast = parse('Array<{ key1: function(), key2: A.B.C }>');
 
-funciton onEnter(node) {
-  console.log('enter', node.type);
+function onEnter(node, parentName, parentType) {
+  console.log('enter', node.type, parentName, parentType);
 }
 
-funciton onLeave(node) {
-  console.log('leave', node.type);
+function onLeave(node, parentName, parentType) {
+  console.log('leave', node.type, parentName, parentType);
 }
 
 traverse(ast, onEnter, onLeave);
@@ -140,24 +135,25 @@ traverse(ast, onEnter, onLeave);
 The output will be:
 
 ```
-enter GENERIC
-enter RECORD
-enter RECORD_ENTRY
-enter FUNCTION
-leave FUNCTION
-leave RECORD_ENTRY
-enter RECORD_ENTRY
-enter MEMBER
-enter MEMBER
-enter NAME
-leave NAME
-leave MEMBER
-leave MEMBER
-leave RECORD_ENTRY
-leave RECORD
-leave GENERIC
+enter GENERIC undefined undefined
+enter NAME subject GENERIC
+leave NAME subject GENERIC
+enter RECORD objects GENERIC
+enter RECORD_ENTRY entries RECORD
+enter FUNCTION value RECORD_ENTRY
+leave FUNCTION value RECORD_ENTRY
+leave RECORD_ENTRY entries RECORD
+enter RECORD_ENTRY entries RECORD
+enter MEMBER value RECORD_ENTRY
+enter MEMBER owner MEMBER
+enter NAME owner MEMBER
+leave NAME owner MEMBER
+leave MEMBER owner MEMBER
+leave MEMBER value RECORD_ENTRY
+leave RECORD_ENTRY entries RECORD
+leave RECORD objects GENERIC
+leave GENERIC undefined undefined
 ```
-
 
 ## AST Specifications
 
@@ -179,7 +175,6 @@ Structure:
   "name": string
 }
 ```
-
 
 ### `MEMBER`
 
@@ -203,7 +198,6 @@ Structure:
 }
 ```
 
-
 ### `INNER_MEMBER`
 
 Example:
@@ -225,8 +219,6 @@ Structure:
 }
 ```
 
-
-
 ### `INSTANCE_MEMBER`
 
 Example:
@@ -247,7 +239,6 @@ Structure:
   "hasEventPrefix": boolean
 }
 ```
-
 
 ### `UNION`
 
@@ -274,7 +265,6 @@ Structure:
 }
 ```
 
-
 ### `RECORD`
 
 Example:
@@ -300,7 +290,6 @@ Structure:
 }
 ```
 
-
 ### `RECORD_ENTRY`
 
 Structure:
@@ -312,7 +301,6 @@ Structure:
   "value": node (or null)
 }
 ```
-
 
 ### `GENERIC`
 
@@ -341,7 +329,6 @@ Structure:
   }
 }
 ```
-
 
 ### `FUNCTION`
 
@@ -372,7 +359,6 @@ Structure:
 }
 ```
 
-
 ### `OPTIONAL`
 
 Example:
@@ -394,7 +380,6 @@ Structure:
   }
 }
 ```
-
 
 ### `NULLABLE`
 
@@ -418,7 +403,6 @@ Structure:
 }
 ```
 
-
 ### `NOT_NULLABLE`
 
 Example:
@@ -440,7 +424,6 @@ Structure:
   }
 }
 ```
-
 
 ### `VARIADIC`
 
@@ -466,7 +449,6 @@ Structure:
 }
 ```
 
-
 ### `MODULE`
 
 Example:
@@ -485,7 +467,6 @@ Structure:
   "value": node
 }
 ```
-
 
 ### `FILE_PATH`
 
@@ -507,7 +488,6 @@ Structure:
 }
 ```
 
-
 ### `EXTERNAL`
 
 Example:
@@ -526,7 +506,6 @@ Structure:
   "value": node
 }
 ```
-
 
 ### `STRING_VALUE`
 
@@ -547,7 +526,6 @@ Structure:
   "string": string
 }
 ```
-
 
 ### `NUMBER_VALUE`
 
@@ -571,7 +549,6 @@ Structure:
 }
 ```
 
-
 ### `ANY`
 
 Example:
@@ -590,7 +567,6 @@ Structure:
 }
 ```
 
-
 ### `UNKNOWN`
 
 Example:
@@ -608,7 +584,6 @@ Structure:
   "type": "UNKNOWN"
 }
 ```
-
 
 ### `PARENTHESIS`
 
@@ -629,8 +604,6 @@ Structure:
 }
 ```
 
-
-
 ### Others
 
 We can use a parenthesis to change operator orders.
@@ -640,7 +613,6 @@ We can use a parenthesis to change operator orders.
  * @type {(module:path/to/file.js).foo}
  */
 ```
-
 
 ## License
 

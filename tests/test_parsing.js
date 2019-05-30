@@ -491,6 +491,73 @@ describe('Parser', function() {
   });
 
 
+  it('should return a tuple type node when "[]" arrived', function() {
+    const typeExprStr = '[]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a tuple type node when "[TupleType]" arrived', function() {
+    const typeExprStr = '[TupleType]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([
+      createTypeNameNode('TupleType'),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a tuple type node when "[TupleType1, TupleType2]" arrived', function() {
+    const typeExprStr = '[TupleType1, TupleType2]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([
+      createTypeNameNode('TupleType1'),
+      createTypeNameNode('TupleType2'),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a generic type node when "[TupleType][]" arrived', function() {
+    const typeExprStr = '[TupleType][]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createGenericTypeNode(
+      createTypeNameNode('Array'),
+      [
+        createTupleTypeNode([
+          createTypeNameNode('TupleType'),
+        ]),
+      ],
+      GenericTypeSyntax.SQUARE_BRACKET);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a generic type node when "[ValueType1, ValueType2][]" arrived', function() {
+    const typeExprStr = '[TupleType1, TupleType2][]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createGenericTypeNode(
+      createTypeNameNode('Array'),
+      [
+        createTupleTypeNode([
+          createTypeNameNode('TupleType1'),
+          createTypeNameNode('TupleType2'),
+        ]),
+      ],
+      GenericTypeSyntax.SQUARE_BRACKET);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   it('should return a generic type node when "Generic<ParamType>" arrived', function() {
     const typeExprStr = 'Generic<ParamType>';
     const node = Parser.parse(typeExprStr);
@@ -1372,6 +1439,17 @@ function createRecordEntryNode(key, valueTypeExpr) {
     type: NodeType.RECORD_ENTRY,
     key: key,
     value: valueTypeExpr,
+  };
+}
+
+/**
+ * @template T
+ * @param {T[]} tupleEntries
+ */
+function createTupleTypeNode(tupleEntries) {
+  return {
+    type: NodeType.TUPLE,
+    entries: tupleEntries,
   };
 }
 

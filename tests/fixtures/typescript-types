@@ -28,7 +28,7 @@
 {function(() => string): void}
 {X<() => string>}
 {new (x: number) => string}
-//{[it, needs, to, be]}
+{[it, needs, to, be]}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}

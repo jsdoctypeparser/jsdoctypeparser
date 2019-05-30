@@ -29,6 +29,7 @@ TopTypeExpr = _ expr:( VariadicTypeExpr
                   / ArrayTypeExpr
                   / GenericTypeExpr
                   / RecordTypeExpr
+                  / TupleTypeExpr
                   / ArrowTypeExpr
                   / FunctionTypeExpr
                   / TypeQueryExpr
@@ -47,6 +48,7 @@ TopLevel = _ expr:( VariadicTypeExpr
                   / ArrayTypeExpr
                   / GenericTypeExpr
                   / RecordTypeExpr
+                  / TupleTypeExpr
                   / ArrowTypeExpr
                   / FunctionTypeExpr
                   / TypeQueryExpr
@@ -417,6 +419,7 @@ UnionTypeOperatorJSDuckFlavored = "/" {
 
 UnionTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
+                     / TupleTypeExpr
                      / ArrowTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
@@ -440,6 +443,7 @@ PrefixUnaryUnionTypeExpr = PrefixOptionalTypeExpr
 
 PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
                                 / RecordTypeExpr
+                                / TupleTypeExpr
                                 / ArrowTypeExpr
                                 / FunctionTypeExpr
                                 / ParenthesizedExpr
@@ -522,6 +526,7 @@ SuffixUnaryUnionTypeExpr = SuffixOptionalTypeExpr
 SuffixUnaryUnionTypeExprOperand = PrefixUnaryUnionTypeExpr
                                 / GenericTypeExpr
                                 / RecordTypeExpr
+                                / TupleTypeExpr
                                 / ArrowTypeExpr
                                 / FunctionTypeExpr
                                 / ParenthesizedExpr
@@ -624,6 +629,7 @@ GenericTypeExprOperand = ParenthesizedExpr
 GenericTypeExprTypeParamOperand = UnionTypeExpr
                                 / UnaryUnionTypeExpr
                                 / RecordTypeExpr
+                                / TupleTypeExpr
                                 / ArrowTypeExpr
                                 / FunctionTypeExpr
                                 / ParenthesizedExpr
@@ -690,6 +696,7 @@ ArrayTypeExpr = operand:ArrayTypeExprOperand brackets:(_ "[" _ "]")+ {
 
 ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
+                     / TupleTypeExpr
                      / ArrowTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
@@ -803,6 +810,7 @@ FunctionTypeExprParamOperand = UnionTypeExpr
                              / TypeQueryExpr
                              / UnaryUnionTypeExpr
                              / RecordTypeExpr
+                             / TupleTypeExpr
                              / ArrowTypeExpr
                              / FunctionTypeExpr
                              / ParenthesizedExpr
@@ -826,6 +834,7 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   //   47f9c92bb4c7de9a3d46f9921a427402910073fb/
                                   //   closure/goog/ui/zippy.js#L47
                                   / RecordTypeExpr
+                                  / TupleTypeExpr
                                   / ArrowTypeExpr
                                   / FunctionTypeExpr
                                   / ParenthesizedExpr
@@ -896,6 +905,7 @@ RecordTypeExprEntryKey = '"' key:$([^"]*) '"' {
 RecordTypeExprEntryOperand = UnionTypeExpr
                            / UnaryUnionTypeExpr
                            / RecordTypeExpr
+                           / TupleTypeExpr
                            / ArrowTypeExpr
                            / FunctionTypeExpr
                            / ParenthesizedExpr
@@ -906,6 +916,45 @@ RecordTypeExprEntryOperand = UnionTypeExpr
                            / AnyTypeExpr
                            / UnknownTypeExpr
 
+
+/**
+ * TypeScript style tuple type.
+ *
+ * Examples:
+ *   - [string]
+ *   - [number]
+ *   - [string, number]
+ *
+ * Spec:
+ *   - https://www.typescriptlang.org/docs/handbook/basic-types.html#tuple
+ */
+TupleTypeExpr = "[" _ entries:TupleTypeExprEntries? _ "]" {
+  return {
+    type: NodeType.TUPLE,
+    entries: entries || [],
+  }
+}
+
+TupleTypeExprEntries = first:TupleTypeExprOperand restWithComma:(_ "," _ TupleTypeExprOperand)* {
+  return restWithComma.reduce((entries, tokens) => {
+    let entry = tokens[3];
+    return entries.concat([entry]);
+  }, [first]);
+}
+
+TupleTypeExprOperand = UnionTypeExpr
+                     / UnaryUnionTypeExpr
+                     / RecordTypeExpr
+                     / TupleTypeExpr
+                     / ArrowTypeExpr
+                     / FunctionTypeExpr
+                     / ParenthesizedExpr
+                     / ArrayTypeExpr
+                     / GenericTypeExpr
+                     / BroadNamepathExpr
+                     / ValueExpr
+                     / AnyTypeExpr
+                     / UnknownTypeExpr
 
 
 /*
@@ -929,6 +978,7 @@ ParenthesizedExpr = "(" _ wrapped:ParenthesizedExprOperand _ ")" {
 ParenthesizedExprOperand = UnionTypeExpr
                          / UnaryUnionTypeExpr
                          / RecordTypeExpr
+                         / TupleTypeExpr
                          / ArrowTypeExpr
                          / FunctionTypeExpr
                          / ArrayTypeExpr
@@ -994,6 +1044,7 @@ AnyVariadicTypeExpr = "..." {
 VariadicTypeExprOperand = UnionTypeExpr
                         / UnaryUnionTypeExpr
                         / RecordTypeExpr
+                        / TupleTypeExpr
                         / ArrowTypeExpr
                         / FunctionTypeExpr
                         / ParenthesizedExpr

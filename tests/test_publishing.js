@@ -28,19 +28,19 @@ describe('publish', function() {
 
   it('should return a generic type has a parameter', function() {
     const node = parse('Array.<string>');
-    expect(publish(node)).to.equal('Array<string>');
+    expect(publish(node)).to.equal('Array.<string>');
   });
 
 
   it('should return a generic type has 2 parameters', function() {
     const node = parse('Object.<string, number>');
-    expect(publish(node)).to.equal('Object<string, number>');
+    expect(publish(node)).to.equal('Object.<string, number>');
   });
 
 
   it('should return a JsDoc-formal generic type', function() {
     const node = parse('String[]');
-    expect(publish(node)).to.equal('Array<String>');
+    expect(publish(node)).to.equal('String[]');
   });
 
 
@@ -177,7 +177,7 @@ describe('publish', function() {
 
   it('should return an arrow type with one variadic parameter', function() {
     const node = parse('(...x: any[]) => string');
-    expect(publish(node)).to.equal('(...x: Array<any>) => string');
+    expect(publish(node)).to.equal('(...x: any[]) => string');
   });
 
   it('should return a construct signature with one parameter', function() {

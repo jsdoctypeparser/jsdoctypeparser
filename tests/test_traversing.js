@@ -493,8 +493,8 @@ function createInstanceMemberNode(name, owner) {
 }
 
 function createEventSpy(eventName, result) {
-  return function(node, propName, parentType) {
-    result.push([eventName, node.type, propName, parentType]);
+  return function(node, propName, parentNode) {
+    result.push([eventName, node.type, propName, parentNode && parentNode.type]);
   };
 }
 

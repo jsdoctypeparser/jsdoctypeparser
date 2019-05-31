@@ -121,12 +121,12 @@ The handlers take a visiting node.
 const {parse, traverse} = require('jsdoctypeparser');
 const ast = parse('Array<{ key1: function(), key2: A.B.C }>');
 
-function onEnter(node, parentName, parentType) {
-  console.log('enter', node.type, parentName, parentType);
+function onEnter(node, parentName, parentNode) {
+  console.log('enter', node.type, parentName, parentNode.type);
 }
 
-function onLeave(node, parentName, parentType) {
-  console.log('leave', node.type, parentName, parentType);
+function onLeave(node, parentName, parentNode) {
+  console.log('leave', node.type, parentName, parentNode.type);
 }
 
 traverse(ast, onEnter, onLeave);

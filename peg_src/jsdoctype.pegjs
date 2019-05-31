@@ -921,6 +921,7 @@ RecordTypeExprEntryOperand = UnionTypeExpr
  * TypeScript style tuple type.
  *
  * Examples:
+ *   - []
  *   - [string]
  *   - [number]
  *   - [string, number]

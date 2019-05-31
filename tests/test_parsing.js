@@ -523,6 +523,20 @@ describe('Parser', function() {
     expect(node).to.deep.equal(expectedNode);
   });
 
+  it('should return a generic type node when "[][]" arrived', function() {
+    const typeExprStr = '[][]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createGenericTypeNode(
+      createTypeNameNode('Array'),
+      [
+        createTupleTypeNode([]),
+      ],
+      GenericTypeSyntax.SQUARE_BRACKET);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
   it('should return a generic type node when "[TupleType][]" arrived', function() {
     const typeExprStr = '[TupleType][]';
     const node = Parser.parse(typeExprStr);
@@ -539,8 +553,7 @@ describe('Parser', function() {
     expect(node).to.deep.equal(expectedNode);
   });
 
-
-  it('should return a generic type node when "[ValueType1, ValueType2][]" arrived', function() {
+  it('should return a generic type node when "[TupleType1, TupleType2][]" arrived', function() {
     const typeExprStr = '[TupleType1, TupleType2][]';
     const node = Parser.parse(typeExprStr);
 

@@ -28,7 +28,12 @@
 {function(() => string): void}
 {X<() => string>}
 {new (x: number) => string}
+// The empty tuple:
+{[]}
+{[x]}
 {[it, needs, to, be]}
+{[][]}
+{[tuple, array][]}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}

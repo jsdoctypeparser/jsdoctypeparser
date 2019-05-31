@@ -9,62 +9,62 @@ describe('traversing', function() {
     'should visit a name node': {
       given: createNameNode('name'),
       then: [
-        ['enter', NodeType.NAME, undefined, undefined],
-        ['leave', NodeType.NAME, undefined, undefined],
+        ['enter', NodeType.NAME, null, null],
+        ['leave', NodeType.NAME, null, null],
       ],
     },
 
     'should visit a member node': {
       given: createMemberNode('child', createNameNode('owner')),
       then: [
-        ['enter', NodeType.MEMBER, undefined, undefined],
+        ['enter', NodeType.MEMBER, null, null],
         ['enter', NodeType.NAME, 'owner', NodeType.MEMBER],
         ['leave', NodeType.NAME, 'owner', NodeType.MEMBER],
-        ['leave', NodeType.MEMBER, undefined, undefined],
+        ['leave', NodeType.MEMBER, null, null],
       ],
     },
 
     'should visit a nested member node': {
       given: createMemberNode('superchild', createMemberNode('child', createNameNode('owner'))),
       then: [
-        ['enter', NodeType.MEMBER, undefined, undefined],
+        ['enter', NodeType.MEMBER, null, null],
         ['enter', NodeType.MEMBER, 'owner', NodeType.MEMBER],
         ['enter', NodeType.NAME, 'owner', NodeType.MEMBER],
         ['leave', NodeType.NAME, 'owner', NodeType.MEMBER],
         ['leave', NodeType.MEMBER, 'owner', NodeType.MEMBER],
-        ['leave', NodeType.MEMBER, undefined, undefined],
+        ['leave', NodeType.MEMBER, null, null],
       ],
     },
 
     'should visit an union node': {
       given: createUnionNode(createNameNode('left'), createNameNode('right')),
       then: [
-        ['enter', NodeType.UNION, undefined, undefined],
+        ['enter', NodeType.UNION, null, null],
         ['enter', NodeType.NAME, 'left', NodeType.UNION],
         ['leave', NodeType.NAME, 'left', NodeType.UNION],
         ['enter', NodeType.NAME, 'right', NodeType.UNION],
         ['leave', NodeType.NAME, 'right', NodeType.UNION],
-        ['leave', NodeType.UNION, undefined, undefined],
+        ['leave', NodeType.UNION, null, null],
       ],
     },
 
     'should visit a type query node': {
       given: createTypeQueryNode(createNameNode('t')),
       then: [
-        ['enter', NodeType.TYPE_QUERY, undefined, undefined],
+        ['enter', NodeType.TYPE_QUERY, null, null],
         ['enter', NodeType.NAME, 'name', NodeType.TYPE_QUERY],
         ['leave', NodeType.NAME, 'name', NodeType.TYPE_QUERY],
-        ['leave', NodeType.TYPE_QUERY, undefined, undefined],
+        ['leave', NodeType.TYPE_QUERY, null, null],
       ],
     },
 
     'should visit an import type node': {
       given: createImportNode(createStringLiteral('jquery')),
       then: [
-        ['enter', NodeType.IMPORT, undefined, undefined],
+        ['enter', NodeType.IMPORT, null, null],
         ['enter', NodeType.STRING_VALUE, 'path', NodeType.IMPORT],
         ['leave', NodeType.STRING_VALUE, 'path', NodeType.IMPORT],
-        ['leave', NodeType.IMPORT, undefined, undefined],
+        ['leave', NodeType.IMPORT, null, null],
       ],
     },
 
@@ -77,7 +77,7 @@ describe('traversing', function() {
         createNameNode('right')
       ),
       then: [
-        ['enter', NodeType.UNION, undefined, undefined],
+        ['enter', NodeType.UNION, null, null],
         ['enter', NodeType.UNION, 'left', NodeType.UNION],
         ['enter', NodeType.NAME, 'left', NodeType.UNION],
         ['leave', NodeType.NAME, 'left', NodeType.UNION],
@@ -86,17 +86,17 @@ describe('traversing', function() {
         ['leave', NodeType.UNION, 'left', NodeType.UNION],
         ['enter', NodeType.NAME, 'right', NodeType.UNION],
         ['leave', NodeType.NAME, 'right', NodeType.UNION],
-        ['leave', NodeType.UNION, undefined, undefined],
+        ['leave', NodeType.UNION, null, null],
       ],
     },
 
     'should visit a variadic node': {
       given: { type: NodeType.VARIADIC, value: createNameNode('variadic') },
       then: [
-        ['enter', NodeType.VARIADIC, undefined, undefined],
+        ['enter', NodeType.VARIADIC, null, null],
         ['enter', NodeType.NAME, 'value', NodeType.VARIADIC],
         ['leave', NodeType.NAME, 'value', NodeType.VARIADIC],
-        ['leave', NodeType.VARIADIC, undefined, undefined],
+        ['leave', NodeType.VARIADIC, null, null],
       ],
     },
 
@@ -106,8 +106,8 @@ describe('traversing', function() {
         entries: [],
       },
       then: [
-        ['enter', NodeType.RECORD, undefined, undefined],
-        ['leave', NodeType.RECORD, undefined, undefined],
+        ['enter', NodeType.RECORD, null, null],
+        ['leave', NodeType.RECORD, null, null],
       ],
     },
 
@@ -120,7 +120,7 @@ describe('traversing', function() {
         ],
       },
       then: [
-        ['enter', NodeType.RECORD, undefined, undefined],
+        ['enter', NodeType.RECORD, null, null],
         ['enter', NodeType.RECORD_ENTRY, 'entries', NodeType.RECORD],
         ['enter', NodeType.NAME, 'value', NodeType.RECORD_ENTRY],
         ['leave', NodeType.NAME, 'value', NodeType.RECORD_ENTRY],
@@ -129,7 +129,7 @@ describe('traversing', function() {
         ['enter', NodeType.NAME, 'value', NodeType.RECORD_ENTRY],
         ['leave', NodeType.NAME, 'value', NodeType.RECORD_ENTRY],
         ['leave', NodeType.RECORD_ENTRY, 'entries', NodeType.RECORD],
-        ['leave', NodeType.RECORD, undefined, undefined],
+        ['leave', NodeType.RECORD, null, null],
       ],
     },
 
@@ -140,10 +140,10 @@ describe('traversing', function() {
         objects: [],
       },
       then: [
-        ['enter', NodeType.GENERIC, undefined, undefined],
+        ['enter', NodeType.GENERIC, null, null],
         ['enter', NodeType.NAME, 'subject', NodeType.GENERIC],
         ['leave', NodeType.NAME, 'subject', NodeType.GENERIC],
-        ['leave', NodeType.GENERIC, undefined, undefined],
+        ['leave', NodeType.GENERIC, null, null],
       ],
     },
 
@@ -157,14 +157,14 @@ describe('traversing', function() {
         ],
       },
       then: [
-        ['enter', NodeType.GENERIC, undefined, undefined],
+        ['enter', NodeType.GENERIC, null, null],
         ['enter', NodeType.NAME, 'subject', NodeType.GENERIC],
         ['leave', NodeType.NAME, 'subject', NodeType.GENERIC],
         ['enter', NodeType.NAME, 'objects', NodeType.GENERIC],
         ['leave', NodeType.NAME, 'objects', NodeType.GENERIC],
         ['enter', NodeType.NAME, 'objects', NodeType.GENERIC],
         ['leave', NodeType.NAME, 'objects', NodeType.GENERIC],
-        ['leave', NodeType.GENERIC, undefined, undefined],
+        ['leave', NodeType.GENERIC, null, null],
       ],
     },
 
@@ -174,10 +174,10 @@ describe('traversing', function() {
         value: createFilePathNode('module'),
       },
       then: [
-        ['enter', NodeType.MODULE, undefined, undefined],
+        ['enter', NodeType.MODULE, null, null],
         ['enter', NodeType.FILE_PATH, 'value', NodeType.MODULE],
         ['leave', NodeType.FILE_PATH, 'value', NodeType.MODULE],
-        ['leave', NodeType.MODULE, undefined, undefined],
+        ['leave', NodeType.MODULE, null, null],
       ],
     },
 
@@ -187,10 +187,10 @@ describe('traversing', function() {
         value: createNameNode('optional'),
       },
       then: [
-        ['enter', NodeType.OPTIONAL, undefined, undefined],
+        ['enter', NodeType.OPTIONAL, null, null],
         ['enter', NodeType.NAME, 'value', NodeType.OPTIONAL],
         ['leave', NodeType.NAME, 'value', NodeType.OPTIONAL],
-        ['leave', NodeType.OPTIONAL, undefined, undefined],
+        ['leave', NodeType.OPTIONAL, null, null],
       ],
     },
 
@@ -200,10 +200,10 @@ describe('traversing', function() {
         value: createNameNode('nullable'),
       },
       then: [
-        ['enter', NodeType.NULLABLE, undefined, undefined],
+        ['enter', NodeType.NULLABLE, null, null],
         ['enter', NodeType.NAME, 'value', NodeType.NULLABLE],
         ['leave', NodeType.NAME, 'value', NodeType.NULLABLE],
-        ['leave', NodeType.NULLABLE, undefined, undefined],
+        ['leave', NodeType.NULLABLE, null, null],
       ],
     },
 
@@ -213,10 +213,10 @@ describe('traversing', function() {
         value: createNameNode('not_nullable'),
       },
       then: [
-        ['enter', NodeType.NOT_NULLABLE, undefined, undefined],
+        ['enter', NodeType.NOT_NULLABLE, null, null],
         ['enter', NodeType.NAME, 'value', NodeType.NOT_NULLABLE],
         ['leave', NodeType.NAME, 'value', NodeType.NOT_NULLABLE],
-        ['leave', NodeType.NOT_NULLABLE, undefined, undefined],
+        ['leave', NodeType.NOT_NULLABLE, null, null],
       ],
     },
 
@@ -229,8 +229,8 @@ describe('traversing', function() {
         new: null,
       },
       then: [
-        ['enter', NodeType.FUNCTION, undefined, undefined],
-        ['leave', NodeType.FUNCTION, undefined, undefined],
+        ['enter', NodeType.FUNCTION, null, null],
+        ['leave', NodeType.FUNCTION, null, null],
       ],
     },
 
@@ -246,7 +246,7 @@ describe('traversing', function() {
         new: createNameNode('new'),
       },
       then: [
-        ['enter', NodeType.FUNCTION, undefined, undefined],
+        ['enter', NodeType.FUNCTION, null, null],
         ['enter', NodeType.NAME, 'params', NodeType.FUNCTION],
         ['leave', NodeType.NAME, 'params', NodeType.FUNCTION],
         ['enter', NodeType.NAME, 'params', NodeType.FUNCTION],
@@ -257,7 +257,7 @@ describe('traversing', function() {
         ['leave', NodeType.NAME, 'this', NodeType.FUNCTION],
         ['enter', NodeType.NAME, 'new', NodeType.FUNCTION],
         ['leave', NodeType.NAME, 'new', NodeType.FUNCTION],
-        ['leave', NodeType.FUNCTION, undefined, undefined],
+        ['leave', NodeType.FUNCTION, null, null],
       ],
     },
 
@@ -271,7 +271,7 @@ describe('traversing', function() {
         returns: createNameNode('return'),
       },
       then: [
-        ['enter', NodeType.ARROW, undefined, undefined],
+        ['enter', NodeType.ARROW, null, null],
         ['enter', NodeType.NAMED_PARAMETER, 'params', NodeType.ARROW],
         ['enter', NodeType.NAME, 'typeName', NodeType.NAMED_PARAMETER],
         ['leave', NodeType.NAME, 'typeName', NodeType.NAMED_PARAMETER],
@@ -282,7 +282,7 @@ describe('traversing', function() {
         ['leave', NodeType.NAMED_PARAMETER, 'params', NodeType.ARROW],
         ['enter', NodeType.NAME, 'returns', NodeType.ARROW],
         ['leave', NodeType.NAME, 'returns', NodeType.ARROW],
-        ['leave', NodeType.ARROW, undefined, undefined],
+        ['leave', NodeType.ARROW, null, null],
       ],
     },
 
@@ -302,7 +302,7 @@ describe('traversing', function() {
         returns: createNameNode('return'),
       },
       then: [
-        ['enter', NodeType.ARROW, undefined, undefined],
+        ['enter', NodeType.ARROW, null, null],
         ['enter', NodeType.VARIADIC, 'params', NodeType.ARROW],
         ['enter', NodeType.NAMED_PARAMETER, 'value', NodeType.VARIADIC],
         ['enter', NodeType.NAME, 'typeName', NodeType.NAMED_PARAMETER],
@@ -311,7 +311,7 @@ describe('traversing', function() {
         ['leave', NodeType.VARIADIC, 'params', NodeType.ARROW],
         ['enter', NodeType.NAME, 'returns', NodeType.ARROW],
         ['leave', NodeType.NAME, 'returns', NodeType.ARROW],
-        ['leave', NodeType.ARROW, undefined, undefined],
+        ['leave', NodeType.ARROW, null, null],
       ],
     },
 
@@ -320,8 +320,8 @@ describe('traversing', function() {
         type: NodeType.ANY,
       },
       then: [
-        ['enter', NodeType.ANY, undefined, undefined],
-        ['leave', NodeType.ANY, undefined, undefined],
+        ['enter', NodeType.ANY, null, null],
+        ['leave', NodeType.ANY, null, null],
       ],
     },
 
@@ -330,18 +330,18 @@ describe('traversing', function() {
         type: NodeType.UNKNOWN,
       },
       then: [
-        ['enter', NodeType.UNKNOWN, undefined, undefined],
-        ['leave', NodeType.UNKNOWN, undefined, undefined],
+        ['enter', NodeType.UNKNOWN, null, null],
+        ['leave', NodeType.UNKNOWN, null, null],
       ],
     },
 
     'should visit an inner member node': {
       given: createInnerMemberNode('child', createNameNode('owner')),
       then: [
-        ['enter', NodeType.INNER_MEMBER, undefined, undefined],
+        ['enter', NodeType.INNER_MEMBER, null, null],
         ['enter', NodeType.NAME, 'owner', NodeType.INNER_MEMBER],
         ['leave', NodeType.NAME, 'owner', NodeType.INNER_MEMBER],
-        ['leave', NodeType.INNER_MEMBER, undefined, undefined],
+        ['leave', NodeType.INNER_MEMBER, null, null],
       ],
     },
 
@@ -349,22 +349,22 @@ describe('traversing', function() {
       given: createInnerMemberNode('superchild',
         createInnerMemberNode('child', createNameNode('owner'))),
       then: [
-        ['enter', NodeType.INNER_MEMBER, undefined, undefined],
+        ['enter', NodeType.INNER_MEMBER, null, null],
         ['enter', NodeType.INNER_MEMBER, 'owner', NodeType.INNER_MEMBER],
         ['enter', NodeType.NAME, 'owner', NodeType.INNER_MEMBER],
         ['leave', NodeType.NAME, 'owner', NodeType.INNER_MEMBER],
         ['leave', NodeType.INNER_MEMBER, 'owner', NodeType.INNER_MEMBER],
-        ['leave', NodeType.INNER_MEMBER, undefined, undefined],
+        ['leave', NodeType.INNER_MEMBER, null, null],
       ],
     },
 
     'should visit an instance member node': {
       given: createInstanceMemberNode('child', createNameNode('owner')),
       then: [
-        ['enter', NodeType.INSTANCE_MEMBER, undefined, undefined],
+        ['enter', NodeType.INSTANCE_MEMBER, null, null],
         ['enter', NodeType.NAME, 'owner', NodeType.INSTANCE_MEMBER],
         ['leave', NodeType.NAME, 'owner', NodeType.INSTANCE_MEMBER],
-        ['leave', NodeType.INSTANCE_MEMBER, undefined, undefined],
+        ['leave', NodeType.INSTANCE_MEMBER, null, null],
       ],
     },
 
@@ -372,38 +372,38 @@ describe('traversing', function() {
       given: createInstanceMemberNode('superchild',
         createInstanceMemberNode('child', createNameNode('owner'))),
       then: [
-        ['enter', NodeType.INSTANCE_MEMBER, undefined, undefined],
+        ['enter', NodeType.INSTANCE_MEMBER, null, null],
         ['enter', NodeType.INSTANCE_MEMBER, 'owner', NodeType.INSTANCE_MEMBER],
         ['enter', NodeType.NAME, 'owner', NodeType.INSTANCE_MEMBER],
         ['leave', NodeType.NAME, 'owner', NodeType.INSTANCE_MEMBER],
         ['leave', NodeType.INSTANCE_MEMBER, 'owner', NodeType.INSTANCE_MEMBER],
-        ['leave', NodeType.INSTANCE_MEMBER, undefined, undefined],
+        ['leave', NodeType.INSTANCE_MEMBER, null, null],
       ],
     },
 
     'should visit a string value node': {
       given: { type: NodeType.STRING_VALUE, value: 'stringValue' },
       then: [
-        ['enter', NodeType.STRING_VALUE, undefined, undefined],
-        ['leave', NodeType.STRING_VALUE, undefined, undefined],
+        ['enter', NodeType.STRING_VALUE, null, null],
+        ['leave', NodeType.STRING_VALUE, null, null],
       ],
     },
 
     'should visit a number value node': {
       given: { type: NodeType.NUMBER_VALUE, value: 'numberValue' },
       then: [
-        ['enter', NodeType.NUMBER_VALUE, undefined, undefined],
-        ['leave', NodeType.NUMBER_VALUE, undefined, undefined],
+        ['enter', NodeType.NUMBER_VALUE, null, null],
+        ['leave', NodeType.NUMBER_VALUE, null, null],
       ],
     },
 
     'should visit an external node': {
       given: { type: NodeType.EXTERNAL, value: createNameNode('external') },
       then: [
-        ['enter', NodeType.EXTERNAL, undefined, undefined],
+        ['enter', NodeType.EXTERNAL, null, null],
         ['enter', NodeType.NAME, 'value', NodeType.EXTERNAL],
         ['leave', NodeType.NAME, 'value', NodeType.EXTERNAL],
-        ['leave', NodeType.EXTERNAL, undefined, undefined],
+        ['leave', NodeType.EXTERNAL, null, null],
       ],
     },
   };

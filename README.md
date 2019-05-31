@@ -135,7 +135,7 @@ traverse(ast, onEnter, onLeave);
 The output will be:
 
 ```
-enter GENERIC undefined undefined
+enter GENERIC null null
 enter NAME subject GENERIC
 leave NAME subject GENERIC
 enter RECORD objects GENERIC
@@ -152,7 +152,7 @@ leave MEMBER owner MEMBER
 leave MEMBER value RECORD_ENTRY
 leave RECORD_ENTRY entries RECORD
 leave RECORD objects GENERIC
-leave GENERIC undefined undefined
+leave GENERIC null null
 ```
 
 ## AST Specifications

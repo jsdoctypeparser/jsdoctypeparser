@@ -32,8 +32,12 @@
 {[]}
 {[x]}
 {[it, needs, to, be]}
+{[ tuple, with, spaces ]}
 {[][]}
 {[tuple, array][]}
+{[variadic, arguments, ...tuple]}
+{[tuple, with, typeof foo]}
+{[ tuple, with, typeof foo, and, ...rest ]}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}

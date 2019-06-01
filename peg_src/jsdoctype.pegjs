@@ -936,11 +936,13 @@ TupleTypeExpr = "[" _ entries:TupleTypeExprEntries? _ "]" {
   }
 }
 
-TupleTypeExprEntries = first:TupleTypeExprOperand restWithComma:(_ "," _ TupleTypeExprOperand)* {
-  return restWithComma.reduce((entries, tokens) => {
-    let entry = tokens[3];
-    return entries.concat([entry]);
-  }, [first]);
+TupleTypeExprEntries = restWithComma:(TupleTypeExprOperand _ "," _)*
+                       // Variadic type is only allowed on the last entry.
+                       last:(VariadicTypeExpr / VariadicTypeExprOperand) {
+  return restWithComma.reduceRight((entries, tokens) => {
+    let entry = tokens[0];
+    return [entry].concat(entries);
+  }, [last]);
 }
 
 TupleTypeExprOperand = UnionTypeExpr
@@ -950,6 +952,7 @@ TupleTypeExprOperand = UnionTypeExpr
                      / ArrowTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
+                     / TypeQueryExpr
                      / ArrayTypeExpr
                      / GenericTypeExpr
                      / BroadNamepathExpr

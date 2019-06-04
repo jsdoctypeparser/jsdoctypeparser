@@ -7,6 +7,7 @@
     "VARIADIC",
     "RECORD",
     "RECORD_ENTRY",
+    "TUPLE",
     "GENERIC",
     "MODULE",
     "OPTIONAL",

@@ -3,11 +3,20 @@
 const {expect} = require('chai');
 
 const {parse} = require('../lib/parsing.js');
+const NodeType = require('../lib/NodeType.js');
 const Publishing = require('../lib/publishing.js');
 
 const {publish, createDefaultPublisher} = Publishing;
 
 describe('publish', function() {
+  it('should have a default publisher for each node type', function() {
+    const publisher = createDefaultPublisher();
+    expect(Object.getOwnPropertyNames(publisher)).to.include.members(
+      Object.getOwnPropertyNames(NodeType).map(p => NodeType[p])
+    );
+  });
+
+
   it('should return a primitive type name', function() {
     const node = parse('boolean');
     expect(publish(node)).to.equal('boolean');
@@ -77,9 +86,33 @@ describe('publish', function() {
   });
 
 
+  it('should return a tuple type', function() {
+    const node = parse('[]');
+    expect(publish(node)).to.equal('[]');
+  });
+
+
+  it('should return a tuple type with an entry', function() {
+    const node = parse('[number]');
+    expect(publish(node)).to.equal('[number]');
+  });
+
+
+  it('should return a tuple type with 2 entries', function() {
+    const node = parse('[number, MyObject]');
+    expect(publish(node)).to.equal('[number, MyObject]');
+  });
+
+
   it('should return a generic type has a parameter as a record type', function() {
     const node = parse('Array<{length}>');
     expect(publish(node)).to.equal('Array<{length}>');
+  });
+
+
+  it('should return a generic type has a parameter as a tuple type', function() {
+    const node = parse('Array<[string, number]>');
+    expect(publish(node)).to.equal('Array<[string, number]>');
   });
 
 

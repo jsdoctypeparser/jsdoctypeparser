@@ -133,6 +133,35 @@ describe('traversing', function() {
       ],
     },
 
+    'should visit a tuple node that is empty': {
+      given: {
+        type: NodeType.TUPLE,
+        entries: [],
+      },
+      then: [
+        ['enter', NodeType.TUPLE],
+        ['leave', NodeType.TUPLE],
+      ],
+    },
+
+    'should visit a tuple node that has multiple entries': {
+      given: {
+        type: NodeType.TUPLE,
+        entries: [
+          createNameNode('object1'),
+          createNameNode('object2'),
+        ],
+      },
+      then: [
+        ['enter', NodeType.TUPLE],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['enter', NodeType.NAME],
+        ['leave', NodeType.NAME],
+        ['leave', NodeType.TUPLE],
+      ],
+    },
+
     'should visit a generic node that is empty': {
       given: {
         type: NodeType.GENERIC,
@@ -423,7 +452,6 @@ describe('traversing', function() {
   });
 });
 
-
 function createNameNode(name) {
   return {
     type: NodeType.NAME,
@@ -503,7 +531,4 @@ function createFilePathNode(filePath) {
     type: NodeType.FILE_PATH,
     path: filePath,
   };
-}
-
-function create() {
 }

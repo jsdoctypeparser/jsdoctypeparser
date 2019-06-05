@@ -1,6 +1,6 @@
 'use strict';
 
-const {expect} = require('chai');
+const {expect, assert} = require('chai');
 
 const NodeType = require('../lib/NodeType.js');
 const Parser = require('../lib/parsing.js');
@@ -486,6 +486,135 @@ describe('Parser', function() {
     const expectedNode = createRecordTypeNode([
       createRecordEntryNode('quoted-key', createTypeNameNode('ValueType')),
     ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a tuple type node when "[]" arrived', function() {
+    const typeExprStr = '[]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a tuple type node when "[TupleType]" arrived', function() {
+    const typeExprStr = '[TupleType]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([
+      createTypeNameNode('TupleType'),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a tuple type node when "[TupleType1, TupleType2]" arrived', function() {
+    const typeExprStr = '[TupleType1, TupleType2]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([
+      createTypeNameNode('TupleType1'),
+      createTypeNameNode('TupleType2'),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a tuple type node when "[TupleConcreteType, ...TupleVarargsType]" arrived', function() {
+    const typeExprStr = '[TupleConcreteType, ...TupleVarargsType]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([
+      createTypeNameNode('TupleConcreteType'),
+      createVariadicTypeNode(
+        createTypeNameNode('TupleVarargsType'),
+        VariadicTypeSyntax.PREFIX_DOTS
+      ),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a tuple type node when "[TupleConcreteType, TupleBrokenVarargsType...]" arrived', function() {
+    const typeExprStr = '[TupleConcreteType, TupleBrokenVarargsType...]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([
+      createTypeNameNode('TupleConcreteType'),
+      createVariadicTypeNode(
+        // This is broken because the TypeScript JSDoc parser doesn't support
+        // the suffix dots variadic type syntax:
+        createTypeNameNode('TupleBrokenVarargsType'),
+        VariadicTypeSyntax.SUFFIX_DOTS
+      ),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a tuple type node when "[TupleAnyVarargs, ...]" arrived', function() {
+    const typeExprStr = '[TupleAnyVarargs, ...]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTupleTypeNode([
+      createTypeNameNode('TupleAnyVarargs'),
+      createVariadicTypeNode(
+        null,
+        VariadicTypeSyntax.ONLY_DOTS
+      ),
+    ]);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a generic type node when "[][]" arrived', function() {
+    const typeExprStr = '[][]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createGenericTypeNode(
+      createTypeNameNode('Array'),
+      [
+        createTupleTypeNode([]),
+      ],
+      GenericTypeSyntax.SQUARE_BRACKET);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a generic type node when "[TupleType][]" arrived', function() {
+    const typeExprStr = '[TupleType][]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createGenericTypeNode(
+      createTypeNameNode('Array'),
+      [
+        createTupleTypeNode([
+          createTypeNameNode('TupleType'),
+        ]),
+      ],
+      GenericTypeSyntax.SQUARE_BRACKET);
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a generic type node when "[TupleType1, TupleType2][]" arrived', function() {
+    const typeExprStr = '[TupleType1, TupleType2][]';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createGenericTypeNode(
+      createTypeNameNode('Array'),
+      [
+        createTupleTypeNode([
+          createTypeNameNode('TupleType1'),
+          createTypeNameNode('TupleType2'),
+        ]),
+      ],
+      GenericTypeSyntax.SQUARE_BRACKET);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -1372,6 +1501,17 @@ function createRecordEntryNode(key, valueTypeExpr) {
     type: NodeType.RECORD_ENTRY,
     key: key,
     value: valueTypeExpr,
+  };
+}
+
+/**
+ * @template T
+ * @param {T[]} tupleEntries
+ */
+function createTupleTypeNode(tupleEntries) {
+  return {
+    type: NodeType.TUPLE,
+    entries: tupleEntries,
   };
 }
 

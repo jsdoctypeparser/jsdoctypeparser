@@ -139,8 +139,8 @@ describe('traversing', function() {
         entries: [],
       },
       then: [
-        ['enter', NodeType.TUPLE],
-        ['leave', NodeType.TUPLE],
+        ['enter', NodeType.TUPLE, null, null],
+        ['leave', NodeType.TUPLE, null, null],
       ],
     },
 
@@ -153,12 +153,12 @@ describe('traversing', function() {
         ],
       },
       then: [
-        ['enter', NodeType.TUPLE],
-        ['enter', NodeType.NAME],
-        ['leave', NodeType.NAME],
-        ['enter', NodeType.NAME],
-        ['leave', NodeType.NAME],
-        ['leave', NodeType.TUPLE],
+        ['enter', NodeType.TUPLE, null, null],
+        ['enter', NodeType.NAME, 'entries', NodeType.TUPLE],
+        ['leave', NodeType.NAME, 'entries', NodeType.TUPLE],
+        ['enter', NodeType.NAME, 'entries', NodeType.TUPLE],
+        ['leave', NodeType.NAME, 'entries', NodeType.TUPLE],
+        ['leave', NodeType.TUPLE, null, null],
       ],
     },
 

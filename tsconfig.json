@@ -4,7 +4,7 @@
         "checkJs": true,
         "noEmit": true,
         "target": "esnext",
-        "lib": ["es6"],
+        "lib": ["es2015"],
         "module": "commonjs",
         "resolveJsonModule": true,
         "strict": false

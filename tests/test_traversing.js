@@ -58,6 +58,16 @@ describe('traversing', function() {
       ],
     },
 
+    'should visit a key query node': {
+      given: createKeyQueryNode(createNameNode('t')),
+      then: [
+        ['enter', NodeType.KEY_QUERY, null, null],
+        ['enter', NodeType.NAME, 'value', NodeType.KEY_QUERY],
+        ['leave', NodeType.NAME, 'value', NodeType.KEY_QUERY],
+        ['leave', NodeType.KEY_QUERY, null, null],
+      ],
+    },
+
     'should visit an import type node': {
       given: createImportNode(createStringLiteral('jquery')),
       then: [
@@ -479,6 +489,17 @@ function createTypeQueryNode(name) {
   return {
     type: NodeType.TYPE_QUERY,
     name: name,
+  }
+}
+
+/**
+ * @template T
+ * @param {T} value
+ */
+function createKeyQueryNode(value) {
+  return {
+    type: NodeType.KEY_QUERY,
+    value: value,
   }
 }
 

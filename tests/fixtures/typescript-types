@@ -10,10 +10,25 @@
 {typeof A | number}
 {number | typeof A}
 {typeof N[]}
+{keyof A}
+{keyof}
+{X<keyof>}
+{X<keyof A>}
+{(keyof X)<A>}
+{(keyof A)}
+{...keyof A}
+{keyof A...}
+{keyof A | number}
+{number | keyof A}
+{keyof N[]}
 {function(typeof A)}
 {function(typeof A, number)}
 {function(number, typeof A)}
 {function(): typeof A}
+{function(keyof A)}
+{function(keyof A, number)}
+{function(number, keyof A)}
+{function(): keyof A}
 {import("x")}
 {import("./x")}
 {import("../x")}
@@ -38,6 +53,10 @@
 {[variadic, arguments, ...tuple]}
 {[tuple, with, typeof foo]}
 {[ tuple, with, typeof foo, and, ...rest ]}
+{[tuple, with, keyof foo]}
+{[ tuple, with, keyof foo, and, ...rest ]}
+{[ tuple, with, typeof foo, and, keyof foo]}
+{[ tuple, with, typeof foo, keyof foo, and, ...rest ]}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}

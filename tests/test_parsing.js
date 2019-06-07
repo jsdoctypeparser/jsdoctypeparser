@@ -1423,8 +1423,7 @@ describe('Parser', function() {
 
 
 /**
- * @template T
- * @param {T} typeName
+ * @param {string} typeName
  */
 function createTypeNameNode(typeName) {
   return {

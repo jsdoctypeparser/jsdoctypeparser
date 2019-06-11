@@ -1,10 +1,12 @@
 'use strict';
 
-const {expect, assert} = require('chai');
+const {expect} = require('chai');
 
 const NodeType = require('../lib/NodeType.js');
 const Parser = require('../lib/parsing.js');
 const SyntaxType = require('../lib/SyntaxType.js');
+
+/** @typedef {{type: import('../lib/NodeType').Type}} Node */
 
 const {
   GenericTypeSyntax, UnionTypeSyntax, VariadicTypeSyntax,
@@ -1542,7 +1544,7 @@ function createRecordEntryNode(key, valueTypeExpr) {
 }
 
 /**
- * @template T
+ * @template {Node} T
  * @param {T[]} tupleEntries
  */
 function createTupleTypeNode(tupleEntries) {
@@ -1600,7 +1602,7 @@ function createParenthesizedNode(value) {
 }
 
 /**
- * @template T
+ * @template {Node} T
  * @param {T} name
  */
 function createTypeQueryNode(name) {
@@ -1611,7 +1613,7 @@ function createTypeQueryNode(name) {
 }
 
 /**
- * @template T
+ * @template {Node} T
  * @param {T} value
  */
 function createKeyQueryNode(value) {

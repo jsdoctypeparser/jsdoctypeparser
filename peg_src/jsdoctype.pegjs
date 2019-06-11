@@ -800,7 +800,7 @@ FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
                          // Variadic type is only allowed on the last parameter.
                          lastParam:(VariadicTypeExpr / VariadicTypeExprOperand) {
                          return paramsWithComma.reduceRight(function(params, tokens) {
-                           const param = tokens[0];
+                           const [param] = tokens;
                            return [param].concat(params);
                          }, [lastParam]);
                        }
@@ -940,7 +940,7 @@ TupleTypeExprEntries = restWithComma:(TupleTypeExprOperand _ "," _)*
                        // Variadic type is only allowed on the last entry.
                        last:(VariadicTypeExpr / VariadicTypeExprOperand) {
   return restWithComma.reduceRight((entries, tokens) => {
-    let entry = tokens[0];
+    let [entry] = tokens;
     return [entry].concat(entries);
   }, [last]);
 }

@@ -543,7 +543,7 @@ function peg$parse(input, options) {
                                  },
       peg$c143 = function(paramsWithComma, lastParam) {
                                return paramsWithComma.reduceRight(function(params, tokens) {
-                                 const param = tokens[0];
+                                 const [param] = tokens;
                                  return [param].concat(params);
                                }, [lastParam]);
                              },
@@ -588,7 +588,7 @@ function peg$parse(input, options) {
       },
       peg$c154 = function(restWithComma, last) {
         return restWithComma.reduceRight((entries, tokens) => {
-          let entry = tokens[0];
+          let [entry] = tokens;
           return [entry].concat(entries);
         }, [last]);
       },

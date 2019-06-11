@@ -1,21 +1,20 @@
 {
-  var meta = require('../lib/SyntaxType.js');
-  var GenericTypeSyntax = meta.GenericTypeSyntax;
-  var UnionTypeSyntax = meta.UnionTypeSyntax;
-  var VariadicTypeSyntax = meta.VariadicTypeSyntax;
-  var OptionalTypeSyntax = meta.OptionalTypeSyntax;
-  var NullableTypeSyntax = meta.NullableTypeSyntax;
-  var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
-  var NodeType = require('../lib/NodeType.js');
+  const meta = require('../lib/SyntaxType.js');
+  const {
+    GenericTypeSyntax, UnionTypeSyntax,
+    VariadicTypeSyntax, OptionalTypeSyntax,
+    NullableTypeSyntax, NotNullableTypeSyntax,
+  } = meta;
+  const NodeType = require('../lib/NodeType.js');
 
-  var NamepathOperatorType = {
+  const NamepathOperatorType = {
     MEMBER: 'MEMBER',
     INNER_MEMBER: 'INNER_MEMBER',
     INSTANCE_MEMBER: 'INSTANCE_MEMBER',
   };
 
   function reverse(array) {
-    var reversed = [].concat(array);
+    const reversed = [].concat(array);
     reversed.reverse();
     return reversed;
   }
@@ -84,29 +83,29 @@ JsIdentifier = $([a-zA-Z_$][a-zA-Z0-9_$]*)
 // See https://en.wikipedia.org/wiki/Left_recursion#Removing_left_recursion
 NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) memberPartWithOperators:(_ InfixNamepathOperator _ "event:"? _ MemberName)* {
                return memberPartWithOperators.reduce(function(owner, tokens) {
-                 var operatorType = tokens[1];
-                 var eventNamespace = tokens[3];
-                 var memberName = tokens[5];
+                 const operatorType = tokens[1];
+                 const eventNamespace = tokens[3];
+                 const memberName = tokens[5];
 
                  switch (operatorType) {
                    case NamepathOperatorType.MEMBER:
                      return {
                        type: NodeType.MEMBER,
-                       owner: owner,
+                       owner,
                        name: memberName,
                        hasEventPrefix: Boolean(eventNamespace),
                      };
                    case NamepathOperatorType.INSTANCE_MEMBER:
                      return {
                        type: NodeType.INSTANCE_MEMBER,
-                       owner: owner,
+                       owner,
                        name: memberName,
                        hasEventPrefix: Boolean(eventNamespace),
                      };
                    case NamepathOperatorType.INNER_MEMBER:
                      return {
                        type: NodeType.INNER_MEMBER,
-                       owner: owner,
+                       owner,
                        name: memberName,
                        hasEventPrefix: Boolean(eventNamespace),
                      };
@@ -138,7 +137,7 @@ TypeNameExpr = TypeNameExprJsDocFlavored
 TypeNameExprStrict = name:JsIdentifier {
                      return {
                        type: NodeType.NAME,
-                       name: name
+                       name
                      };
                    }
 
@@ -148,7 +147,7 @@ TypeNameExprStrict = name:JsIdentifier {
 TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
                             return {
                               type: NodeType.NAME,
-                              name: name
+                              name
                             };
                           }
 
@@ -171,7 +170,7 @@ QualifiedMemberName = rootOwner:TypeNameExpr memberPart:(_ "." _ TypeNameExpr)* 
                       return memberPart.reduce(function(owner, tokens) {
                         return {
                           type: NodeType.MEMBER,
-                          owner: owner,
+                          owner,
                           name: tokens[3]
                         }
                       }, rootOwner);
@@ -233,7 +232,7 @@ BroadNamepathExpr = ExternalNameExpr
 ExternalNameExpr = "external" _ ":" _ value:NamepathExpr {
                    return {
                      type: NodeType.EXTERNAL,
-                     value: value
+                     value
                    };
                  }
 
@@ -252,7 +251,7 @@ ExternalNameExpr = "external" _ ":" _ value:NamepathExpr {
 ModuleNameExpr = "module" _ ":" _ value:ModulePathExpr {
                  return {
                    type: NodeType.MODULE,
-                   value: value,
+                   value,
                  };
                }
 
@@ -261,29 +260,29 @@ ModuleNameExpr = "module" _ ":" _ value:ModulePathExpr {
 // It is transformed to remove left recursion
 ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepathOperator _ "event:"? _ MemberName)* {
                  return memberPartWithOperators.reduce(function(owner, tokens) {
-                   var operatorType = tokens[1];
-                   var eventNamespace = tokens[3];
-                   var memberName = tokens[5];
+                   const operatorType = tokens[1];
+                   const eventNamespace = tokens[3];
+                   const memberName = tokens[5];
 
                    switch (operatorType) {
                      case NamepathOperatorType.MEMBER:
                        return {
                          type: NodeType.MEMBER,
-                         owner: owner,
+                         owner,
                          name: memberName,
                          hasEventPrefix: Boolean(eventNamespace),
                        };
                      case NamepathOperatorType.INSTANCE_MEMBER:
                        return {
                          type: NodeType.INSTANCE_MEMBER,
-                         owner: owner,
+                         owner,
                          name: memberName,
                          hasEventPrefix: Boolean(eventNamespace),
                        };
                      case NamepathOperatorType.INNER_MEMBER:
                        return {
                          type: NodeType.INNER_MEMBER,
-                         owner: owner,
+                         owner,
                          name: memberName,
                          hasEventPrefix: Boolean(eventNamespace),
                        };
@@ -397,9 +396,9 @@ HexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
 UnionTypeExpr = left:UnionTypeExprOperand _ syntax:UnionTypeOperator _ right:(UnionTypeExpr / UnionTypeExprOperand) {
                 return {
                     type: NodeType.UNION,
-                    left: left,
-                    right: right,
-                    meta: { syntax: syntax },
+                    left,
+                    right,
+                    meta: { syntax },
                 };
               }
 
@@ -456,12 +455,12 @@ PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
 TypeQueryExpr = operator:"typeof" _ name:QualifiedMemberName {
                 return {
                     type: NodeType.TYPE_QUERY,
-                    name: name,
+                    name,
                 };
               }
 
 ImportTypeExpr = operator:"import" _ "(" _ path:StringLiteralExpr _ ")" {
-                 return { type: NodeType.IMPORT, path: path };
+                 return { type: NodeType.IMPORT, path };
                }
 
 /*
@@ -615,7 +614,7 @@ GenericTypeExpr = operand:GenericTypeExprOperand _ syntax:GenericTypeStartToken 
                     type: NodeType.GENERIC,
                     subject: operand,
                     objects: params,
-                    meta: { syntax: syntax },
+                    meta: { syntax },
                   };
                 }
 
@@ -725,13 +724,13 @@ ArrowTypeExprParamsList = "(" _ params:ArrowTypeExprParams _ ")" {
                           }
 ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr {
   return paramsWithComma.reduceRight(function(params, tokens) {
-    var param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
+    const param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
     return [param].concat(params);
   }, [lastParam]);
 }
 
 VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExprParamOperand? _ ","? {
-  var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
+  const operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
   if (spread) {
   return {
     type: NodeType.VARIADIC,
@@ -759,7 +758,7 @@ VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExpr
  */
 FunctionTypeExpr = "function" _ paramsPart:FunctionTypeExprParamsList _
                    returnedTypePart:(":" _ FunctionTypeExprReturnableOperand)? {
-                   var returnedTypeNode = returnedTypePart ? returnedTypePart[2] : null;
+                   const returnedTypeNode = returnedTypePart ? returnedTypePart[2] : null;
 
                    return {
                      type: NodeType.FUNCTION,
@@ -772,13 +771,13 @@ FunctionTypeExpr = "function" _ paramsPart:FunctionTypeExprParamsList _
 
 
 FunctionTypeExprParamsList = "(" _ modifier:FunctionTypeExprModifier _ "," _ params: FunctionTypeExprParams _ ")" {
-                               return { params: params, modifier: modifier };
+                               return { params, modifier };
                              }
                            / "(" _ modifier:FunctionTypeExprModifier _ ")" {
-                               return { params: [], modifier: modifier };
+                               return { params: [], modifier };
                              }
                            / "(" _ params:FunctionTypeExprParams _ ")" {
-                               return { params: params, modifier: { nodeThis: null, nodeNew: null } };
+                               return { params, modifier: { nodeThis: null, nodeNew: null } };
                              }
                            / "(" _ ")" {
                                return { params: [], modifier: { nodeThis: null, nodeNew: null } };
@@ -801,7 +800,7 @@ FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
                          // Variadic type is only allowed on the last parameter.
                          lastParam:(VariadicTypeExpr / VariadicTypeExprOperand) {
                          return paramsWithComma.reduceRight(function(params, tokens) {
-                           var param = tokens[0];
+                           const param = tokens[0];
                            return [param].concat(params);
                          }, [lastParam]);
                        }
@@ -872,7 +871,7 @@ RecordTypeExpr = "{" _ entries:RecordTypeExprEntries? _ "}" {
 
 RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:(_ "," _ RecordTypeExprEntry)* {
                         return restWithComma.reduce(function(entries, tokens) {
-                          var entry = tokens[3];
+                          const entry = tokens[3];
                           return entries.concat([entry]);
                         }, [first]);
                       }
@@ -881,14 +880,14 @@ RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:(_ "," _ RecordT
 RecordTypeExprEntry = key:RecordTypeExprEntryKey _ ":" _ value:RecordTypeExprEntryOperand {
                         return {
                           type: NodeType.RECORD_ENTRY,
-                          key: key,
-                          value: value
+                          key,
+                          value
                         };
                       }
                     / key:RecordTypeExprEntryKey {
                         return {
                           type: NodeType.RECORD_ENTRY,
-                          key: key,
+                          key,
                           value: null,
                         };
                       }

@@ -154,29 +154,29 @@ function peg$parse(input, options) {
       peg$c8 = peg$literalExpectation("event:", false),
       peg$c9 = function(rootOwner, memberPartWithOperators) {
                      return memberPartWithOperators.reduce(function(owner, tokens) {
-                       var operatorType = tokens[1];
-                       var eventNamespace = tokens[3];
-                       var memberName = tokens[5];
+                       const operatorType = tokens[1];
+                       const eventNamespace = tokens[3];
+                       const memberName = tokens[5];
 
                        switch (operatorType) {
                          case NamepathOperatorType.MEMBER:
                            return {
                              type: NodeType.MEMBER,
-                             owner: owner,
+                             owner,
                              name: memberName,
                              hasEventPrefix: Boolean(eventNamespace),
                            };
                          case NamepathOperatorType.INSTANCE_MEMBER:
                            return {
                              type: NodeType.INSTANCE_MEMBER,
-                             owner: owner,
+                             owner,
                              name: memberName,
                              hasEventPrefix: Boolean(eventNamespace),
                            };
                          case NamepathOperatorType.INNER_MEMBER:
                            return {
                              type: NodeType.INNER_MEMBER,
-                             owner: owner,
+                             owner,
                              name: memberName,
                              hasEventPrefix: Boolean(eventNamespace),
                            };
@@ -188,7 +188,7 @@ function peg$parse(input, options) {
       peg$c10 = function(name) {
                            return {
                              type: NodeType.NAME,
-                             name: name
+                             name
                            };
                          },
       peg$c11 = /^[a-zA-Z0-9_$\-]/,
@@ -196,7 +196,7 @@ function peg$parse(input, options) {
       peg$c13 = function(name) {
                                   return {
                                     type: NodeType.NAME,
-                                    name: name
+                                    name
                                   };
                                 },
       peg$c14 = "'",
@@ -216,7 +216,7 @@ function peg$parse(input, options) {
                             return memberPart.reduce(function(owner, tokens) {
                               return {
                                 type: NodeType.MEMBER,
-                                owner: owner,
+                                owner,
                                 name: tokens[3]
                               }
                             }, rootOwner);
@@ -241,7 +241,7 @@ function peg$parse(input, options) {
       peg$c37 = function(value) {
                          return {
                            type: NodeType.EXTERNAL,
-                           value: value
+                           value
                          };
                        },
       peg$c38 = "module",
@@ -249,34 +249,34 @@ function peg$parse(input, options) {
       peg$c40 = function(value) {
                        return {
                          type: NodeType.MODULE,
-                         value: value,
+                         value,
                        };
                      },
       peg$c41 = function(rootOwner, memberPartWithOperators) {
                        return memberPartWithOperators.reduce(function(owner, tokens) {
-                         var operatorType = tokens[1];
-                         var eventNamespace = tokens[3];
-                         var memberName = tokens[5];
+                         const operatorType = tokens[1];
+                         const eventNamespace = tokens[3];
+                         const memberName = tokens[5];
 
                          switch (operatorType) {
                            case NamepathOperatorType.MEMBER:
                              return {
                                type: NodeType.MEMBER,
-                               owner: owner,
+                               owner,
                                name: memberName,
                                hasEventPrefix: Boolean(eventNamespace),
                              };
                            case NamepathOperatorType.INSTANCE_MEMBER:
                              return {
                                type: NodeType.INSTANCE_MEMBER,
-                               owner: owner,
+                               owner,
                                name: memberName,
                                hasEventPrefix: Boolean(eventNamespace),
                              };
                            case NamepathOperatorType.INNER_MEMBER:
                              return {
                                type: NodeType.INNER_MEMBER,
-                               owner: owner,
+                               owner,
                                name: memberName,
                                hasEventPrefix: Boolean(eventNamespace),
                              };
@@ -347,9 +347,9 @@ function peg$parse(input, options) {
       peg$c77 = function(left, syntax, right) {
                       return {
                           type: NodeType.UNION,
-                          left: left,
-                          right: right,
-                          meta: { syntax: syntax },
+                          left,
+                          right,
+                          meta: { syntax },
                       };
                     },
       peg$c78 = "|",
@@ -367,7 +367,7 @@ function peg$parse(input, options) {
       peg$c86 = function(operator, name) {
                       return {
                           type: NodeType.TYPE_QUERY,
-                          name: name,
+                          name,
                       };
                     },
       peg$c87 = "import",
@@ -377,7 +377,7 @@ function peg$parse(input, options) {
       peg$c91 = ")",
       peg$c92 = peg$literalExpectation(")", false),
       peg$c93 = function(operator, path) {
-                       return { type: NodeType.IMPORT, path: path };
+                       return { type: NodeType.IMPORT, path };
                      },
       peg$c94 = function(operator, operand) {
                                return {
@@ -430,7 +430,7 @@ function peg$parse(input, options) {
                           type: NodeType.GENERIC,
                           subject: operand,
                           objects: params,
-                          meta: { syntax: syntax },
+                          meta: { syntax },
                         };
                       },
       peg$c105 = ",",
@@ -489,14 +489,14 @@ function peg$parse(input, options) {
                                 },
       peg$c128 = function(paramsWithComma, lastParam) {
         return paramsWithComma.reduceRight(function(params, tokens) {
-          var param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
+          const param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
           return [param].concat(params);
         }, [lastParam]);
       },
       peg$c129 = "...",
       peg$c130 = peg$literalExpectation("...", false),
       peg$c131 = function(spread, id, type) {
-        var operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
+        const operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
         if (spread) {
         return {
           type: NodeType.VARIADIC,
@@ -511,7 +511,7 @@ function peg$parse(input, options) {
       peg$c132 = "function",
       peg$c133 = peg$literalExpectation("function", false),
       peg$c134 = function(paramsPart, returnedTypePart) {
-                         var returnedTypeNode = returnedTypePart ? returnedTypePart[2] : null;
+                         const returnedTypeNode = returnedTypePart ? returnedTypePart[2] : null;
 
                          return {
                            type: NodeType.FUNCTION,
@@ -522,13 +522,13 @@ function peg$parse(input, options) {
                          };
                        },
       peg$c135 = function(modifier, params) {
-                                     return { params: params, modifier: modifier };
+                                     return { params, modifier };
                                    },
       peg$c136 = function(modifier) {
-                                     return { params: [], modifier: modifier };
+                                     return { params: [], modifier };
                                    },
       peg$c137 = function(params) {
-                                     return { params: params, modifier: { nodeThis: null, nodeNew: null } };
+                                     return { params, modifier: { nodeThis: null, nodeNew: null } };
                                    },
       peg$c138 = function() {
                                      return { params: [], modifier: { nodeThis: null, nodeNew: null } };
@@ -543,7 +543,7 @@ function peg$parse(input, options) {
                                  },
       peg$c143 = function(paramsWithComma, lastParam) {
                                return paramsWithComma.reduceRight(function(params, tokens) {
-                                 var param = tokens[0];
+                                 const param = tokens[0];
                                  return [param].concat(params);
                                }, [lastParam]);
                              },
@@ -559,21 +559,21 @@ function peg$parse(input, options) {
                      },
       peg$c149 = function(first, restWithComma) {
                               return restWithComma.reduce(function(entries, tokens) {
-                                var entry = tokens[3];
+                                const entry = tokens[3];
                                 return entries.concat([entry]);
                               }, [first]);
                             },
       peg$c150 = function(key, value) {
                               return {
                                 type: NodeType.RECORD_ENTRY,
-                                key: key,
-                                value: value
+                                key,
+                                value
                               };
                             },
       peg$c151 = function(key) {
                               return {
                                 type: NodeType.RECORD_ENTRY,
-                                key: key,
+                                key,
                                 value: null,
                               };
                             },
@@ -6113,23 +6113,22 @@ function peg$parse(input, options) {
   }
 
 
-    var meta = require('../lib/SyntaxType.js');
-    var GenericTypeSyntax = meta.GenericTypeSyntax;
-    var UnionTypeSyntax = meta.UnionTypeSyntax;
-    var VariadicTypeSyntax = meta.VariadicTypeSyntax;
-    var OptionalTypeSyntax = meta.OptionalTypeSyntax;
-    var NullableTypeSyntax = meta.NullableTypeSyntax;
-    var NotNullableTypeSyntax = meta.NotNullableTypeSyntax;
-    var NodeType = require('../lib/NodeType.js');
+    const meta = require('../lib/SyntaxType.js');
+    const {
+      GenericTypeSyntax, UnionTypeSyntax,
+      VariadicTypeSyntax, OptionalTypeSyntax,
+      NullableTypeSyntax, NotNullableTypeSyntax,
+    } = meta;
+    const NodeType = require('../lib/NodeType.js');
 
-    var NamepathOperatorType = {
+    const NamepathOperatorType = {
       MEMBER: 'MEMBER',
       INNER_MEMBER: 'INNER_MEMBER',
       INSTANCE_MEMBER: 'INSTANCE_MEMBER',
     };
 
     function reverse(array) {
-      var reversed = [].concat(array);
+      const reversed = [].concat(array);
       reversed.reverse();
       return reversed;
     }

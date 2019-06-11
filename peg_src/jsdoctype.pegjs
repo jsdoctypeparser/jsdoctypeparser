@@ -223,11 +223,12 @@ BroadNamepathExpr = ExternalNameExpr
  * External name expressions.
  *
  * Examples:
+ *   - external:classNamespaceOrModuleName
  *   - external:path/to/file
  *   - external:path/to/file.js
  *
  * Spec:
- *   - http://usejsdoc.org/tags-external.html
+ *   - https://jsdoc.app/tags-external.html
  */
 ExternalNameExpr = "external" _ ":" _ value:NamepathExpr {
                    return {
@@ -245,8 +246,8 @@ ExternalNameExpr = "external" _ ":" _ value:NamepathExpr {
  *   - module:path/to/file.MyModule~Foo
  *
  * Spec:
- *   - http://usejsdoc.org/tags-module.html
- *   - http://usejsdoc.org/howto-commonjs-modules.html
+ *   - https://jsdoc.app/tags-module.html
+ *   - https://jsdoc.app/howto-commonjs-modules.html
  */
 ModuleNameExpr = "module" _ ":" _ value:ModulePathExpr {
                  return {
@@ -606,7 +607,7 @@ SuffixOptionalTypeExpr = operand:( SuffixNullableTypeExpr
  *
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
- *   - http://usejsdoc.org/tags-type.html
+ *   - https://jsdoc.app/tags-type.html
  */
 GenericTypeExpr = operand:GenericTypeExprOperand _ syntax:GenericTypeStartToken _
                   params:GenericTypeExprTypeParamList _ GenericTypeEndToken {

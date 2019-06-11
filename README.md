@@ -5,7 +5,7 @@
 
 The parser can parse:
 
-* [JSDoc type expressions](http://usejsdoc.org/tags-type.html)
+* [JSDoc type expressions](https://jsdoc.app/tags-type.html)
   * `foo.bar`, `String[]`
 * [Closure Compiler type expressions](https://developers.google.com/closure/compiler/docs/js-for-compiler)
   * `Array<string>`, `function(arg1, arg2): ret`

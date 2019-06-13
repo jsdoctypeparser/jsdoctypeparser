@@ -1373,6 +1373,28 @@ describe('Parser', function() {
     expect(node).to.deep.equal(expectedNode);
   });
 
+  it('should return a string value type node when \'"\\string with\\ \\"escapes\\\\"\' arrived', function() {
+    const typeExprStr = '"\\string with\\ \\"escapes\\\\"';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createStringValueNode('\\string with\\ "escapes\\');
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should throw for string value type node with unescaped quotes', function() {
+    const typeExprStr = '"string with "unescaped quote"';
+    expect(function () {
+      Parser.parse(typeExprStr);
+    }).to.throw('or end of input but "u" found.');
+  });
+
+  it('should throw for string value type node with unescaped quotes (preceded by escaped backslash)', function() {
+    const typeExprStr = '"string with \\\\"unescaped quote"';
+    expect(function () {
+      Parser.parse(typeExprStr);
+    }).to.throw('or end of input but "u" found.');
+  });
+
 
   it('should throw a syntax error when "" arrived', function() {
     const typeExprStr = '';
@@ -1635,9 +1657,10 @@ function createNumberValueNode(numberLiteral) {
   };
 }
 
-function createStringValueNode(stringLiteral) {
+function createStringValueNode(stringLiteral, quoteStyle = 'double') {
   return {
     type: NodeType.STRING_VALUE,
+    quoteStyle,
     string: stringLiteral,
   };
 }

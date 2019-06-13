@@ -523,6 +523,7 @@ Structure:
 ```javascript
 {
   "type": "STRING_VALUE",
+  "quoteStyle": "double",
   "string": string
 }
 ```

@@ -304,14 +304,19 @@ describe('publish', function() {
     expect(publish(node)).to.equal('"stringValue"');
   });
 
-  it('should return a string value with escaped quote type', function() {
+  it('should return a string value type with escaped quote', function() {
     const node = parse('"string \\"Value"');
     expect(publish(node)).to.equal('"string \\"Value"');
   });
 
-  it('should return an escaped string value type', function() {
-    const node = parse('"\\str\\ing\\\\Value and end backslash: \\\\"');
-    expect(publish(node)).to.equal('"\\\\str\\\\ing\\\\\\\\Value and end backslash: \\\\\\\\"');
+  it('should return a string value type with single extra backslash for odd count backslash series not before a quote', function() {
+    const node = parse('"\\Odd count backslash sequence not before a quote\\add\\\\\\one backslash\\."');
+    expect(publish(node)).to.equal('"\\\\Odd count backslash sequence not before a quote\\\\add\\\\\\\\one backslash\\\\."');
+  });
+
+  it('should return a string value type without adding backslashes for escaped backslash sequences (i.e., even count)', function() {
+    const node = parse('"\\\\Even count (escaped)\\\\\\\\backslash sequences\\\\remain\\\\"');
+    expect(publish(node)).to.equal('"\\\\Even count (escaped)\\\\\\\\backslash sequences\\\\remain\\\\"');
   });
 
 

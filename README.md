@@ -193,6 +193,7 @@ Structure:
 {
   "type": "MEMBER",
   "name": string,
+  "quoteStyle": "none",
   "owner": node,
   "hasEventPrefix": boolean
 }
@@ -214,6 +215,7 @@ Structure:
 {
   "type": "INNER_MEMBER",
   "name": string,
+  "quoteStyle": "none",
   "owner": node,
   "hasEventPrefix": boolean
 }
@@ -235,6 +237,7 @@ Structure:
 {
   "type": "INSTANCE_MEMBER",
   "name": string,
+  "quoteStyle": "none",
   "owner": node,
   "hasEventPrefix": boolean
 }

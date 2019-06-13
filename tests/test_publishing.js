@@ -299,6 +299,11 @@ describe('publish', function() {
     expect(publish(node)).to.equal('"stringValue"');
   });
 
+  it('should return an escaped string value type', function() {
+    const node = parse('"\\str\\ing\\\\Value and end backslash: \\\\"');
+    expect(publish(node)).to.equal('"\\str\\ing\\\\Value and end backslash: \\\\"');
+  });
+
 
   it('should return a number value type', function() {
     const node = parse('0123456789');

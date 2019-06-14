@@ -304,6 +304,16 @@ describe('publish', function() {
     expect(publish(node)).to.equal('"stringValue"');
   });
 
+  it('should return a string value with escaped quote type', function() {
+    const node = parse('"string \\"Value"');
+    expect(publish(node)).to.equal('"string \\"Value"');
+  });
+
+  it('should return an escaped string value type', function() {
+    const node = parse('"\\str\\ing\\\\Value and end backslash: \\\\"');
+    expect(publish(node)).to.equal('"\\\\str\\\\ing\\\\\\\\Value and end backslash: \\\\\\\\"');
+  });
+
 
   it('should return a number value type', function() {
     const node = parse('0123456789');

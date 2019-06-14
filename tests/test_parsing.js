@@ -132,18 +132,6 @@ describe('Parser', function() {
     expect(node).to.deep.equal(expectedNode);
   });
 
-  it('should return a member type node when "owner.event:Member" arrived', function() {
-    const typeExprStr = 'owner.event:Member';
-    const node = Parser.parse(typeExprStr);
-
-    const expectedNode = createMemberTypeNode(
-      createTypeNameNode('owner'),
-      'Member',
-      true);
-
-    expect(node).to.deep.equal(expectedNode);
-  });
-
   it('should return a module name node when "external:string" arrived', function() {
     const typeExprStr = 'external:string';
     const node = Parser.parse(typeExprStr);
@@ -182,6 +170,40 @@ describe('Parser', function() {
     const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
       'Member');
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a member type node when \'owner."Mem.ber"\' arrived', function() {
+    const typeExprStr = 'owner."Mem.ber"';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createMemberTypeNode(
+      createTypeNameNode('owner'),
+      'Mem.ber');
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a member type node when \'owner."Mem\\ber"\' arrived', function() {
+    const typeExprStr = 'owner."Mem\\ber"';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createMemberTypeNode(
+      createTypeNameNode('owner'),
+      'Mem\\ber');
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a member type node when \'owner."Mem.ber\\"\' arrived', function() {
+    const typeExprStr = 'owner."Mem.ber\\"';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createMemberTypeNode(
+      createTypeNameNode('owner'),
+      'Mem.ber\\');
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -325,6 +347,19 @@ describe('Parser', function() {
       'instanceMember'),
       OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
     );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a member type node when "owner.event:Member" arrived', function() {
+    const typeExprStr = 'owner.event:Member';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createMemberTypeNode(
+      createTypeNameNode('owner'),
+      'Member',
+      true);
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -1202,6 +1237,17 @@ describe('Parser', function() {
     expect(node).to.deep.equal(expectedNode);
   });
 
+  it('should return an arrow function type node when "() => string" arrived', function() {
+    const typeExprStr = '() => string';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createArrowFunctionTypeNode(
+      [], createTypeNameNode('string'),
+      { 'new': null }
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
 
   it('should throw an error when "function(new:NewObject, this:ThisObject)" ' +
      'arrived', function() {
@@ -1569,6 +1615,15 @@ function createFunctionTypeNode(paramNodes, returnedNode, modifierMap) {
     params: paramNodes,
     returns: returnedNode,
     this: modifierMap.this,
+    new: modifierMap.new,
+  };
+}
+
+function createArrowFunctionTypeNode(paramNodes, returnedNode, modifierMap) {
+  return {
+    type: NodeType.ARROW,
+    params: paramNodes,
+    returns: returnedNode,
     new: modifierMap.new,
   };
 }

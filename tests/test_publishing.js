@@ -69,6 +69,11 @@ describe('publish', function() {
     expect(publish(node)).to.equal('typeof x');
   });
 
+  it('should return a key query node', function() {
+    const node = parse('keyof x');
+    expect(publish(node)).to.equal('keyof x');
+  })
+
   it('should return an import type node', function() {
     const node = parse('import("./lodash4ever")');
     expect(publish(node)).to.equal('import("./lodash4ever")');

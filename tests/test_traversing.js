@@ -4,6 +4,8 @@ const {expect} = require('chai');
 const NodeType = require('../lib/NodeType.js');
 const {traverse} = require('../lib/traversing.js');
 
+/** @typedef {{type: import('../lib/NodeType').Type}} Node */
+
 describe('traversing', function() {
   const testCases = {
     'should visit a name node': {
@@ -55,6 +57,16 @@ describe('traversing', function() {
         ['enter', NodeType.NAME, 'name', NodeType.TYPE_QUERY],
         ['leave', NodeType.NAME, 'name', NodeType.TYPE_QUERY],
         ['leave', NodeType.TYPE_QUERY, null, null],
+      ],
+    },
+
+    'should visit a key query node': {
+      given: createKeyQueryNode(createNameNode('t')),
+      then: [
+        ['enter', NodeType.KEY_QUERY, null, null],
+        ['enter', NodeType.NAME, 'value', NodeType.KEY_QUERY],
+        ['leave', NodeType.NAME, 'value', NodeType.KEY_QUERY],
+        ['leave', NodeType.KEY_QUERY, null, null],
       ],
     },
 
@@ -479,6 +491,17 @@ function createTypeQueryNode(name) {
   return {
     type: NodeType.TYPE_QUERY,
     name: name,
+  }
+}
+
+/**
+ * @template {Node} T
+ * @param {T} value
+ */
+function createKeyQueryNode(value) {
+  return {
+    type: NodeType.KEY_QUERY,
+    value: value,
   }
 }
 

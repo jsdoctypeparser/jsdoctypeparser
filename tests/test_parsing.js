@@ -1,10 +1,12 @@
 'use strict';
 
-const {expect, assert} = require('chai');
+const {expect} = require('chai');
 
 const NodeType = require('../lib/NodeType.js');
 const Parser = require('../lib/parsing.js');
 const SyntaxType = require('../lib/SyntaxType.js');
+
+/** @typedef {{type: import('../lib/NodeType').Type}} Node */
 
 const {
   GenericTypeSyntax, UnionTypeSyntax, VariadicTypeSyntax,
@@ -1408,6 +1410,40 @@ describe('Parser', function() {
   });
 
 
+  it('should return a type query type node when "typeof foo" arrived', function() {
+    const typeExprStr = 'typeof foo';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createTypeQueryNode(
+      createTypeNameNode('foo')
+    );
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
+  it('should return a key query type node when "keyof foo" arrived', function() {
+    const typeExprStr = 'keyof foo';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createKeyQueryNode(
+      createTypeNameNode('foo')
+    );
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a key query type node when "keyof typeof foo" arrived', function() {
+    const typeExprStr = 'keyof typeof foo';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createKeyQueryNode(
+      createTypeQueryNode(
+        createTypeNameNode('foo')
+      )
+    );
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+
   describe('operator precedence', function() {
     context('when "Foo|function():Returned?" arrived', function() {
       it('should parse as "Foo|((function():Returned)?)"', function() {
@@ -1434,6 +1470,9 @@ describe('Parser', function() {
 });
 
 
+/**
+ * @param {string} typeName
+ */
 function createTypeNameNode(typeName) {
   return {
     type: NodeType.NAME,
@@ -1551,7 +1590,7 @@ function createRecordEntryNode(key, valueTypeExpr) {
 }
 
 /**
- * @template T
+ * @template {Node} T
  * @param {T[]} tupleEntries
  */
 function createTupleTypeNode(tupleEntries) {
@@ -1616,3 +1655,26 @@ function createParenthesizedNode(value) {
     value: value,
   };
 }
+
+/**
+ * @template {Node} T
+ * @param {T} name
+ */
+function createTypeQueryNode(name) {
+  return {
+    type: NodeType.TYPE_QUERY,
+    name: name,
+  }
+}
+
+/**
+ * @template {Node} T
+ * @param {T} value
+ */
+function createKeyQueryNode(value) {
+  return {
+    type: NodeType.KEY_QUERY,
+    value: value,
+  };
+}
+

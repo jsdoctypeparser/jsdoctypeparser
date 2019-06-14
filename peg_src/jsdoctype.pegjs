@@ -32,6 +32,7 @@ TopTypeExpr = _ expr:( VariadicTypeExpr
                   / ArrowTypeExpr
                   / FunctionTypeExpr
                   / TypeQueryExpr
+                  / KeyQueryExpr
                   / BroadNamepathExpr
                   / ParenthesizedExpr
                   / ValueExpr
@@ -51,6 +52,7 @@ TopLevel = _ expr:( VariadicTypeExpr
                   / ArrowTypeExpr
                   / FunctionTypeExpr
                   / TypeQueryExpr
+                  / KeyQueryExpr
                   / BroadNamepathExpr
                   / ParenthesizedExpr
                   / ValueExpr
@@ -424,6 +426,7 @@ UnionTypeExprOperand = UnaryUnionTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
                      / TypeQueryExpr
+                     / KeyQueryExpr
                      / GenericTypeExpr
                      / ArrayTypeExpr
                      / BroadNamepathExpr
@@ -458,6 +461,28 @@ TypeQueryExpr = operator:"typeof" _ name:QualifiedMemberName {
                     name,
                 };
               }
+
+KeyQueryExpr = operator:"keyof" _ operand:KeyQueryExprOperand {
+  return {
+    type: NodeType.KEY_QUERY,
+    value: operand,
+  }
+}
+
+KeyQueryExprOperand = UnionTypeExpr
+                    / UnaryUnionTypeExpr
+                    / RecordTypeExpr
+                    / TupleTypeExpr
+                    / FunctionTypeExpr
+                    / ParenthesizedExpr
+                    / TypeQueryExpr
+                    / KeyQueryExpr
+                    / ArrayTypeExpr
+                    / GenericTypeExpr
+                    / BroadNamepathExpr
+                    / ValueExpr
+                    / AnyTypeExpr
+                    / UnknownTypeExpr
 
 ImportTypeExpr = operator:"import" _ "(" _ path:StringLiteralExpr _ ")" {
                  return { type: NodeType.IMPORT, path };
@@ -636,6 +661,7 @@ GenericTypeExprTypeParamOperand = UnionTypeExpr
                                 / ArrayTypeExpr
                                 / GenericTypeExpr
                                 / TypeQueryExpr
+                                / KeyQueryExpr
                                 / BroadNamepathExpr
                                 / ValueExpr
                                 / AnyTypeExpr
@@ -702,6 +728,7 @@ ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / ParenthesizedExpr
                      / GenericTypeExpr
                      / TypeQueryExpr
+                     / KeyQueryExpr
                      / BroadNamepathExpr
                      / ValueExpr
                      / AnyTypeExpr
@@ -808,6 +835,7 @@ FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
 
 FunctionTypeExprParamOperand = UnionTypeExpr
                              / TypeQueryExpr
+                             / KeyQueryExpr
                              / UnaryUnionTypeExpr
                              / RecordTypeExpr
                              / TupleTypeExpr
@@ -840,6 +868,7 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   / ParenthesizedExpr
                                   / ArrayTypeExpr
                                   / TypeQueryExpr
+                                  / KeyQueryExpr
                                   / GenericTypeExpr
                                   / BroadNamepathExpr
                                   / ValueExpr
@@ -953,6 +982,7 @@ TupleTypeExprOperand = UnionTypeExpr
                      / FunctionTypeExpr
                      / ParenthesizedExpr
                      / TypeQueryExpr
+                     / KeyQueryExpr
                      / ArrayTypeExpr
                      / GenericTypeExpr
                      / BroadNamepathExpr
@@ -987,6 +1017,7 @@ ParenthesizedExprOperand = UnionTypeExpr
                          / FunctionTypeExpr
                          / ArrayTypeExpr
                          / TypeQueryExpr
+                         / KeyQueryExpr
                          / GenericTypeExpr
                          / BroadNamepathExpr
                          / ValueExpr
@@ -1053,6 +1084,7 @@ VariadicTypeExprOperand = UnionTypeExpr
                         / FunctionTypeExpr
                         / ParenthesizedExpr
                         / TypeQueryExpr
+                        / KeyQueryExpr
                         / ArrayTypeExpr
                         / GenericTypeExpr
                         / BroadNamepathExpr

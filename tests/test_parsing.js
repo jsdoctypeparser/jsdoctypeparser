@@ -1235,6 +1235,17 @@ describe('Parser', function() {
     expect(node).to.deep.equal(expectedNode);
   });
 
+  it('should return an arrow function type node when "() => string" arrived', function() {
+    const typeExprStr = '() => string';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createArrowFunctionTypeNode(
+      [], createTypeNameNode('string'),
+      { 'new': null }
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
 
   it('should throw an error when "function(new:NewObject, this:ThisObject)" ' +
      'arrived', function() {
@@ -1565,6 +1576,15 @@ function createFunctionTypeNode(paramNodes, returnedNode, modifierMap) {
     params: paramNodes,
     returns: returnedNode,
     this: modifierMap.this,
+    new: modifierMap.new,
+  };
+}
+
+function createArrowFunctionTypeNode(paramNodes, returnedNode, modifierMap) {
+  return {
+    type: NodeType.ARROW,
+    params: paramNodes,
+    returns: returnedNode,
     new: modifierMap.new,
   };
 }

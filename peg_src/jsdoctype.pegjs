@@ -356,13 +356,17 @@ ValueExpr = StringLiteralExpr / NumberLiteralExpr
 StringLiteralExpr = '"' value:$([^\\"] / "\\".)* '"' {
                       return {
                         type: NodeType.STRING_VALUE,
-                        string: value.replace(/\\"/g, '"')
+                        quoteStyle: 'double',
+                        string: value.replace(/\\"/gu, '"')
+                            .replace(/\\\\/gu, '\\')
                       };
                     }
                   / "'" value:$([^\\'] / "\\".)* "'" {
                       return {
                         type: NodeType.STRING_VALUE,
+                        quoteStyle: 'single',
                         string: value.replace(/\\'/g, "'")
+                            .replace(/\\\\/gu, '\\')
                       };
                     }
 

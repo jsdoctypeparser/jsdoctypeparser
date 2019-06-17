@@ -515,6 +515,7 @@ function createImportNode(path) {
 function createStringLiteral(string) {
   return {
     type: NodeType.STRING_VALUE,
+    quoteStyle: 'double',
     string: string,
   }
 }

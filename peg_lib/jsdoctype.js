@@ -311,7 +311,9 @@ function peg$parse(input, options) {
       peg$c56 = function(value) {
                             return {
                               type: NodeType.STRING_VALUE,
-                              string: value.replace(/\\"/g, '"')
+                              quoteStyle: 'double',
+                              string: value.replace(/\\"/gu, '"')
+                                  .replace(/\\\\/gu, '\\')
                             };
                           },
       peg$c57 = /^[^\\']/,
@@ -319,7 +321,9 @@ function peg$parse(input, options) {
       peg$c59 = function(value) {
                             return {
                               type: NodeType.STRING_VALUE,
+                              quoteStyle: 'single',
                               string: value.replace(/\\'/g, "'")
+                                  .replace(/\\\\/gu, '\\')
                             };
                           },
       peg$c60 = function(value) {

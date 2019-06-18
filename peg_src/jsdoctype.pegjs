@@ -87,7 +87,8 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
                return memberPartWithOperators.reduce(function(owner, tokens) {
                  const operatorType = tokens[1];
                  const eventNamespace = tokens[3];
-                 const memberName = tokens[5];
+                 const MemberName = tokens[5];
+                 const {quoteStyle, name: memberName} = MemberName;
 
                  switch (operatorType) {
                    case NamepathOperatorType.MEMBER:
@@ -95,6 +96,7 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
                        type: NodeType.MEMBER,
                        owner,
                        name: memberName,
+                       quoteStyle,
                        hasEventPrefix: Boolean(eventNamespace),
                      };
                    case NamepathOperatorType.INSTANCE_MEMBER:
@@ -102,6 +104,7 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
                        type: NodeType.INSTANCE_MEMBER,
                        owner,
                        name: memberName,
+                       quoteStyle,
                        hasEventPrefix: Boolean(eventNamespace),
                      };
                    case NamepathOperatorType.INNER_MEMBER:
@@ -109,6 +112,7 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
                        type: NodeType.INNER_MEMBER,
                        owner,
                        name: memberName,
+                       quoteStyle,
                        hasEventPrefix: Boolean(eventNamespace),
                      };
                    default:
@@ -154,14 +158,26 @@ TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
                           }
 
 
-// TODO: Care escaped strings
-MemberName = "'" name:$([^']*) "'" {
-               return name;
+MemberName = "'" name:$([^\\'] / "\\".)* "'" {
+               return {
+                 quoteStyle: 'single',
+                 name: name.replace(/\\'/g, "'")
+                   .replace(/\\\\/gu, '\\')
+               };
              }
-           / '"' name:$([^"]*) '"' {
-               return name;
+           / '"' name:$([^\\"] / "\\".)* '"' {
+               return {
+                 quoteStyle: 'double',
+                 name: name.replace(/\\"/gu, '"')
+                  .replace(/\\\\/gu, '\\')
+               };
              }
-           / JsIdentifier
+           / name:JsIdentifier {
+             return {
+               quoteStyle: 'none',
+               name
+             };
+           };
 
 
 InfixNamepathOperator = MemberTypeOperator
@@ -264,7 +280,8 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
                  return memberPartWithOperators.reduce(function(owner, tokens) {
                    const operatorType = tokens[1];
                    const eventNamespace = tokens[3];
-                   const memberName = tokens[5];
+                   const MemberName = tokens[5];
+                   const {quoteStyle, name: memberName} = MemberName;
 
                    switch (operatorType) {
                      case NamepathOperatorType.MEMBER:
@@ -272,6 +289,7 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
                          type: NodeType.MEMBER,
                          owner,
                          name: memberName,
+                         quoteStyle,
                          hasEventPrefix: Boolean(eventNamespace),
                        };
                      case NamepathOperatorType.INSTANCE_MEMBER:
@@ -279,6 +297,7 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
                          type: NodeType.INSTANCE_MEMBER,
                          owner,
                          name: memberName,
+                         quoteStyle,
                          hasEventPrefix: Boolean(eventNamespace),
                        };
                      case NamepathOperatorType.INNER_MEMBER:
@@ -286,6 +305,7 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
                          type: NodeType.INNER_MEMBER,
                          owner,
                          name: memberName,
+                         quoteStyle,
                          hasEventPrefix: Boolean(eventNamespace),
                        };
                      default:

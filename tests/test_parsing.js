@@ -127,7 +127,7 @@ describe('Parser', function() {
     const node = Parser.parse(typeExprStr);
 
     const expectedNode = createModuleNameNode(
-      createMemberTypeNode(createFilePathNode('path/to/file'), 'member', true)
+      createMemberTypeNode(createFilePathNode('path/to/file'), 'member', 'none', true)
     );
     expect(node).to.deep.equal(expectedNode);
   });
@@ -181,7 +181,8 @@ describe('Parser', function() {
 
     const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
-      'Mem.ber');
+      'Mem.ber',
+      'double');
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -192,18 +193,33 @@ describe('Parser', function() {
 
     const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
-      'Mem\\ber');
+      'Mem\\ber',
+      'double');
 
     expect(node).to.deep.equal(expectedNode);
   });
 
-  it('should return a member type node when \'owner."Mem.ber\\"\' arrived', function() {
-    const typeExprStr = 'owner."Mem.ber\\"';
+  it('should return a member type node when \'owner."Mem.ber\\""\' arrived', function() {
+    const typeExprStr = 'owner."Mem.ber\\""';
     const node = Parser.parse(typeExprStr);
 
     const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
-      'Mem.ber\\');
+      'Mem.ber"',
+      'double'
+    );
+
+    expect(node).to.deep.equal(expectedNode);
+  });
+
+  it('should return a member type node when \'owner."Mem\\\\ber\\""\' arrived', function() {
+    const typeExprStr = 'owner."Mem\\\\ber\\""';
+    const node = Parser.parse(typeExprStr);
+
+    const expectedNode = createMemberTypeNode(
+      createTypeNameNode('owner'),
+      'Mem\\ber"',
+      'double');
 
     expect(node).to.deep.equal(expectedNode);
   });
@@ -359,6 +375,7 @@ describe('Parser', function() {
     const expectedNode = createMemberTypeNode(
       createTypeNameNode('owner'),
       'Member',
+      'none',
       true);
 
     expect(node).to.deep.equal(expectedNode);
@@ -1552,30 +1569,33 @@ function createNotNullableTypeNode(nullableTypeExpr, syntax) {
   };
 }
 
-function createMemberTypeNode(ownerTypeExpr, memberTypeName, hasEventPrefix) {
+function createMemberTypeNode(ownerTypeExpr, memberTypeName, quoteStyle = 'none', hasEventPrefix = false) {
   return {
     type: NodeType.MEMBER,
     owner: ownerTypeExpr,
     name: memberTypeName,
-    hasEventPrefix: hasEventPrefix || false,
+    quoteStyle,
+    hasEventPrefix,
   };
 }
 
-function createInnerMemberTypeNode(ownerTypeExpr, memberTypeName, hasEventPrefix) {
+function createInnerMemberTypeNode(ownerTypeExpr, memberTypeName, quoteStyle = 'none', hasEventPrefix = false) {
   return {
     type: NodeType.INNER_MEMBER,
     owner: ownerTypeExpr,
     name: memberTypeName,
-    hasEventPrefix: hasEventPrefix || false,
+    quoteStyle,
+    hasEventPrefix,
   };
 }
 
-function createInstanceMemberTypeNode(ownerTypeExpr, memberTypeName, hasEventPrefix) {
+function createInstanceMemberTypeNode(ownerTypeExpr, memberTypeName, quoteStyle = 'none', hasEventPrefix = false) {
   return {
     type: NodeType.INSTANCE_MEMBER,
     owner: ownerTypeExpr,
     name: memberTypeName,
-    hasEventPrefix: hasEventPrefix || false,
+    quoteStyle,
+    hasEventPrefix,
   };
 }
 
@@ -1700,4 +1720,3 @@ function createKeyQueryNode(value) {
     value: value,
   };
 }
-

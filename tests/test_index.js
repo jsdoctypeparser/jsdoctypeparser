@@ -6,7 +6,7 @@ const jsdoctypeparser = require('../index.js');
 describe('jsdoctypeparser', function() {
   const expectedTypeMap = {
     parse: 'function',
-    SyntaxError: 'function',
+    JSDocTypeSyntaxError: 'function',
     publish: 'function',
     createDefaultPublisher: 'function',
     traverse: 'function',

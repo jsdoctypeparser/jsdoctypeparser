@@ -20,7 +20,7 @@ The parser can parse:
 
 The [live demo](https://jsdoctypeparser.github.io/jsdoctypeparser/) is available.
 
-## Usage
+## Usage (Programmatic)
 
 ### Parsing
 
@@ -617,6 +617,20 @@ We can use a parenthesis to change operator orders.
  * @type {(module:path/to/file.js).foo}
  */
 ```
+
+## Usage (CLI)
+
+To parse a type into a JSON structure, you may pass a string argument
+containing the structure to parse (with the JSON results equivalent to the
+parsing example above):
+
+```
+jsdoctypeparser 'Array<MyClass>'
+```
+
+Note: There is no need to prefix the path to the `jsdoctypeparser` binary,
+e.g., with `./node_modules/.bin/` when you are running within one of the
+`package.json` `scripts` or if you have installed the package globally.
 
 ## License
 

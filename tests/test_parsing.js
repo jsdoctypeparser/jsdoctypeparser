@@ -1154,21 +1154,47 @@ describe('Parser', function() {
       });
     });
     describe('external', function () {
-      it('should return a module name node when "external:string" arrived', function() {
+      it('should return an external name node when "external:string" arrived', function() {
         const typeExprStr = 'external:string';
         const node = Parser.parse(typeExprStr);
 
-        const expectedNode = createExternalNameNode(createTypeNameNode('string'));
+        const expectedNode = createExternalNameNode('string');
         expect(node).to.deep.equal(expectedNode);
       });
 
 
-      it('should return a module name node when "external : String#rot13" arrived', function() {
+      it('should return an external name node when "external : String#rot13" arrived', function() {
         const typeExprStr = 'external : String#rot13';
         const node = Parser.parse(typeExprStr);
 
-        const expectedNode = createExternalNameNode(
-          createInstanceMemberTypeNode(createTypeNameNode('String'), 'rot13'));
+        const expectedNode = createInstanceMemberTypeNode(
+          createExternalNameNode('String'),
+          'rot13'
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return an external name node when `external:"jQuery.fn"` arrived', function() {
+        const typeExprStr = 'external:"jQuery.fn"';
+        const node = Parser.parse(typeExprStr);
+
+        const expectedNode = createExternalNameNode('jQuery.fn', 'double');
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return an external name node when `external:"jQuery.fn".someMethod#event:abc` arrived', function() {
+        const typeExprStr = 'external:"jQuery.fn".someMethod#event:abc';
+        const node = Parser.parse(typeExprStr);
+
+        const expectedNode = createInstanceMemberTypeNode(
+          createMemberTypeNode(
+            createExternalNameNode('jQuery.fn', 'double'),
+            'someMethod'
+          ),
+          'abc',
+          'none',
+          true
+        );
         expect(node).to.deep.equal(expectedNode);
       });
     });
@@ -1730,10 +1756,11 @@ function createModuleNameNode(value) {
   };
 }
 
-function createExternalNameNode(value) {
+function createExternalNameNode(name, quoteStyle = 'none') {
   return {
     type: NodeType.EXTERNAL,
-    value: value,
+    name,
+    quoteStyle,
   };
 }
 

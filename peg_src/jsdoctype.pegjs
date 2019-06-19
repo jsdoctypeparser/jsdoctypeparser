@@ -157,7 +157,6 @@ TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
                             };
                           }
 
-
 MemberName = "'" name:$([^\\'] / "\\".)* "'" {
                return {
                  quoteStyle: 'single',
@@ -247,12 +246,45 @@ BroadNamepathExpr = ExternalNameExpr
  * Spec:
  *   - https://jsdoc.app/tags-external.html
  */
-ExternalNameExpr = "external" _ ":" _ value:NamepathExpr {
-                   return {
-                     type: NodeType.EXTERNAL,
-                     value
-                   };
-                 }
+ExternalNameExpr = "external" _ ":" _ external:(MemberName) memberPartWithOperators:(_ InfixNamepathOperator _ "event:"? _ MemberName)* {
+          return memberPartWithOperators.reduce(function(owner, tokens) {
+            const operatorType = tokens[1];
+            const eventNamespace = tokens[3];
+            const MemberName = tokens[5];
+            const {quoteStyle, name: memberName} = MemberName;
+
+            switch (operatorType) {
+              case NamepathOperatorType.MEMBER:
+                return {
+                  type: NodeType.MEMBER,
+                  owner,
+                  name: memberName,
+                  quoteStyle,
+                  hasEventPrefix: Boolean(eventNamespace),
+                };
+              case NamepathOperatorType.INSTANCE_MEMBER:
+                return {
+                  type: NodeType.INSTANCE_MEMBER,
+                  owner,
+                  name: memberName,
+                  quoteStyle,
+                  hasEventPrefix: Boolean(eventNamespace),
+                };
+              case NamepathOperatorType.INNER_MEMBER:
+                return {
+                  type: NodeType.INNER_MEMBER,
+                  owner,
+                  name: memberName,
+                  quoteStyle,
+                  hasEventPrefix: Boolean(eventNamespace),
+                };
+              default:
+                throw new Error('Unexpected operator type: "' + operatorType + '"');
+            }
+          }, Object.assign({
+            type: NodeType.EXTERNAL
+          }, external));
+        }
 
 
 /*

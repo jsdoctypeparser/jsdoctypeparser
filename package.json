@@ -19,7 +19,7 @@
   "engines": {
     "node": ">=6"
   },
-  "homepage": "https://jsdoctypeparser.github.io/jsdoctypeparser/",
+  "homepage": "https://jsdoctypeparser.github.io",
   "bugs": {
     "mail": "orga.chem.job@gmail.com",
     "url": "https://github.com/jsdoctypeparser/jsdoctypeparser/issues"

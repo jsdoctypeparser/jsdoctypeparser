@@ -408,6 +408,53 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+    it('should return a record type node when \'{"keyOnly"}\' arrived', function() {
+      const typeExprStr = '{"keyOnly"}';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('keyOnly', null, 'double'),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a record type node when "{\'keyOnly\'}" arrived', function() {
+      const typeExprStr = "{'keyOnly'}";
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('keyOnly', null, 'single'),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a record type node when \'{"ke\\\\y\\Only\\""}\' arrived', function() {
+      const typeExprStr = '{"ke\\\\y\\Only\\""}';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('ke\\y\\Only"', null, 'double'),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should throw when \'{"key"Only"}\' arrived', function() {
+      const typeExprStr = '{"key"Only"}';
+      expect(function () {
+        Parser.parse(typeExprStr);
+      }).to.throw('Expected ",", ":", "}", or [ \\t\\r\\n ] but "O" found.');
+    });
+
+    it('should throw when \'{"key\\\\"Only"}\' arrived', function() {
+      const typeExprStr = '{"key\\\\"Only"}';
+      expect(function () {
+        Parser.parse(typeExprStr);
+      }).to.throw('Expected ",", ":", "}", or [ \\t\\r\\n ] but "O" found.');
+    });
+
 
     it('should return a record type node when "{key1:ValueType1,key2:ValueType2}"' +
        ' arrived', function() {
@@ -457,7 +504,7 @@ describe('Parser', function() {
       const node = Parser.parse(typeExprStr);
 
       const expectedNode = createRecordTypeNode([
-        createRecordEntryNode('quoted-key', createTypeNameNode('ValueType')),
+        createRecordEntryNode('quoted-key', createTypeNameNode('ValueType'), 'single'),
       ]);
 
       expect(node).to.deep.equal(expectedNode);
@@ -1677,11 +1724,12 @@ function createRecordTypeNode(recordEntries) {
   };
 }
 
-function createRecordEntryNode(key, valueTypeExpr) {
+function createRecordEntryNode(key, valueTypeExpr, quoteStyle = 'none') {
   return {
     type: NodeType.RECORD_ENTRY,
     key: key,
     value: valueTypeExpr,
+    quoteStyle,
   };
 }
 

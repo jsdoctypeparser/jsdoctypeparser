@@ -3,7 +3,12 @@
   "properties": {
     "type": { "$ref": "NodeType.json" },
     "owner": { "$ref": "Node.json" },
-    "name": { "type": "string" }
+    "name": { "type": "string" },
+    "hasEventPrefix": { "type": "boolean" },
+    "quoteStyle": {
+      "type": "string",
+      "enum": ["single", "double", "none"]
+    }
   },
   "required": [
     "type",

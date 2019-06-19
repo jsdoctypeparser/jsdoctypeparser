@@ -316,13 +316,29 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
 
 
 
-FilePathExpr = filePath:$([a-zA-Z0-9_$/-]+) {
+FilePathExpr = "'" path:$([^\\'] / "\\".)* "'" {
+                return {
+                  quoteStyle: 'single',
+                  type: NodeType.FILE_PATH,
+                  path: path.replace(/\\'/g, "'")
+                    .replace(/\\\\/gu, '\\')
+                };
+              }
+            / '"' path:$([^\\"] / "\\".)* '"' {
+                return {
+                  quoteStyle: 'double',
+                  type: NodeType.FILE_PATH,
+                  path: path.replace(/\\"/gu, '"')
+                   .replace(/\\\\/gu, '\\')
+                };
+              }
+            / path:$([a-zA-Z0-9_$/-]+) {
                return {
+                 quoteStyle: 'none',
                  type: NodeType.FILE_PATH,
-                 path: filePath,
+                 path,
                };
              }
-
 
 /*
  * Any type expressions.

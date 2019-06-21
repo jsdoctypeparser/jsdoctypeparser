@@ -72,7 +72,7 @@ _  = [ \t\r\n ]*
 /*
  * JavaScript identifier names.
  *
- * NOTE: We does not support UnicodeIDStart and \UnicodeEscapeSequence yet.
+ * NOTE: We do not support UnicodeIDStart and \UnicodeEscapeSequence yet.
  *
  * Spec:
  *   - http://www.ecma-international.org/ecma-262/6.0/index.html#sec-names-and-keywords
@@ -719,7 +719,7 @@ GenericTypeEndToken = ">"
 
 
 /*
- * JSDoc style array of a generic type expressions.
+ * JSDoc style array of generic type expressions.
  *
  * Examples:
  *   - string[]

@@ -1,6 +1,6 @@
 'use strict';
 
-const {parse, SyntaxError} = require('./lib/parsing.js');
+const {parse, JSDocTypeSyntaxError} = require('./lib/parsing.js');
 const {publish, createDefaultPublisher} = require('./lib/publishing.js');
 const {traverse} = require('./lib/traversing.js');
 const NodeType = require('./lib/NodeType.js');
@@ -14,7 +14,7 @@ const SyntaxType = require('./lib/SyntaxType.js');
  */
 module.exports = {
   parse,
-  SyntaxError,
+  JSDocTypeSyntaxError,
   publish,
   createDefaultPublisher,
   traverse,

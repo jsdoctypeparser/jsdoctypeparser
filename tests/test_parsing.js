@@ -140,7 +140,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
 
     it('should throw a syntax error when "Invalid type" arrived', function() {
@@ -148,7 +148,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
   });
 
@@ -370,7 +370,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
   });
 
@@ -633,7 +633,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
 
 
@@ -715,7 +715,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
 
 
@@ -725,7 +725,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
 
 
@@ -1287,7 +1287,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
 
 
@@ -1296,7 +1296,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
 
     it('should return a variadic type node when "...PrefixVariadic" arrived', function() {
@@ -1498,7 +1498,7 @@ describe('Parser', function() {
 
       expect(function() {
         Parser.parse(typeExprStr);
-      }).to.throw(Parser.SyntaxError);
+      }).to.throw(Parser.JSDocTypeSyntaxError);
     });
   });
 

@@ -401,7 +401,7 @@ NumberLiteralExpr = value:(BinNumberLiteralExpr / OctNumberLiteralExpr / HexNumb
 
 DecimalNumberLiteralExpr = $(("+" / "-")? UnsignedDecimalNumberLiteralExpr)
 
-UnsignedDecimalNumberLiteralExpr = $([0-9]+ ("." [0-9]+)? ("e" ("+" / "-")? [0-9]+)?)
+UnsignedDecimalNumberLiteralExpr = $((([0-9]+ ("." [0-9]+)?) / ("." [0-9]+)) ("e" ("+" / "-")? [0-9]+)?)
 
 
 

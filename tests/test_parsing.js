@@ -32,6 +32,13 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+    it('should return a number value type node when ".0" arrived', function() {
+      const typeExprStr = '.0';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
 
     it('should return a number value type node when "-0" arrived', function() {
       const typeExprStr = '-0';
@@ -41,6 +48,46 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+
+    it('should return a number value type node when "+0" arrived', function() {
+      const typeExprStr = '+0';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a number value type node when "3e5" arrived', function() {
+      const typeExprStr = '3e5';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a number value type node when "3e+5" arrived', function() {
+      const typeExprStr = '3e+5';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a number value type node when "3e-5" arrived', function() {
+      const typeExprStr = '3e-5';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a number value type node when "3.14e5" arrived', function() {
+      const typeExprStr = '3.14e5';
+      const node = Parser.parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
 
     it('should return a number value type node when "0b01" arrived', function() {
       const typeExprStr = '0b01';

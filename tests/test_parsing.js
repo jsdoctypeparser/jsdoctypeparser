@@ -1225,6 +1225,50 @@ describe('Parser', function() {
         );
         expect(node).to.deep.equal(expectedNode);
       });
+
+      it('should return a member node when \'module:"path/to/file".event:member\' arrived', function() {
+        const typeExprStr = 'module:"path/to/file".event:member';
+        const node = Parser.parse(typeExprStr);
+
+        const expectedNode = createModuleNameNode(
+          createMemberTypeNode(createFilePathNode('path/to/file', 'double'), 'member', 'none', true)
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return a member node when \'module:"path\\\\to\\file\\"".event:member\' arrived', function() {
+        const typeExprStr = 'module:"path\\\\to\\file\\"".event:member';
+        const node = Parser.parse(typeExprStr);
+
+        const expectedNode = createModuleNameNode(
+          createMemberTypeNode(createFilePathNode('path\\to\\file"', 'double'), 'member', 'none', true)
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should throw when \'module:"path/t"o/file".event:member\' arrived', function() {
+        const typeExprStr = 'module:"path/t"o/file".event:member';
+        expect(function () {
+          Parser.parse(typeExprStr);
+        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t\\r\\n ], or end of input but "o" found.');
+      });
+
+      it('should throw when \'module:"path/t\\\\"o/file".event:member', function() {
+        const typeExprStr = 'module:"path/t\\\\"o/file".event:member';
+        expect(function () {
+          Parser.parse(typeExprStr);
+        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t\\r\\n ], or end of input but "o" found.');
+      });
+
+      it('should return a member node when "module:\'path/to/file\'.event:member" arrived', function() {
+        const typeExprStr = "module:'path/to/file'.event:member";
+        const node = Parser.parse(typeExprStr);
+
+        const expectedNode = createModuleNameNode(
+          createMemberTypeNode(createFilePathNode('path/to/file', 'single'), 'member', 'none', true)
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
     });
   });
 
@@ -1834,10 +1878,11 @@ function createStringValueNode(stringLiteral, quoteStyle = 'double') {
   };
 }
 
-function createFilePathNode(filePath) {
+function createFilePathNode(filePath, quoteStyle = 'none') {
   return {
     type: NodeType.FILE_PATH,
     path: filePath,
+    quoteStyle,
   };
 }
 

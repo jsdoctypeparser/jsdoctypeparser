@@ -303,7 +303,7 @@ describe('publish', function() {
         expect(publish(node)).to.equal('namespace."memberNameValue"');
       });
 
-      it('should return a quoted `MemberName` type', function() {
+      it('should return a quoted `MemberName` type (single quotes)', function() {
         const node = parse("namespace.'memberNameValue'");
         expect(publish(node)).to.equal("namespace.'memberNameValue'");
       });
@@ -369,6 +369,31 @@ describe('publish', function() {
         //   const node = parse('module:foo/bar.<string>');
         const node = parse('module:foo/bar<string>');
         expect(publish(node)).to.equal('module:foo/bar<string>');
+      });
+
+      it('should return a quoted module type', function() {
+        const node = parse('module:"module/path".member');
+        expect(publish(node)).to.equal('module:"module/path".member');
+      });
+
+      it('should return a quoted module type (single quotes)', function() {
+        const node = parse("module:'module/path'.member");
+        expect(publish(node)).to.equal("module:'module/path'.member");
+      });
+
+      it('should return a quoted module type with escaped quote', function() {
+        const node = parse('module:"module/path\\"Value".member');
+        expect(publish(node)).to.equal('module:"module/path\\"Value".member');
+      });
+
+      it('should return a quoted module type with single extra backslash for odd count backslash series not before a quote', function() {
+        const node = parse('module:"\\Odd/count/backslash/sequence/not/before/a/quote\\add\\\\\\one/backslash\\.".member');
+        expect(publish(node)).to.equal('module:"\\\\Odd/count/backslash/sequence/not/before/a/quote\\\\add\\\\\\\\one/backslash\\\\.".member');
+      });
+
+      it('should return a quoted module type without adding backslashes for escaped backslash sequences (i.e., even count)', function() {
+        const node = parse('module:"\\\\Even/count/(escaped)\\\\\\\\backslash/sequences\\\\remain\\\\".member');
+        expect(publish(node)).to.equal('module:"\\\\Even/count/(escaped)\\\\\\\\backslash/sequences\\\\remain\\\\".member');
       });
     });
   });

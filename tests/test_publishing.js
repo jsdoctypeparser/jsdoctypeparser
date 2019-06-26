@@ -141,6 +141,31 @@ describe('publish', function() {
       const node = parse('{myNum: number, myObject}');
       expect(publish(node)).to.equal('{myNum: number, myObject}');
     });
+
+    it('should return a quoted record type key', function() {
+      const node = parse('{"myNum": number, "myObject"}');
+      expect(publish(node)).to.equal('{"myNum": number, "myObject"}');
+    });
+
+    it('should return a quoted record type key (single quotes)', function() {
+      const node = parse("{'myNum': number, 'myObject'}");
+      expect(publish(node)).to.equal("{'myNum': number, 'myObject'}");
+    });
+
+    it('should return a quoted record type key with escaped quote', function() {
+      const node = parse('{"my\\"Num": number, "myObject"}');
+      expect(publish(node)).to.equal('{"my\\"Num": number, "myObject"}');
+    });
+
+    it('should return a quoted record type key with single extra backslash for odd count backslash series not before a quote', function() {
+      const node = parse('{"\\Odd count backslash sequence not before a quote\\add\\\\\\one backslash\\.": number, "myObject"}');
+      expect(publish(node)).to.equal('{"\\\\Odd count backslash sequence not before a quote\\\\add\\\\\\\\one backslash\\\\.": number, "myObject"}');
+    });
+
+    it('should return a quoted record type key without adding backslashes for escaped backslash sequences (i.e., even count)', function() {
+      const node = parse('{"\\\\Even count (escaped)\\\\\\\\backslash sequences\\\\remain\\\\": number, "myObject"}');
+      expect(publish(node)).to.equal('{"\\\\Even count (escaped)\\\\\\\\backslash sequences\\\\remain\\\\": number, "myObject"}');
+    });
   });
 
   describe('Tuple types', function () {

@@ -399,7 +399,10 @@ NumberLiteralExpr = value:(BinNumberLiteralExpr / OctNumberLiteralExpr / HexNumb
                   }
 
 
-DecimalNumberLiteralExpr = $("-"? [0-9]+ ("." [0-9]+)?)
+DecimalNumberLiteralExpr = $(("+" / "-")? UnsignedDecimalNumberLiteralExpr)
+
+UnsignedDecimalNumberLiteralExpr = $((([0-9]+ ("." [0-9]+)?) / ("." [0-9]+)) ("e" ("+" / "-")? [0-9]+)?)
+
 
 
 BinNumberLiteralExpr = $("-"? "0b"[01]+)
@@ -930,29 +933,46 @@ RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:(_ "," _ RecordT
                       }
 
 
-RecordTypeExprEntry = key:RecordTypeExprEntryKey _ ":" _ value:RecordTypeExprEntryOperand {
+RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _ ":" _ value:RecordTypeExprEntryOperand {
+                        const {quoteStyle, key} = keyInfo;
                         return {
                           type: NodeType.RECORD_ENTRY,
                           key,
-                          value
+                          value,
+                          quoteStyle
                         };
                       }
-                    / key:RecordTypeExprEntryKey {
+                    / keyInfo:RecordTypeExprEntryKey {
+                        const {quoteStyle, key} = keyInfo;
                         return {
                           type: NodeType.RECORD_ENTRY,
                           key,
                           value: null,
+                          quoteStyle
                         };
                       }
 
 
-RecordTypeExprEntryKey = '"' key:$([^"]*) '"' {
-                           return key;
+RecordTypeExprEntryKey = '"' key:$([^\\"] / "\\".)* '"' {
+                           return {
+                             quoteStyle: 'double',
+                             key: key.replace(/\\"/gu, '"')
+                               .replace(/\\\\/gu, '\\')
+                           };
+                       }
+                       / "'" key:$([^\\'] / "\\".)* "'" {
+                           return {
+                             quoteStyle: 'single',
+                             key: key.replace(/\\'/g, "'")
+                               .replace(/\\\\/gu, '\\')
+                           };
                          }
-                       / "'" key:$([^']*) "'" {
-                           return key;
-                         }
-                       / $([a-zA-Z0-9_$]+)
+                       / key:$(JsIdentifier / UnsignedDecimalNumberLiteralExpr) {
+                           return {
+                             quoteStyle: 'none',
+                             key
+                           };
+                       }
 
 
 RecordTypeExprEntryOperand = UnionTypeExpr

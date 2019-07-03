@@ -329,6 +329,18 @@ describe('publish', function() {
         const node = parse('external:string');
         expect(publish(node)).to.equal('external:string');
       });
+      it('should return an external node type with an instance member method', function() {
+        const node = parse('external : String#rot13');
+        expect(publish(node)).to.equal('external:String#rot13');
+      });
+      it('should return a quoted external node type', function() {
+        const node = parse('external:"jQuery.fn"');
+        expect(publish(node)).to.equal('external:"jQuery.fn"');
+      });
+      it('should return a quoted external node type with a static member method and event', function() {
+        const node = parse('external:"jQuery.fn".someMethod#event:abc');
+        expect(publish(node)).to.equal('external:"jQuery.fn".someMethod#event:abc');
+      });
     });
 
 

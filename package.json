@@ -41,7 +41,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^12.0.12",
+    "@types/node": "^12.6.1",
     "chai": "^4.2.0",
     "eslint": "^6.0.1",
     "mkdirp": "^0.5.1",

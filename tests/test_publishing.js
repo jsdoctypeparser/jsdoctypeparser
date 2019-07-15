@@ -166,6 +166,16 @@ describe('publish', function() {
       const node = parse('{"\\\\Even count (escaped)\\\\\\\\backslash sequences\\\\remain\\\\": number, "myObject"}');
       expect(publish(node)).to.equal('{"\\\\Even count (escaped)\\\\\\\\backslash sequences\\\\remain\\\\": number, "myObject"}');
     });
+
+    it('should return an optional record type by type', function() {
+      const node = parse('{myNum: number=}');
+      expect(publish(node)).to.equal('{myNum: number=}');
+    });
+
+    it('should return an optional record type by key', function() {
+      const node = parse('{myNum?: number}');
+      expect(publish(node)).to.equal('{myNum?: number}');
+    });
   });
 
   describe('Tuple types', function () {

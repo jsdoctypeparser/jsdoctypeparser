@@ -323,11 +323,9 @@ describe('traversing', function() {
     },
     'External': {
       'should visit an external node': {
-        given: { type: NodeType.EXTERNAL, value: createNameNode('external') },
+        given: { type: NodeType.EXTERNAL, name: 'external', quoteStyle: 'double' },
         then: [
           ['enter', NodeType.EXTERNAL, null, null],
-          ['enter', NodeType.NAME, 'value', NodeType.EXTERNAL],
-          ['leave', NodeType.NAME, 'value', NodeType.EXTERNAL],
           ['leave', NodeType.EXTERNAL, null, null],
         ],
       },

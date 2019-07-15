@@ -1,7 +1,7 @@
 {
   "name": "jsdoctypeparser",
   "description": "Strict JsDoc type expression parser.",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "author": "Kuniwak <orga.chem.job@gmail.com>",
   "contributors": [
     "Brett Zamir",
@@ -48,7 +48,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^12.0.12",
+    "@types/node": "^12.6.2",
     "chai": "^4.2.0",
     "eslint": "^6.0.1",
     "husky": "^3.0.0",

@@ -650,13 +650,17 @@ function peg$parse(input, options) {
                                 return entries.concat([entry]);
                               }, [first]);
                             },
-      peg$c157 = function(keyInfo, value) {
+      peg$c157 = function(keyInfo, optional, value) {
                               const {quoteStyle, key} = keyInfo;
                               return {
                                 type: NodeType.RECORD_ENTRY,
                                 key,
-                                value,
-                                quoteStyle
+                                quoteStyle,
+                                value: optional !== '?' ? value : {
+                                  type: NodeType.OPTIONAL,
+                                  value,
+                                  meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK },
+                                }
                               };
                             },
       peg$c158 = function(keyInfo) {
@@ -6145,7 +6149,7 @@ function peg$parse(input, options) {
   }
 
   function peg$parseRecordTypeExprEntry() {
-    var s0, s1, s2, s3, s4, s5;
+    var s0, s1, s2, s3, s4, s5, s6, s7;
 
     var key    = peg$currPos * 84 + 71,
         cached = peg$resultsCache[key];
@@ -6161,21 +6165,42 @@ function peg$parse(input, options) {
     if (s1 !== peg$FAILED) {
       s2 = peg$parse_();
       if (s2 !== peg$FAILED) {
-        if (input.charCodeAt(peg$currPos) === 58) {
-          s3 = peg$c40;
+        if (input.charCodeAt(peg$currPos) === 63) {
+          s3 = peg$c55;
           peg$currPos++;
         } else {
           s3 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c41); }
+          if (peg$silentFails === 0) { peg$fail(peg$c56); }
+        }
+        if (s3 === peg$FAILED) {
+          s3 = null;
         }
         if (s3 !== peg$FAILED) {
           s4 = peg$parse_();
           if (s4 !== peg$FAILED) {
-            s5 = peg$parseRecordTypeExprEntryOperand();
+            if (input.charCodeAt(peg$currPos) === 58) {
+              s5 = peg$c40;
+              peg$currPos++;
+            } else {
+              s5 = peg$FAILED;
+              if (peg$silentFails === 0) { peg$fail(peg$c41); }
+            }
             if (s5 !== peg$FAILED) {
-              peg$savedPos = s0;
-              s1 = peg$c157(s1, s5);
-              s0 = s1;
+              s6 = peg$parse_();
+              if (s6 !== peg$FAILED) {
+                s7 = peg$parseRecordTypeExprEntryOperand();
+                if (s7 !== peg$FAILED) {
+                  peg$savedPos = s0;
+                  s1 = peg$c157(s1, s3, s7);
+                  s0 = s1;
+                } else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+                }
+              } else {
+                peg$currPos = s0;
+                s0 = peg$FAILED;
+              }
             } else {
               peg$currPos = s0;
               s0 = peg$FAILED;

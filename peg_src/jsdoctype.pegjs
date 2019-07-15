@@ -951,7 +951,6 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   / UnknownTypeExpr
 
 
-
 /*
  * Record type expressions.
  *
@@ -961,9 +960,11 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
  *   - {length:number}
  *   - {toString:Function,valueOf:Function}
  *   - {'foo':*}
+ *   - {a:string,b?:number} // TypeScript syntax
  *
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
+ *   - https://www.typescriptlang.org/docs/handbook/type-checking-javascript-files.html#patterns-that-are-known-not-to-be-supported
  */
 RecordTypeExpr = "{" _ entries:RecordTypeExprEntries? _ "}" {
                  return {
@@ -980,14 +981,17 @@ RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:(_ "," _ RecordT
                         }, [first]);
                       }
 
-
-RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _ ":" _ value:RecordTypeExprEntryOperand {
+RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _ optional:"?"? _ ":" _ value:RecordTypeExprEntryOperand {
                         const {quoteStyle, key} = keyInfo;
                         return {
                           type: NodeType.RECORD_ENTRY,
                           key,
-                          value,
-                          quoteStyle
+                          quoteStyle,
+                          value: optional !== '?' ? value : {
+                            type: NodeType.OPTIONAL,
+                            value,
+                            meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK },
+                          }
                         };
                       }
                     / keyInfo:RecordTypeExprEntryKey {

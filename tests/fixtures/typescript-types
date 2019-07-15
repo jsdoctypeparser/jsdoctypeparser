@@ -57,6 +57,7 @@
 {[ tuple, with, keyof foo, and, ...rest ]}
 {[ tuple, with, typeof foo, and, keyof foo]}
 {[ tuple, with, typeof foo, keyof foo, and, ...rest ]}
+{{ object?: string, key: string }}
 //{(own: list, of: constituents) => x}
 //{{ (own: list, constituents): x }}
 //{{ new (own: list, constituents): x }}

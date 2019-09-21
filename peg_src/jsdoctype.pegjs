@@ -974,7 +974,7 @@ RecordTypeExpr = "{" _ entries:RecordTypeExprEntries? _ "}" {
                }
 
 
-RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:(_ "," _ RecordTypeExprEntry)* {
+RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:(_ "," _ RecordTypeExprEntry)* _ ","? {
                         return restWithComma.reduce(function(entries, tokens) {
                           const entry = tokens[3];
                           return entries.concat([entry]);

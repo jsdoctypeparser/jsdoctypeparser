@@ -38,16 +38,20 @@
 {(x: *) => *}
 {(x: number) => string}
 {(x: number, y: string, z: Class) => string}
+//{( arrow: Function, with: TrailingComma, ) => string}
 {() => string}
 {function(): () => string}
 {function(() => string): void}
+//{function( TrailingComma, ): string}
 {X<() => string>}
 {new (x: number) => string}
+{{ object: 'with', trailing: 'comma', }}
 // The empty tuple:
 {[]}
 {[x]}
 {[it, needs, to, be]}
 {[ tuple, with, spaces ]}
+//{[ tuple, with, trailing, comma, ]}
 {[][]}
 {[tuple, array][]}
 {[variadic, arguments, ...tuple]}
@@ -65,4 +69,3 @@
 //{{ [s: string]: string }}
 //{{ [T in keyof P]: T[K] }}
 //{X extends Y ? U : V}
-

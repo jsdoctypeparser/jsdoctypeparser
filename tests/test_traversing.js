@@ -354,6 +354,16 @@ describe('traversing', function() {
           ['leave', NodeType.VARIADIC, null, null],
         ],
       },
+      'should visit an empty variadic node': {
+        given: { type: NodeType.VARIADIC, value: null },
+        then: [
+          // eventName, node && node.type, propName, parentNode && parentNode.type
+          ['enter', NodeType.VARIADIC, null, null],
+          ['enter', null, 'value', NodeType.VARIADIC],
+          ['leave', null, 'value', NodeType.VARIADIC],
+          ['leave', NodeType.VARIADIC, null, null],
+        ],
+      },
       'should visit an optional node': {
         given: {
           type: NodeType.OPTIONAL,
@@ -559,7 +569,7 @@ function createInstanceMemberNode(name, owner) {
 
 function createEventSpy(eventName, result) {
   return function(node, propName, parentNode) {
-    result.push([eventName, node.type, propName, parentNode && parentNode.type]);
+    result.push([eventName, node && node.type, propName, parentNode && parentNode.type]);
   };
 }
 

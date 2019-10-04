@@ -221,6 +221,16 @@ describe('publish', function() {
       expect(publish(node)).to.equal('function()');
     });
 
+    it('should return a function type with variadic', function() {
+      const node = parse('function(...a)');
+      expect(publish(node)).to.equal('function(...a)');
+    });
+
+    it('should return a function type with variadic and no operand', function() {
+      const node = parse('function(...)');
+      expect(publish(node)).to.equal('function(...)');
+    });
+
 
     it('should return a function type with a parameter', function() {
       const node = parse('function(string)');

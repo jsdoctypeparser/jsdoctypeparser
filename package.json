@@ -31,7 +31,7 @@
   "bin": "./bin/jsdoctypeparser",
   "scripts": {
     "prepare": "npm-run-all build",
-    "pretest": "npm-run-all lint build typecheck",
+    "pretest": "npm-run-all lint build",
     "test": "npm-run-all mocha typecheck",
     "lint": "eslint .",
     "mocha": "mocha tests",

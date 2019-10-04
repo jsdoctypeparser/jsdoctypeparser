@@ -4,9 +4,9 @@
 {{ object: with; semicolon: separator }}
 {{ object: with; semicolon: separators; }}
 {{ object: with, mixed: format; separator: markers, }}
-// {{ object: with, mixed: format; separator: markers\n including: newline }}
-// {{ object: with\n linebreak: separator }}
-// {{ object: with\n linebreak: separators\n }}
+{{ object: with \n linebreak: separator }}
+{{ object: with \n linebreak: separators\n }}
+{{ object: with, mixed: format; separator: markers\n including: newline }}
 {typeof A}
 {typeof}
 {X<typeof>}

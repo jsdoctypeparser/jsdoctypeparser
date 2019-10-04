@@ -3,6 +3,8 @@
 {{ object: with, trailing: comma, }}
 {{ object: with; semicolon: separator }}
 {{ object: with; semicolon: separators; }}
+{{ object: with, mixed: format; separator: markers, }}
+// {{ object: with, mixed: format; separator: markers\n including: newline }}
 // {{ object: with\n linebreak: separator }}
 // {{ object: with\n linebreak: separators\n }}
 {typeof A}

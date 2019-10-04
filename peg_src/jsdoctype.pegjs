@@ -66,7 +66,7 @@ TopLevel = _ expr:( VariadicTypeExpr
 /*
  * White spaces.
  */
-_  = [ \t\r\n ]*
+_  = [ \t\r\n]*
 
 
 /*
@@ -974,7 +974,7 @@ RecordTypeExpr = "{" _ entries:RecordTypeExprEntries? _ "}" {
                }
 
 
-RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:((_ "," /_ ";" / [ \t\r ]* [\n]) _ RecordTypeExprEntry)* (_ "," / _ ";" / [ \t\r ]* [\n])? {
+RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:((_ "," /_ ";" / [ \t\r]* [\n]) _ RecordTypeExprEntry)* (_ "," / _ ";" / [ \t\r]* [\n])? {
                         return restWithComma.reduce(function(entries, tokens) {
                           const entry = tokens[2];
                           return entries.concat([entry]);

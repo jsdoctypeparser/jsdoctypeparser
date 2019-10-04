@@ -144,8 +144,8 @@ function peg$parse(input, options) {
       peg$c0 = function(expr) {
                  return expr;
                },
-      peg$c1 = /^[ \t\r\n ]/,
-      peg$c2 = peg$classExpectation([" ", "\t", "\r", "\n", " "], false, false),
+      peg$c1 = /^[ \t\r\n]/,
+      peg$c2 = peg$classExpectation([" ", "\t", "\r", "\n"], false, false),
       peg$c3 = /^[a-zA-Z_$]/,
       peg$c4 = peg$classExpectation([["a", "z"], ["A", "Z"], "_", "$"], false, false),
       peg$c5 = /^[a-zA-Z0-9_$]/,
@@ -646,8 +646,8 @@ function peg$parse(input, options) {
                      },
       peg$c156 = ";",
       peg$c157 = peg$literalExpectation(";", false),
-      peg$c158 = /^[ \t\r ]/,
-      peg$c159 = peg$classExpectation([" ", "\t", "\r", " "], false, false),
+      peg$c158 = /^[ \t\r]/,
+      peg$c159 = peg$classExpectation([" ", "\t", "\r"], false, false),
       peg$c160 = /^[\n]/,
       peg$c161 = peg$classExpectation(["\n"], false, false),
       peg$c162 = function(first, restWithComma) {

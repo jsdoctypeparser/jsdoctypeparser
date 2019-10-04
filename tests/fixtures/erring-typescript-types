@@ -1,0 +1,3 @@
+{function(string, number, ...any[], ): any}
+{(arg0: string, arg1: number, ...rest: any[], ) => any}
+{[string, ...any, ]}

@@ -42,11 +42,11 @@
 {(x: *) => *}
 {(x: number) => string}
 {(x: number, y: string, z: Class) => string}
-//{( arrow: Function, with: TrailingComma, ) => string}
+{( arrow: Function, with: TrailingComma, ) => string}
 {() => string}
 {function(): () => string}
 {function(() => string): void}
-//{function( TrailingComma, ): string}
+{function( TrailingComma, ): string}
 {X<() => string>}
 {new (x: number) => string}
 // The empty tuple:
@@ -54,7 +54,7 @@
 {[x]}
 {[it, needs, to, be]}
 {[ tuple, with, spaces ]}
-//{[ tuple, with, trailing, comma, ]}
+{[ tuple, with, trailing, comma, ]}
 {[][]}
 {[tuple, array][]}
 {[variadic, arguments, ...tuple]}

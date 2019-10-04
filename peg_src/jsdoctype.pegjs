@@ -824,14 +824,14 @@ ArrowTypeExprParamsList = "(" _ params:ArrowTypeExprParams _ ")" {
                         / "(" _ ")" {
                             return [];
                           }
-ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr {
+ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr? {
   return paramsWithComma.reduceRight(function(params, tokens) {
     const param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
     return [param].concat(params);
-  }, [lastParam]);
+  }, lastParam ? [lastParam] : []);
 }
 
-VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExprParamOperand? _ ","? {
+VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExprParamOperand? {
   const operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
   if (spread) {
   return {
@@ -900,11 +900,11 @@ FunctionTypeExprModifier = modifierThis:("this" _ ":" _ FunctionTypeExprParamOpe
 
 FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
                          // Variadic type is only allowed on the last parameter.
-                         lastParam:(VariadicTypeExpr / VariadicTypeExprOperand) {
+                         lastParam:(VariadicTypeExpr / VariadicTypeExprOperand)? {
                          return paramsWithComma.reduceRight(function(params, tokens) {
                            const [param] = tokens;
                            return [param].concat(params);
-                         }, [lastParam]);
+                         }, lastParam ? [lastParam] : []);
                        }
 
 
@@ -1063,11 +1063,11 @@ TupleTypeExpr = "[" _ entries:TupleTypeExprEntries? _ "]" {
 
 TupleTypeExprEntries = restWithComma:(TupleTypeExprOperand _ "," _)*
                        // Variadic type is only allowed on the last entry.
-                       last:(VariadicTypeExpr / VariadicTypeExprOperand) {
+                       last:(VariadicTypeExpr / VariadicTypeExprOperand)? {
   return restWithComma.reduceRight((entries, tokens) => {
     let [entry] = tokens;
     return [entry].concat(entries);
-  }, [last]);
+  }, last ? [last] : []);
 }
 
 TupleTypeExprOperand = UnionTypeExpr

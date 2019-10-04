@@ -1,4 +1,6 @@
 {number}
+{{ object: with, comma: separator }}
+{{ object: with, trailing: comma, }}
 // {{ object: with\n linebreak: separator }}
 // {{ object: with\n linebreak: separators\n }}
 {typeof A}
@@ -47,7 +49,6 @@
 //{function( TrailingComma, ): string}
 {X<() => string>}
 {new (x: number) => string}
-{{ object: 'with', trailing: 'comma', }}
 // The empty tuple:
 {[]}
 {[x]}

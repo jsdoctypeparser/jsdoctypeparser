@@ -1,6 +1,8 @@
 {number}
 {{ object: with, comma: separator }}
 {{ object: with, trailing: comma, }}
+{{ object: with; semicolon: separator }}
+{{ object: with; semicolon: separators; }}
 // {{ object: with\n linebreak: separator }}
 // {{ object: with\n linebreak: separators\n }}
 {typeof A}

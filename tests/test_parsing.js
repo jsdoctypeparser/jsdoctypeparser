@@ -492,14 +492,14 @@ describe('Parser', function() {
       const typeExprStr = '{"key"Only"}';
       expect(function () {
         Parser.parse(typeExprStr);
-      }).to.throw('Expected ",", ":", "?", "}", or [ \\t\\r\\n ] but "O" found.');
+      }).to.throw('Expected ",", ":", ";", "?", "}", or [ \\t\\r\\n ] but "O" found.');
     });
 
     it('should throw when \'{"key\\\\"Only"}\' arrived', function() {
       const typeExprStr = '{"key\\\\"Only"}';
       expect(function () {
         Parser.parse(typeExprStr);
-      }).to.throw('Expected ",", ":", "?", "}", or [ \\t\\r\\n ] but "O" found.');
+      }).to.throw('Expected ",", ":", ";", "?", "}", or [ \\t\\r\\n ] but "O" found.');
     });
 
 

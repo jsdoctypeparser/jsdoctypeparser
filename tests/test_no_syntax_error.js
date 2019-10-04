@@ -5,6 +5,20 @@ const path = require('path');
 const util = require('util');
 const Parser = require('../lib/parsing.js');
 
+/**
+ * @typedef {object} FixtureEntry
+ * @property {boolean} skip
+ * @property {string} typeExprStr
+ * @property {FilePosition} position
+ *
+ * @typedef {object} FilePosition
+ * @property {string} fileName
+ * @property {string} lineno
+ *
+ * @typedef {{fileName: string, filePath: string} & FixtureEntry[]} Fixture
+ */
+
+/** @type {{[fixtureName: string]: Fixture}} */
 const Fixtures = {
   CATHARSIS: readFixtureSync('catharsis-types'),
   CLOSURE_LIBRARY: readFixtureSync('closure-library-types'),
@@ -14,20 +28,25 @@ const Fixtures = {
 };
 
 describe('Parser', function() {
-  it('should not throw any errors when parsing tests/fixtures/*', function() {
-    Object.keys(Fixtures).forEach(function(fixtureName) {
-      Fixtures[fixtureName].forEach(function({skip, typeExprStr, position}) {
+  Object.keys(Fixtures).forEach(function(fixtureName) {
+    const fixture = Fixtures[fixtureName];
+    it(`should not throw any errors when parsing ${fixture.filePath}`, function() {
+      /** @type {Error[]} */
+      let errors = [];
+      fixture.forEach(function({skip, typeExprStr, position}) {
         if (skip) return;
 
         try {
           Parser.parse(typeExprStr);
         }
         catch (e) {
-          const debugMessage = util.format('parsing %s at %s:%d\n\n%s',
-                                         typeExprStr,
-                                         position.filePath,
-                                         position.lineno,
-                                         e.stack);
+          const debugMessage = util.format(
+            'parsing %s at %s:%d\n\n%s',
+            typeExprStr.replace(/\n/g, '\\n'),
+            fixture.filePath,
+            position.lineno,
+            e.stack
+          );
 
           throw new Error(debugMessage);
         }
@@ -36,11 +55,15 @@ describe('Parser', function() {
   });
 });
 
-
+/**
+ * @param {string} fileName
+ * @return {Fixture}
+ */
 function readFixtureSync(fileName) {
   const filePath = path.resolve(__dirname, 'fixtures', fileName);
 
-  return fs.readFileSync(filePath, 'utf8')
+  /** @type {any} */
+  let result = fs.readFileSync(filePath, 'utf8')
     .trim()
     .split(/\n/)
     .map(function(line, lineIdx) {
@@ -50,9 +73,25 @@ function readFixtureSync(fileName) {
 
         typeExprStr: line.trim().replace(/^\{(.*)\}$/, '$1').replace(/\\n/g, '\n'),
         position: {
-          filePath,
+          fileName,
           lineno: lineIdx + 1,
         },
       };
     });
+
+  Object.defineProperties(result, {
+    fileName: {
+      value: fileName,
+      writable: true,
+      enumerable: false,
+      configurable: true,
+    },
+    filePath: {
+      value: path.relative(process.cwd(), filePath),
+      writable: true,
+      enumerable: false,
+      configurable: true,
+    },
+  });
+  return result;
 }

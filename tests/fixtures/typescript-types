@@ -1,4 +1,6 @@
 {number}
+// {{ object: with\n linebreak: separator }}
+// {{ object: with\n linebreak: separators\n }}
 {typeof A}
 {typeof}
 {X<typeof>}

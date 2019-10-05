@@ -34,7 +34,7 @@
     "pretest": "npm-run-all lint build",
     "test": "npm-run-all mocha typecheck",
     "lint": "eslint .",
-    "mocha": "mocha tests",
+    "mocha": "mocha tests/test_*",
     "typecheck": "tsc",
     "clean": "rimraf ./peg_lib",
     "postclean": "mkdirp ./peg_lib",

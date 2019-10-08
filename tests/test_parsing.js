@@ -492,14 +492,14 @@ describe('Parser', function() {
       const typeExprStr = '{"key"Only"}';
       expect(function () {
         Parser.parse(typeExprStr);
-      }).to.throw('Expected ",", ":", ";", "?", "}", [ \\t\\r\\n], [ \\t\\r], or [\\n] but "O" found.');
+      }).to.throw('Expected ",", ":", ";", "?", "}", [ \\t], [\\n], or [\\r] but "O" found.');
     });
 
     it('should throw when \'{"key\\\\"Only"}\' arrived', function() {
       const typeExprStr = '{"key\\\\"Only"}';
       expect(function () {
         Parser.parse(typeExprStr);
-      }).to.throw('Expected ",", ":", ";", "?", "}", [ \\t\\r\\n], [ \\t\\r], or [\\n] but "O" found.');
+      }).to.throw('Expected ",", ":", ";", "?", "}", [ \\t], [\\n], or [\\r] but "O" found.');
     });
 
 
@@ -1276,14 +1276,14 @@ describe('Parser', function() {
         const typeExprStr = 'module:"path/t"o/file".event:member';
         expect(function () {
           Parser.parse(typeExprStr);
-        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t\\r\\n], or end of input but "o" found.');
+        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
       });
 
       it('should throw when \'module:"path/t\\\\"o/file".event:member', function() {
         const typeExprStr = 'module:"path/t\\\\"o/file".event:member';
         expect(function () {
           Parser.parse(typeExprStr);
-        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t\\r\\n], or end of input but "o" found.');
+        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
       });
 
       it('should return a member node when "module:\'path/to/file\'.event:member" arrived', function() {

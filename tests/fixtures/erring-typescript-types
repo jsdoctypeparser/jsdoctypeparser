@@ -1,3 +1,9 @@
 {function(string, number, ...any[], ): any}
 {(arg0: string, arg1: number, ...rest: any[], ) => any}
 {[string, ...any, ]}
+{{ object: with \t tab: separator }}
+{{ object: with \r\t carriageReturnAndTab: separator }}
+{{ object: with \r\r\n carriageReturnsAndNewline: separator }}
+{{ object: with \n\r newlineCarriageReturn: separator }}
+{{ object: with \t\r\t\r\n mixedWhitespace: separator }}
+{{ object: with \r carriageReturn: separator }}

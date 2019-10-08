@@ -30,7 +30,9 @@ function readFixtureSync(fileName) {
         // When the line starts with "//", we should skip it.
         skip: /^\/\//.test(line),
 
-        typeExprStr: line.trim().replace(/^\{(.*)\}$/, '$1').replace(/\\n/g, '\n'),
+        typeExprStr: line.trim().replace(/^\{(.*)\}$/, '$1')
+          .replace(/\\r/g, '\r').replace(/\\n/g, '\n')
+          .replace(/\\t/g, '\t'),
         position: {
           fileName,
           lineno: lineIdx + 1,

@@ -52,7 +52,11 @@
     "clean": "rimraf ./peg_lib",
     "postclean": "mkdirp ./peg_lib",
     "prebuild": "npm-run-all clean",
-    "build": "pegjs --cache -o ./peg_lib/jsdoctype.js ./peg_src/jsdoctype.pegjs"
+    "build:jsdoc": "FRS-replace '^.*// [^/]*?no-jsdoc(?!-)[^/]*?$' '' -f gm -i './peg_src/jsdoctype.pegjs' --stdout | FRS-replace '^.*// [^/]*?no-jsdoc-begin[\\s\\S]*?no-jsdoc-end.*?$' '' -f gm | pegjs --cache > ./peg_lib/jsdoctype-jsdoc.js",
+    "build:typescript": "FRS-replace '^.*// [^/]*?no-typescript(?!-)[^/]*?$' '' -f gm -i './peg_src/jsdoctype.pegjs' --stdout | FRS-replace '^.*// [^/]*?no-typescript-begin[\\s\\S]*?no-typescript-end.*?$' '' -f gm | pegjs --cache > ./peg_lib/jsdoctype-typescript.js",
+    "build:closure": "FRS-replace '^.*// [^/]*?no-closure(?!-)[^/]*?$' '' -f gm -i './peg_src/jsdoctype.pegjs' --stdout | FRS-replace '^.*// [^/]*?no-closure-begin[\\s\\S]*?no-closure-end.*?$' '' -f gm| pegjs --cache > ./peg_lib/jsdoctype-closure.js",
+    "build:permissive": "pegjs --cache -o ./peg_lib/jsdoctype-permissive.js ./peg_src/jsdoctype.pegjs",
+    "build": "npm run build:jsdoc && npm run build:typescript && npm run build:closure && npm run build:permissive"
   },
   "husky": {
     "hooks": {
@@ -64,6 +68,7 @@
     "@types/node": "^13.9.0",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
+    "frs-replace": "^2.0.0",
     "husky": "^4.2.3",
     "mkdirp": "^1.0.3",
     "mocha": "^7.1.0",

@@ -22,11 +22,11 @@ TopTypeExpr = _ expr:( VariadicTypeExpr
                   / ArrayTypeExpr
                   / GenericTypeExpr
                   / RecordTypeExpr
-                  / TupleTypeExpr
-                  / ArrowTypeExpr
-                  / FunctionTypeExpr
-                  / TypeQueryExpr
-                  / KeyQueryExpr
+                  / TupleTypeExpr // no-jsdoc, no-closure
+                  / ArrowTypeExpr // no-jsdoc, no-closure
+                  / FunctionTypeExpr // no-jsdoc
+                  / TypeQueryExpr // no-jsdoc
+                  / KeyQueryExpr // no-jsdoc, no-closure
                   / BroadNamepathExpr
                   / ParenthesizedExpr
                   / ValueExpr
@@ -56,7 +56,11 @@ JsIdentifier = $([a-zA-Z_$][a-zA-Z0-9_$]*)
 
 // It is transformed to remove left recursion.
 // See https://en.wikipedia.org/wiki/Left_recursion#Removing_left_recursion
-NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) memberPartWithOperators:(_ InfixNamepathOperator _ "event:"? _ MemberName)* {
+NamepathExpr = rootOwner:(
+  ParenthesizedExpr /
+  ImportTypeExpr / // no-jsdoc, no-closure
+  TypeNameExpr
+) memberPartWithOperators:(_ InfixNamepathOperator _ "event:"? _ MemberName)* {
                return memberPartWithOperators.reduce(function(owner, tokens) {
                  const operatorType = tokens[1];
                  const eventNamespace = tokens[3];
@@ -112,7 +116,7 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
  */
 TypeNameExpr = TypeNameExprJsDocFlavored
 
-// JSDoc allow to use hyphens in identifier contexts.
+// JSDoc allows using hyphens in identifier contexts.
 // See https://github.com/jsdoctypeparser/jsdoctypeparser/issues/15
 TypeNameExprJsDocFlavored = name:$([a-zA-Z_$][a-zA-Z0-9_$-]*) {
                             return {
@@ -194,11 +198,13 @@ InstanceMemberTypeOperator = "#" {
                            }
 
 
-BroadNamepathExpr = ExternalNameExpr
-                  / ModuleNameExpr
-                  / NamepathExpr
+BroadNamepathExpr =
+                  ExternalNameExpr / // no-typescript
+                  ModuleNameExpr / // no-typescript
+                  NamepathExpr
 
 
+// no-typescript-begin
 /*
  * External name expressions.
  *
@@ -250,8 +256,9 @@ ExternalNameExpr = "external" _ ":" _ external:(MemberName) memberPartWithOperat
             type: NodeType.EXTERNAL
           }, external));
         }
+// no-typescript-end
 
-
+// no-typescript-begin
 /*
  * Module name expressions.
  *
@@ -313,7 +320,6 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
                }
 
 
-
 FilePathExpr = "'" path:$([^\\'] / "\\".)* "'" {
                 return {
                   quoteStyle: 'single',
@@ -337,6 +343,7 @@ FilePathExpr = "'" path:$([^\\'] / "\\".)* "'" {
                  path,
                };
              }
+// no-typescript-end
 
 /*
  * Any type expressions.
@@ -462,12 +469,12 @@ UnionTypeOperatorJSDuckFlavored = "/" {
 
 UnionTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
-                     / TupleTypeExpr
-                     / ArrowTypeExpr
-                     / FunctionTypeExpr
+                     / TupleTypeExpr // no-jsdoc, no-closure
+                     / ArrowTypeExpr // no-jsdoc, no-closure
+                     / FunctionTypeExpr // no-jsdoc
                      / ParenthesizedExpr
-                     / TypeQueryExpr
-                     / KeyQueryExpr
+                     / TypeQueryExpr // no-jsdoc
+                     / KeyQueryExpr // no-jsdoc, no-closure
                      / GenericTypeExpr
                      / ArrayTypeExpr
                      / BroadNamepathExpr
@@ -487,22 +494,25 @@ PrefixUnaryUnionTypeExpr = PrefixOptionalTypeExpr
 
 PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
                                 / RecordTypeExpr
-                                / TupleTypeExpr
-                                / ArrowTypeExpr
-                                / FunctionTypeExpr
+                                / TupleTypeExpr // no-jsdoc, no-closure
+                                / ArrowTypeExpr // no-jsdoc, no-closure
+                                / FunctionTypeExpr // no-jsdoc
                                 / ParenthesizedExpr
                                 / BroadNamepathExpr
                                 / ValueExpr
                                 / AnyTypeExpr
                                 / UnknownTypeExpr
 
+// no-jsdoc-begin
 TypeQueryExpr = operator:"typeof" _ name:QualifiedMemberName {
                 return {
                     type: NodeType.TYPE_QUERY,
                     name,
                 };
               }
+// no-jsdoc-end
 
+// no-jsdoc-begin, no-closure-begin
 KeyQueryExpr = operator:"keyof" _ operand:KeyQueryExprOperand {
   return {
     type: NodeType.KEY_QUERY,
@@ -513,10 +523,10 @@ KeyQueryExpr = operator:"keyof" _ operand:KeyQueryExprOperand {
 KeyQueryExprOperand = UnionTypeExpr
                     / UnaryUnionTypeExpr
                     / RecordTypeExpr
-                    / TupleTypeExpr
-                    / FunctionTypeExpr
+                    / TupleTypeExpr // no-jsdoc, no-closure
+                    / FunctionTypeExpr // no-jsdoc
                     / ParenthesizedExpr
-                    / TypeQueryExpr
+                    / TypeQueryExpr // no-jsdoc
                     / KeyQueryExpr
                     / ArrayTypeExpr
                     / GenericTypeExpr
@@ -524,10 +534,13 @@ KeyQueryExprOperand = UnionTypeExpr
                     / ValueExpr
                     / AnyTypeExpr
                     / UnknownTypeExpr
+// no-jsdoc-end, no-closure-end
 
+// no-jsdoc-begin, no-closure-begin
 ImportTypeExpr = operator:"import" _ "(" _ path:StringLiteralExpr _ ")" {
                  return { type: NodeType.IMPORT, path };
                }
+// no-jsdoc-end, no-closure-end
 
 /*
  * Prefix nullable type expressions.
@@ -592,9 +605,9 @@ SuffixUnaryUnionTypeExpr = SuffixOptionalTypeExpr
 SuffixUnaryUnionTypeExprOperand = PrefixUnaryUnionTypeExpr
                                 / GenericTypeExpr
                                 / RecordTypeExpr
-                                / TupleTypeExpr
-                                / ArrowTypeExpr
-                                / FunctionTypeExpr
+                                / TupleTypeExpr // no-jsdoc, no-closure
+                                / ArrowTypeExpr // no-jsdoc, no-closure
+                                / FunctionTypeExpr // no-jsdoc
                                 / ParenthesizedExpr
                                 / BroadNamepathExpr
                                 / ValueExpr
@@ -695,14 +708,14 @@ GenericTypeExprOperand = ParenthesizedExpr
 GenericTypeExprTypeParamOperand = UnionTypeExpr
                                 / UnaryUnionTypeExpr
                                 / RecordTypeExpr
-                                / TupleTypeExpr
-                                / ArrowTypeExpr
-                                / FunctionTypeExpr
+                                / TupleTypeExpr // no-jsdoc, no-closure
+                                / ArrowTypeExpr // no-jsdoc, no-closure
+                                / FunctionTypeExpr // no-jsdoc
                                 / ParenthesizedExpr
                                 / ArrayTypeExpr
                                 / GenericTypeExpr
-                                / TypeQueryExpr
-                                / KeyQueryExpr
+                                / TypeQueryExpr // no-jsdoc
+                                / KeyQueryExpr // no-jsdoc, no-closure
                                 / BroadNamepathExpr
                                 / ValueExpr
                                 / AnyTypeExpr
@@ -763,18 +776,19 @@ ArrayTypeExpr = operand:ArrayTypeExprOperand brackets:(_ "[" _ "]")+ {
 
 ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
-                     / TupleTypeExpr
-                     / ArrowTypeExpr
-                     / FunctionTypeExpr
+                     / TupleTypeExpr // no-jsdoc, no-closure
+                     / ArrowTypeExpr // no-jsdoc, no-closure
+                     / FunctionTypeExpr // no-jsdoc
                      / ParenthesizedExpr
                      / GenericTypeExpr
-                     / TypeQueryExpr
-                     / KeyQueryExpr
+                     / TypeQueryExpr // no-jsdoc
+                     / KeyQueryExpr // no-jsdoc, no-closure
                      / BroadNamepathExpr
                      / ValueExpr
                      / AnyTypeExpr
                      / UnknownTypeExpr
 
+// no-jsdoc-begin, no-closure-begin
 ArrowTypeExpr = newModifier:"new"? _ paramsPart:ArrowTypeExprParamsList _ "=>" _ returnedTypeNode:FunctionTypeExprReturnableOperand {
                    return {
                      type: NodeType.ARROW,
@@ -810,7 +824,9 @@ VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExpr
     return operand;
   }
 }
+// no-jsdoc-end, no-closure-end
 
+// no-jsdoc-begin
 /*
  * Function type expressions.
  *
@@ -875,12 +891,12 @@ FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
 
 
 FunctionTypeExprParamOperand = UnionTypeExpr
-                             / TypeQueryExpr
-                             / KeyQueryExpr
+                             / TypeQueryExpr // no-jsdoc
+                             / KeyQueryExpr // no-jsdoc, no-closure
                              / UnaryUnionTypeExpr
                              / RecordTypeExpr
-                             / TupleTypeExpr
-                             / ArrowTypeExpr
+                             / TupleTypeExpr // no-jsdoc, no-closure
+                             / ArrowTypeExpr // no-jsdoc, no-closure
                              / FunctionTypeExpr
                              / ParenthesizedExpr
                              / ArrayTypeExpr
@@ -903,19 +919,19 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   //   47f9c92bb4c7de9a3d46f9921a427402910073fb/
                                   //   closure/goog/ui/zippy.js#L47
                                   / RecordTypeExpr
-                                  / TupleTypeExpr
-                                  / ArrowTypeExpr
+                                  / TupleTypeExpr // no-jsdoc, no-closure
+                                  / ArrowTypeExpr // no-jsdoc, no-closure
                                   / FunctionTypeExpr
                                   / ParenthesizedExpr
                                   / ArrayTypeExpr
-                                  / TypeQueryExpr
-                                  / KeyQueryExpr
+                                  / TypeQueryExpr // no-jsdoc
+                                  / KeyQueryExpr // no-jsdoc, no-closure
                                   / GenericTypeExpr
                                   / BroadNamepathExpr
                                   / ValueExpr
                                   / AnyTypeExpr
                                   / UnknownTypeExpr
-
+// no-jsdoc-end
 
 /*
  * Record type expressions.
@@ -947,17 +963,23 @@ RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:((_ "," /_ ";" /
                         }, [first]);
                       }
 
-RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _ optional:"?"? _ ":" _ value:RecordTypeExprEntryOperand {
+RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _
+    optional:"?"? // no-jsdoc
+    _ ":" _ value:RecordTypeExprEntryOperand {
                         const {quoteStyle, key} = keyInfo;
                         return {
                           type: NodeType.RECORD_ENTRY,
                           key,
                           quoteStyle,
-                          value: optional !== '?' ? value : {
-                            type: NodeType.OPTIONAL,
-                            value,
-                            meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK },
-                          }
+                          value:
+                            // no-jsdoc-begin
+                            optional === '?' ? {
+                              type: NodeType.OPTIONAL,
+                              value,
+                              meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK },
+                            } :
+                            // no-jsdoc-end
+                            value
                         };
                       }
                     / keyInfo:RecordTypeExprEntryKey {
@@ -996,9 +1018,9 @@ RecordTypeExprEntryKey = '"' key:$([^\\"] / "\\".)* '"' {
 RecordTypeExprEntryOperand = UnionTypeExpr
                            / UnaryUnionTypeExpr
                            / RecordTypeExpr
-                           / TupleTypeExpr
-                           / ArrowTypeExpr
-                           / FunctionTypeExpr
+                           / TupleTypeExpr // no-jsdoc, no-closure
+                           / ArrowTypeExpr // no-jsdoc, no-closure
+                           / FunctionTypeExpr // no-jsdoc
                            / ParenthesizedExpr
                            / ArrayTypeExpr
                            / GenericTypeExpr
@@ -1008,6 +1030,7 @@ RecordTypeExprEntryOperand = UnionTypeExpr
                            / UnknownTypeExpr
 
 
+// no-jsdoc-begin, no-closure-begin
 /**
  * TypeScript style tuple type.
  *
@@ -1039,19 +1062,19 @@ TupleTypeExprEntries = restWithComma:(TupleTypeExprOperand _ "," _)*
 TupleTypeExprOperand = UnionTypeExpr
                      / UnaryUnionTypeExpr
                      / RecordTypeExpr
-                     / TupleTypeExpr
-                     / ArrowTypeExpr
-                     / FunctionTypeExpr
+                     / TupleTypeExpr // no-jsdoc, no-closure
+                     / ArrowTypeExpr // no-jsdoc, no-closure
+                     / FunctionTypeExpr // no-jsdoc
                      / ParenthesizedExpr
-                     / TypeQueryExpr
-                     / KeyQueryExpr
+                     / TypeQueryExpr // no-jsdoc
+                     / KeyQueryExpr // no-jsdoc, no-closure
                      / ArrayTypeExpr
                      / GenericTypeExpr
                      / BroadNamepathExpr
                      / ValueExpr
                      / AnyTypeExpr
                      / UnknownTypeExpr
-
+// no-jsdoc-end, no-closure-end
 
 /*
  * Parenthesis expressions.
@@ -1074,12 +1097,12 @@ ParenthesizedExpr = "(" _ wrapped:ParenthesizedExprOperand _ ")" {
 ParenthesizedExprOperand = UnionTypeExpr
                          / UnaryUnionTypeExpr
                          / RecordTypeExpr
-                         / TupleTypeExpr
-                         / ArrowTypeExpr
-                         / FunctionTypeExpr
+                         / TupleTypeExpr // no-jsdoc, no-closure
+                         / ArrowTypeExpr // no-jsdoc, no-closure
+                         / FunctionTypeExpr // no-jsdoc
                          / ArrayTypeExpr
-                         / TypeQueryExpr
-                         / KeyQueryExpr
+                         / TypeQueryExpr // no-jsdoc
+                         / KeyQueryExpr // no-jsdoc, no-closure
                          / GenericTypeExpr
                          / BroadNamepathExpr
                          / ValueExpr
@@ -1141,12 +1164,12 @@ AnyVariadicTypeExpr = "..." {
 VariadicTypeExprOperand = UnionTypeExpr
                         / UnaryUnionTypeExpr
                         / RecordTypeExpr
-                        / TupleTypeExpr
-                        / ArrowTypeExpr
-                        / FunctionTypeExpr
+                        / TupleTypeExpr // no-jsdoc, no-closure
+                        / ArrowTypeExpr // no-jsdoc, no-closure
+                        / FunctionTypeExpr // no-jsdoc
                         / ParenthesizedExpr
-                        / TypeQueryExpr
-                        / KeyQueryExpr
+                        / TypeQueryExpr // no-jsdoc
+                        / KeyQueryExpr // no-jsdoc, no-closure
                         / ArrayTypeExpr
                         / GenericTypeExpr
                         / BroadNamepathExpr

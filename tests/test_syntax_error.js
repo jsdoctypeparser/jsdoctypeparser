@@ -1,7 +1,7 @@
 'use strict';
 
 const util = require('util');
-const Parser = require('../lib/parsing.js');
+const {parse} = require('../lib/parsing.js');
 const {readFixtureSync} = require('./utils.js');
 
 /** @type {{[fixtureName: string]: import('./utils').Fixture}} */
@@ -18,7 +18,7 @@ describe('Parser', function() {
 
         let parsed;
         try {
-          parsed = Parser.parse(typeExprStr);
+          parsed = parse(typeExprStr);
         }
         catch (e) {
           return;

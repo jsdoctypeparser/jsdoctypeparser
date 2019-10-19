@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const Parser = require('../lib/parsing.js');
+const {parse} = require('../lib/parsing.js');
 
 const Fixtures = {
   DEFINITELY_TYPED: readFixtureSync('definitely-typed-types'),
@@ -16,7 +16,7 @@ describe('Parser', function() {
         if (fixture.skip) return;
 
         try {
-          Parser.parse(fixture.typeExprStr);
+          parse(fixture.typeExprStr);
         } catch (e) {
           if (e.name !== 'SyntaxError') {
             throw e;

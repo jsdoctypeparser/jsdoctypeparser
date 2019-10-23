@@ -68,7 +68,7 @@
     "@types/node": "^13.9.0",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
-    "frs-replace": "^2.0.0",
+    "frs-replace": "^2.0.1",
     "husky": "^4.2.3",
     "mkdirp": "^1.0.3",
     "mocha": "^7.1.0",

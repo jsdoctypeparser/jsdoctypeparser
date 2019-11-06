@@ -733,7 +733,7 @@ function peg$parse(input, options) {
       peg$c173 = function() {
                             return {
                               type: NodeType.VARIADIC,
-                              value: null,
+                              value: { type: NodeType.ANY },
                               meta: { syntax: VariadicTypeSyntax.ONLY_DOTS },
                             };
                           },

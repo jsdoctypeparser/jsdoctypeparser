@@ -632,7 +632,7 @@ describe('Parser', function() {
       const expectedNode = createTupleTypeNode([
         createTypeNameNode('TupleAnyVarargs'),
         createVariadicTypeNode(
-          null,
+          createAnyTypeNode(),
           VariadicTypeSyntax.ONLY_DOTS
         ),
       ]);
@@ -1494,7 +1494,7 @@ describe('Parser', function() {
       const node = parse(typeExprStr);
 
       const expectedNode = createVariadicTypeNode(
-        null,
+        createAnyTypeNode(),
         VariadicTypeSyntax.ONLY_DOTS
       );
 

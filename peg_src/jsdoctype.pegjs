@@ -1166,7 +1166,7 @@ SuffixVariadicTypeExpr = operand:VariadicTypeExprOperand "..." {
 AnyVariadicTypeExpr = "..." {
                       return {
                         type: NodeType.VARIADIC,
-                        value: null,
+                        value: { type: NodeType.ANY },
                         meta: { syntax: VariadicTypeSyntax.ONLY_DOTS },
                       };
                     }

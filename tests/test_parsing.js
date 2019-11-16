@@ -1913,6 +1913,11 @@ describe('Parser', function() {
 });
 
 describe('Parser modes', function() {
+  it('should throw when invalid mode is specified', function() {
+    expect(function() {
+      parse('foo', {mode: 'invalid'})
+    }).to.throw(TypeError);
+  });
   describe('jsdoc', function () {
     it('should throw when "[TupleType1, TupleType2]" arrived', function() {
       const typeExprStr = '[TupleType1, TupleType2]';

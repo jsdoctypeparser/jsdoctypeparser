@@ -190,6 +190,21 @@ describe('traversing', function() {
         ],
       },
 
+      'should visit an arrow function with no params and `new`': {
+        given: {
+          type: NodeType.ARROW,
+          params: [],
+          returns: createNameNode('return'),
+          new: 'new',
+        },
+        then: [
+          ['enter', NodeType.ARROW, null, null],
+          ['enter', NodeType.NAME, 'returns', NodeType.ARROW],
+          ['leave', NodeType.NAME, 'returns', NodeType.ARROW],
+          ['leave', NodeType.ARROW, null, null],
+        ],
+      },
+
       'should visit an arrow function that has two params and a returns': {
         given: {
           type: NodeType.ARROW,

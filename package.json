@@ -30,13 +30,22 @@
   "main": "index.js",
   "bin": "./bin/jsdoctypeparser",
   "nyc": {
-    "exclude": ["tests"]
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "exclude": [
+      "tests"
+    ]
   },
   "scripts": {
     "prepare": "npm-run-all build",
     "pretest": "npm-run-all lint build",
     "test": "npm-run-all mocha typecheck",
     "lint": "eslint .",
+    "start": "static -p 8050",
+    "open-coverage": "open-cli http://localhost:8050/coverage/",
+    "open-cov": "run-p start open-coverage",
     "coverage": "nyc npm run mocha",
     "mocha": "mocha tests/test_*",
     "typecheck": "tsc",
@@ -58,9 +67,11 @@
     "husky": "^3.1.0",
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.2",
+    "node-static": "^0.7.11",
     "npm-run-all": "^4.1.5",
     "nyc": "^14.1.1",
     "object.entries-ponyfill": "^1.0.1",
+    "open-cli": "^5.0.0",
     "pegjs": "^0.10.0",
     "rimraf": "^3.0.0",
     "typescript": "^3.7.2"

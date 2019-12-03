@@ -323,6 +323,16 @@ describe('publish', function() {
         expect(publish(node)).to.equal('goog.ui~Menu');
       });
 
+      it('should return a user-defined type name with event member', function() {
+        const node = parse('goog.ui.event:Menu');
+        expect(publish(node)).to.equal('goog.ui.event:Menu');
+      });
+
+      it('should return a user-defined type name with inner event member', function() {
+        const node = parse('goog.ui~event:Menu');
+        expect(publish(node)).to.equal('goog.ui~event:Menu');
+      });
+
       it('should return a quoted `MemberName` type', function() {
         const node = parse('namespace."memberNameValue"');
         expect(publish(node)).to.equal('namespace."memberNameValue"');

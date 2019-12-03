@@ -7464,12 +7464,6 @@ function peg$parse(input, options) {
       INSTANCE_MEMBER: 'INSTANCE_MEMBER',
     };
 
-    function reverse(array) {
-      const reversed = [].concat(array);
-      reversed.reverse();
-      return reversed;
-    }
-
 
   peg$result = peg$startRuleFunction();
 

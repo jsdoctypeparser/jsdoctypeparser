@@ -12,12 +12,6 @@
     INNER_MEMBER: 'INNER_MEMBER',
     INSTANCE_MEMBER: 'INSTANCE_MEMBER',
   };
-
-  function reverse(array) {
-    const reversed = [].concat(array);
-    reversed.reverse();
-    return reversed;
-  }
 }
 
 

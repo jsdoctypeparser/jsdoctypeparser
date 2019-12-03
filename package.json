@@ -29,11 +29,15 @@
   },
   "main": "index.js",
   "bin": "./bin/jsdoctypeparser",
+  "nyc": {
+    "exclude": ["tests"]
+  },
   "scripts": {
     "prepare": "npm-run-all build",
     "pretest": "npm-run-all lint build",
     "test": "npm-run-all mocha typecheck",
     "lint": "eslint .",
+    "coverage": "nyc npm run mocha",
     "mocha": "mocha tests/test_*",
     "typecheck": "tsc",
     "clean": "rimraf ./peg_lib",
@@ -55,6 +59,7 @@
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.2",
     "npm-run-all": "^4.1.5",
+    "nyc": "^14.1.1",
     "object.entries-ponyfill": "^1.0.1",
     "pegjs": "^0.10.0",
     "rimraf": "^3.0.0",

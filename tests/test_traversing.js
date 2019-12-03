@@ -9,6 +9,33 @@ const {traverse} = require('../lib/traversing.js');
 /** @typedef {{type: import('../lib/NodeType').Type}} Node */
 
 describe('traversing', function() {
+  it('can be called with missing enter callback', function () {
+    const visitedOrder = [];
+    const onLeaveSpy = createEventSpy('leave', visitedOrder);
+
+    const given = createMemberNode('child', createNameNode('owner'));
+    traverse(given, null, onLeaveSpy);
+
+    const then = [
+      ['leave', NodeType.NAME, 'owner', NodeType.MEMBER],
+      ['leave', NodeType.MEMBER, null, null],
+    ];
+    expect(visitedOrder).to.deep.equal(then);
+  });
+  it('can be called with missing enter callback', function () {
+    const visitedOrder = [];
+    const onEnterSpy = createEventSpy('enter', visitedOrder);
+
+    const given = createMemberNode('child', createNameNode('owner'));
+    traverse(given, onEnterSpy);
+
+    const then = [
+      ['enter', NodeType.MEMBER, null, null],
+      ['enter', NodeType.NAME, 'owner', NodeType.MEMBER],
+    ];
+    expect(visitedOrder).to.deep.equal(then);
+  });
+
   const testCaseGroups = {
     'Primitive types': {
       'should visit a string value node': {

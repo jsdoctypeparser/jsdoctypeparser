@@ -36,27 +36,6 @@ TopTypeExpr = _ expr:( VariadicTypeExpr
            return expr;
          }
 
-TopLevel = _ expr:( VariadicTypeExpr
-                  / UnionTypeExpr
-                  / UnaryUnionTypeExpr
-                  / ArrayTypeExpr
-                  / GenericTypeExpr
-                  / RecordTypeExpr
-                  / TupleTypeExpr
-                  / ArrowTypeExpr
-                  / FunctionTypeExpr
-                  / TypeQueryExpr
-                  / KeyQueryExpr
-                  / BroadNamepathExpr
-                  / ParenthesizedExpr
-                  / ValueExpr
-                  / AnyTypeExpr
-                  / UnknownTypeExpr
-                  ) _ {
-           return expr;
-         }
-
-
 /*
  * White spaces.
  */
@@ -109,6 +88,7 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
                        quoteStyle,
                        hasEventPrefix: Boolean(eventNamespace),
                      };
+                   /* istanbul ignore next */
                    default:
                      throw new Error('Unexpected operator type: "' + operatorType + '"');
                  }
@@ -131,8 +111,8 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
 TypeNameExpr = TypeNameExprJsDocFlavored
+/*
              / TypeNameExprStrict
-
 
 TypeNameExprStrict = name:JsIdentifier {
                      return {
@@ -140,7 +120,7 @@ TypeNameExprStrict = name:JsIdentifier {
                        name
                      };
                    }
-
+*/
 
 // JSDoc allow to use hyphens in identifier contexts.
 // See https://github.com/jsdoctypeparser/jsdoctypeparser/issues/15
@@ -272,6 +252,7 @@ ExternalNameExpr = "external" _ ":" _ external:(MemberName) memberPartWithOperat
                   quoteStyle,
                   hasEventPrefix: Boolean(eventNamespace),
                 };
+              /* istanbul ignore next */
               default:
                 throw new Error('Unexpected operator type: "' + operatorType + '"');
             }
@@ -334,6 +315,7 @@ ModulePathExpr = rootOwner:(FilePathExpr) memberPartWithOperators:(_ InfixNamepa
                          quoteStyle,
                          hasEventPrefix: Boolean(eventNamespace),
                        };
+                     /* istanbul ignore next */
                      default:
                        throw new Error('Unexpected operator type: "' + operatorType + '"');
                    }
@@ -812,12 +794,12 @@ ArrowTypeExpr = newModifier:"new"? _ paramsPart:ArrowTypeExprParamsList _ "=>" _
                    };
 }
 
-ArrowTypeExprParamsList = "(" _ params:ArrowTypeExprParams _ ")" {
-                            return params;
-                          }
-                        / "(" _ ")" {
-                            return [];
-                          }
+ArrowTypeExprParamsList = "(" _ ")" {
+                      return [];
+                    } /
+                    "(" _ params:ArrowTypeExprParams _ ")" {
+                      return params;
+                    }
 ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr? {
   return paramsWithComma.reduceRight(function(params, tokens) {
     const param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
@@ -872,11 +854,11 @@ FunctionTypeExprParamsList = "(" _ modifier:FunctionTypeExprModifier _ "," _ par
                            / "(" _ modifier:FunctionTypeExprModifier _ ")" {
                                return { params: [], modifier };
                              }
-                           / "(" _ params:FunctionTypeExprParams _ ")" {
-                               return { params, modifier: { nodeThis: null, nodeNew: null } };
-                             }
                            / "(" _ ")" {
                                return { params: [], modifier: { nodeThis: null, nodeNew: null } };
+                             }
+                           / "(" _ params:FunctionTypeExprParams _ ")" {
+                               return { params, modifier: { nodeThis: null, nodeNew: null } };
                              }
 
 
@@ -1048,10 +1030,10 @@ RecordTypeExprEntryOperand = UnionTypeExpr
  * Spec:
  *   - https://www.typescriptlang.org/docs/handbook/basic-types.html#tuple
  */
-TupleTypeExpr = "[" _ entries:TupleTypeExprEntries? _ "]" {
+TupleTypeExpr = "[" _ entries:TupleTypeExprEntries _ "]" {
   return {
     type: NodeType.TUPLE,
-    entries: entries || [],
+    entries,
   }
 }
 

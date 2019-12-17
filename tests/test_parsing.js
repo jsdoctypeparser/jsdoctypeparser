@@ -40,6 +40,14 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+    it('should return a number value type node when ".05" arrived', function() {
+      const typeExprStr = '.05';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
+
     it('should return a number value type node when "-0" arrived', function() {
       const typeExprStr = '-0';
       const node = parse(typeExprStr);
@@ -89,6 +97,14 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+    it('should return a number value type node when "3.14e54" arrived', function() {
+      const typeExprStr = '3.14e54';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createNumberValueNode(typeExprStr);
+      expect(node).to.deep.equal(expectedNode);
+    });
+
     it('should return a number value type node when "0b01" arrived', function() {
       const typeExprStr = '0b01';
       const node = parse(typeExprStr);
@@ -129,6 +145,22 @@ describe('Parser', function() {
       const node = parse(typeExprStr);
 
       const expectedNode = createStringValueNode('', 'single');
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a string value type node when "\'\\a\'" arrived', function() {
+      const typeExprStr = "'\\a'";
+      const node = parse(typeExprStr);
+
+      const expectedNode = createStringValueNode('\\a', 'single');
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a string value type node when "\'\\a\\\'\'" arrived', function() {
+      const typeExprStr = "'\\a\\''";
+      const node = parse(typeExprStr);
+
+      const expectedNode = createStringValueNode("\\a'", 'single');
       expect(node).to.deep.equal(expectedNode);
     });
 
@@ -516,6 +548,19 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+    it('should return a record type node when "{key1:ValueType1,key2:ValueType2\r\n}"' +
+       ' arrived', function() {
+      const typeExprStr = '{key1:ValueType1,key2:ValueType2\r\n}';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key1', createTypeNameNode('ValueType1')),
+        createRecordEntryNode('key2', createTypeNameNode('ValueType2')),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
 
     it('should return a record type node when "{key:ValueType1,keyOnly}"' +
        ' arrived', function() {
@@ -544,6 +589,18 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+    it('should return a record type node when "{ key1 : ValueType1 , key2 : ValueType2  }"' +
+       ' arrived', function() {
+      const typeExprStr = '{ key1 : ValueType1 , key2 : ValueType2  }';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key1', createTypeNameNode('ValueType1')),
+        createRecordEntryNode('key2', createTypeNameNode('ValueType2')),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
 
     it('should return a record type node when "{\'quoted-key\':ValueType}"' +
        ' arrived', function() {
@@ -552,6 +609,30 @@ describe('Parser', function() {
 
       const expectedNode = createRecordTypeNode([
         createRecordEntryNode('quoted-key', createTypeNameNode('ValueType'), 'single'),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a record type node when "{\'\\quoted-key\':ValueType}"' +
+       ' arrived', function() {
+      const typeExprStr = '{\'\\quoted-key\':ValueType}';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('\\quoted-key', createTypeNameNode('ValueType'), 'single'),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a record type node when "{\'q\\uoted-key\':ValueType}"' +
+       ' arrived', function() {
+      const typeExprStr = '{\'q\\uoted-key\':ValueType}';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('q\\uoted-key', createTypeNameNode('ValueType'), 'single'),
       ]);
 
       expect(node).to.deep.equal(expectedNode);
@@ -926,6 +1007,32 @@ describe('Parser', function() {
         expect(node).to.deep.equal(expectedNode);
       });
 
+      it('should return a member type node when "owner.\'\'" arrived', function() {
+        const typeExprStr = 'owner.\'\'';
+        const node = parse(typeExprStr);
+
+        const expectedNode = createMemberTypeNode(
+          createTypeNameNode('owner'),
+          '',
+          'single'
+        );
+
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return a member type node when "owner.\'\\a\'" arrived', function() {
+        const typeExprStr = 'owner.\'\\a\'';
+        const node = parse(typeExprStr);
+
+        const expectedNode = createMemberTypeNode(
+          createTypeNameNode('owner'),
+          '\\a',
+          'single'
+        );
+
+        expect(node).to.deep.equal(expectedNode);
+      });
+
       it('should return a member type node when \'owner."Mem\\ber"\' arrived', function() {
         const typeExprStr = 'owner."Mem\\ber"';
         const node = parse(typeExprStr);
@@ -1174,11 +1281,36 @@ describe('Parser', function() {
         expect(node).to.deep.equal(expectedNode);
       });
 
+      it('should return an external name node when "external : String~rot13" arrived', function() {
+        const typeExprStr = 'external : String~rot13';
+        const node = parse(typeExprStr);
+
+        const expectedNode = createInnerMemberTypeNode(
+          createExternalNameNode('String'),
+          'rot13'
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
       it('should return an external name node when `external:"jQuery.fn"` arrived', function() {
         const typeExprStr = 'external:"jQuery.fn"';
         const node = parse(typeExprStr);
 
         const expectedNode = createExternalNameNode('jQuery.fn', 'double');
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return an external name node when `external:"jQuery.fn".someMethod#abc` arrived', function() {
+        const typeExprStr = 'external:"jQuery.fn".someMethod#abc';
+        const node = parse(typeExprStr);
+
+        const expectedNode = createInstanceMemberTypeNode(
+          createMemberTypeNode(
+            createExternalNameNode('jQuery.fn', 'double'),
+            'someMethod'
+          ),
+          'abc'
+        );
         expect(node).to.deep.equal(expectedNode);
       });
 
@@ -1191,6 +1323,19 @@ describe('Parser', function() {
             createExternalNameNode('jQuery.fn', 'double'),
             'someMethod'
           ),
+          'abc',
+          'none',
+          true
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return an external name node when `external:"jQuery.fn"#event:abc` arrived', function() {
+        const typeExprStr = 'external:"jQuery.fn"#event:abc';
+        const node = parse(typeExprStr);
+
+        const expectedNode = createInstanceMemberTypeNode(
+          createExternalNameNode('jQuery.fn', 'double'),
           'abc',
           'none',
           true
@@ -1252,6 +1397,24 @@ describe('Parser', function() {
         expect(node).to.deep.equal(expectedNode);
       });
 
+      it('should return a member node when "module:path/to#file#event:member" arrived', function() {
+        const typeExprStr = 'module:path/to#file#event:member';
+        const node = parse(typeExprStr);
+
+        const expectedNode = createModuleNameNode(
+          createInstanceMemberTypeNode(
+            createInstanceMemberTypeNode(
+              createFilePathNode('path/to'),
+              'file'
+            ),
+            'member',
+            'none',
+            true
+          )
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
       it('should return a member node when \'module:"path/to/file".event:member\' arrived', function() {
         const typeExprStr = 'module:"path/to/file".event:member';
         const node = parse(typeExprStr);
@@ -1268,6 +1431,26 @@ describe('Parser', function() {
 
         const expectedNode = createModuleNameNode(
           createMemberTypeNode(createFilePathNode('path\\to\\file"', 'double'), 'member', 'none', true)
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return a member node when "module:\'\\path\'.event:member" arrived', function() {
+        const typeExprStr = "module:'\\path'.event:member";
+        const node = parse(typeExprStr);
+
+        const expectedNode = createModuleNameNode(
+          createMemberTypeNode(createFilePathNode('\\path', 'single'), 'member', 'none', true)
+        );
+        expect(node).to.deep.equal(expectedNode);
+      });
+
+      it('should return a member node when "module:\'path\\\\to\\file\\\'\'.event:member" arrived', function() {
+        const typeExprStr = "module:'path\\\\to\\file\\''.event:member";
+        const node = parse(typeExprStr);
+
+        const expectedNode = createModuleNameNode(
+          createMemberTypeNode(createFilePathNode("path\\to\\file'", 'single'), 'member', 'none', true)
         );
         expect(node).to.deep.equal(expectedNode);
       });

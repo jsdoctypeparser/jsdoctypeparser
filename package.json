@@ -61,7 +61,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^12.12.18",
+    "@types/node": "^12.12.21",
     "chai": "^4.2.0",
     "eslint": "^6.7.2",
     "husky": "^3.1.0",

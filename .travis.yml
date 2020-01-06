@@ -11,8 +11,8 @@ sudo: false
 before_install:
   - npm config set depth 0
 before_script:
-  - 'if [ -n "${ESLINT-}" ]; then npm install --no-save "eslint@${ESLINT}" ; fi'
-
+  - 'if [ "${ESLINT-}" == "6" ]; then npm install --no-save "eslint@${ESLINT}" ; fi'
+  - 'if [ "${ESLINT-}" == "5" ]; then npm install --no-save "eslint@${ESLINT}" mocha@6.2.2 ; fi'
 script:
   - npm run test
   - 'if [ -n "${LINTBUILD-}" ]; then npm run lint && npm run build; fi'

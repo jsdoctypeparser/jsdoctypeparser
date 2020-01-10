@@ -61,10 +61,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^13.1.5",
+    "@types/node": "^13.1.6",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
-    "husky": "^4.0.1",
+    "husky": "^4.0.5",
     "mkdirp": "^0.5.1",
     "mocha": "^7.0.0",
     "node-static": "^0.7.11",

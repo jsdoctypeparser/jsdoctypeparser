@@ -111,16 +111,6 @@ NamepathExpr = rootOwner:(ParenthesizedExpr / ImportTypeExpr / TypeNameExpr) mem
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
  */
 TypeNameExpr = TypeNameExprJsDocFlavored
-/*
-             / TypeNameExprStrict
-
-TypeNameExprStrict = name:JsIdentifier {
-                     return {
-                       type: NodeType.NAME,
-                       name
-                     };
-                   }
-*/
 
 // JSDoc allow to use hyphens in identifier contexts.
 // See https://github.com/jsdoctypeparser/jsdoctypeparser/issues/15

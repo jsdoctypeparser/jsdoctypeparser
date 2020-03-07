@@ -1931,12 +1931,6 @@ describe('Parser modes', function() {
         parse(typeExprStr, {mode: 'jsdoc'});
       }).to.throw(JSDocSyntaxError);
     });
-    it('should throw when "function()" arrived', function() {
-      const typeExprStr = 'function()';
-      expect(function () {
-        parse(typeExprStr, {mode: 'jsdoc'});
-      }).to.throw(JSDocSyntaxError);
-    });
     it('should throw when "typeof foo" arrived', function() {
       const typeExprStr = 'typeof foo';
       expect(function () {
@@ -1978,12 +1972,6 @@ describe('Parser modes', function() {
       ]);
 
       expect(node).to.deep.equal(expectedNode);
-    });
-    it('should throw when "{key?:ValueType}" arrived', function() {
-      const typeExprStr = '{key?:ValueType}';
-      expect(function () {
-        parse(typeExprStr, {mode: 'jsdoc'});
-      }).to.throw(JSDocSyntaxError);
     });
   });
   describe('Closure', function () {

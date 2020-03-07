@@ -661,13 +661,11 @@ function peg$parse(input, options) {
                                 key,
                                 quoteStyle,
                                 value:
-                                  // no-jsdoc-begin
                                   optional === '?' ? {
                                     type: NodeType.OPTIONAL,
                                     value,
                                     meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK },
                                   } :
-                                  // no-jsdoc-end
                                   value
                               };
                             },

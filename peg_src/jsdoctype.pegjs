@@ -24,7 +24,7 @@ TopTypeExpr = _ expr:( VariadicTypeExpr
                   / RecordTypeExpr
                   / TupleTypeExpr // no-jsdoc, no-closure
                   / ArrowTypeExpr // no-jsdoc, no-closure
-                  / FunctionTypeExpr // no-jsdoc
+                  / FunctionTypeExpr
                   / TypeQueryExpr // no-jsdoc
                   / KeyQueryExpr // no-jsdoc, no-closure
                   / BroadNamepathExpr
@@ -471,7 +471,7 @@ UnionTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
                      / TupleTypeExpr // no-jsdoc, no-closure
                      / ArrowTypeExpr // no-jsdoc, no-closure
-                     / FunctionTypeExpr // no-jsdoc
+                     / FunctionTypeExpr
                      / ParenthesizedExpr
                      / TypeQueryExpr // no-jsdoc
                      / KeyQueryExpr // no-jsdoc, no-closure
@@ -496,12 +496,20 @@ PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
                                 / RecordTypeExpr
                                 / TupleTypeExpr // no-jsdoc, no-closure
                                 / ArrowTypeExpr // no-jsdoc, no-closure
-                                / FunctionTypeExpr // no-jsdoc
+                                / FunctionTypeExpr
                                 / ParenthesizedExpr
                                 / BroadNamepathExpr
                                 / ValueExpr
                                 / AnyTypeExpr
                                 / UnknownTypeExpr
+
+// While the following is supported in Closure per https://github.com/google/closure-compiler/wiki/Types-in-the-Closure-Type-System#user-content-the-javascript-type-language
+// ...the statement at https://jsdoc.app/tags-type.html :
+// > Full support for Google Closure Compiler-style type expressions is
+// > available in JSDoc 3.2 and later.
+// ... is apparently outdated as the catharsis parser on which jsdoc depends,
+// does not contain reference to `typeof` as an expression, so preventing
+// from jsdoc mode for now.
 
 // no-jsdoc-begin
 TypeQueryExpr = operator:"typeof" _ name:QualifiedMemberName {
@@ -524,7 +532,7 @@ KeyQueryExprOperand = UnionTypeExpr
                     / UnaryUnionTypeExpr
                     / RecordTypeExpr
                     / TupleTypeExpr // no-jsdoc, no-closure
-                    / FunctionTypeExpr // no-jsdoc
+                    / FunctionTypeExpr
                     / ParenthesizedExpr
                     / TypeQueryExpr // no-jsdoc
                     / KeyQueryExpr
@@ -607,7 +615,7 @@ SuffixUnaryUnionTypeExprOperand = PrefixUnaryUnionTypeExpr
                                 / RecordTypeExpr
                                 / TupleTypeExpr // no-jsdoc, no-closure
                                 / ArrowTypeExpr // no-jsdoc, no-closure
-                                / FunctionTypeExpr // no-jsdoc
+                                / FunctionTypeExpr
                                 / ParenthesizedExpr
                                 / BroadNamepathExpr
                                 / ValueExpr
@@ -710,7 +718,7 @@ GenericTypeExprTypeParamOperand = UnionTypeExpr
                                 / RecordTypeExpr
                                 / TupleTypeExpr // no-jsdoc, no-closure
                                 / ArrowTypeExpr // no-jsdoc, no-closure
-                                / FunctionTypeExpr // no-jsdoc
+                                / FunctionTypeExpr
                                 / ParenthesizedExpr
                                 / ArrayTypeExpr
                                 / GenericTypeExpr
@@ -778,7 +786,7 @@ ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr
                      / TupleTypeExpr // no-jsdoc, no-closure
                      / ArrowTypeExpr // no-jsdoc, no-closure
-                     / FunctionTypeExpr // no-jsdoc
+                     / FunctionTypeExpr
                      / ParenthesizedExpr
                      / GenericTypeExpr
                      / TypeQueryExpr // no-jsdoc
@@ -826,7 +834,6 @@ VariadicNameExpr = spread:"..."? _ id:JsIdentifier _ ":" _ type:FunctionTypeExpr
 }
 // no-jsdoc-end, no-closure-end
 
-// no-jsdoc-begin
 /*
  * Function type expressions.
  *
@@ -931,7 +938,6 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   / ValueExpr
                                   / AnyTypeExpr
                                   / UnknownTypeExpr
-// no-jsdoc-end
 
 /*
  * Record type expressions.
@@ -964,7 +970,7 @@ RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:((_ "," /_ ";" /
                       }
 
 RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _
-    optional:"?"? // no-jsdoc
+    optional:"?"?
     _ ":" _ value:RecordTypeExprEntryOperand {
                         const {quoteStyle, key} = keyInfo;
                         return {
@@ -972,13 +978,11 @@ RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _
                           key,
                           quoteStyle,
                           value:
-                            // no-jsdoc-begin
                             optional === '?' ? {
                               type: NodeType.OPTIONAL,
                               value,
                               meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK },
                             } :
-                            // no-jsdoc-end
                             value
                         };
                       }
@@ -1020,7 +1024,7 @@ RecordTypeExprEntryOperand = UnionTypeExpr
                            / RecordTypeExpr
                            / TupleTypeExpr // no-jsdoc, no-closure
                            / ArrowTypeExpr // no-jsdoc, no-closure
-                           / FunctionTypeExpr // no-jsdoc
+                           / FunctionTypeExpr
                            / ParenthesizedExpr
                            / ArrayTypeExpr
                            / GenericTypeExpr
@@ -1064,7 +1068,7 @@ TupleTypeExprOperand = UnionTypeExpr
                      / RecordTypeExpr
                      / TupleTypeExpr // no-jsdoc, no-closure
                      / ArrowTypeExpr // no-jsdoc, no-closure
-                     / FunctionTypeExpr // no-jsdoc
+                     / FunctionTypeExpr
                      / ParenthesizedExpr
                      / TypeQueryExpr // no-jsdoc
                      / KeyQueryExpr // no-jsdoc, no-closure
@@ -1099,7 +1103,7 @@ ParenthesizedExprOperand = UnionTypeExpr
                          / RecordTypeExpr
                          / TupleTypeExpr // no-jsdoc, no-closure
                          / ArrowTypeExpr // no-jsdoc, no-closure
-                         / FunctionTypeExpr // no-jsdoc
+                         / FunctionTypeExpr
                          / ArrayTypeExpr
                          / TypeQueryExpr // no-jsdoc
                          / KeyQueryExpr // no-jsdoc, no-closure
@@ -1166,7 +1170,7 @@ VariadicTypeExprOperand = UnionTypeExpr
                         / RecordTypeExpr
                         / TupleTypeExpr // no-jsdoc, no-closure
                         / ArrowTypeExpr // no-jsdoc, no-closure
-                        / FunctionTypeExpr // no-jsdoc
+                        / FunctionTypeExpr
                         / ParenthesizedExpr
                         / TypeQueryExpr // no-jsdoc
                         / KeyQueryExpr // no-jsdoc, no-closure

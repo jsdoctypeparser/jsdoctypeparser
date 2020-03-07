@@ -19,7 +19,7 @@
 TopTypeExpr = _ expr:( VariadicTypeExpr
                   / UnionTypeExpr
                   / UnaryUnionTypeExpr
-                  / ArrayTypeExpr
+                  / ArrayTypeExpr // no-closure
                   / GenericTypeExpr
                   / RecordTypeExpr
                   / TupleTypeExpr // no-jsdoc, no-closure
@@ -476,7 +476,7 @@ UnionTypeExprOperand = UnaryUnionTypeExpr
                      / TypeQueryExpr // no-jsdoc
                      / KeyQueryExpr // no-jsdoc, no-closure
                      / GenericTypeExpr
-                     / ArrayTypeExpr
+                     / ArrayTypeExpr // no-closure
                      / BroadNamepathExpr
                      / ValueExpr
                      / AnyTypeExpr
@@ -536,7 +536,7 @@ KeyQueryExprOperand = UnionTypeExpr
                     / ParenthesizedExpr
                     / TypeQueryExpr // no-jsdoc
                     / KeyQueryExpr
-                    / ArrayTypeExpr
+                    / ArrayTypeExpr // no-closure
                     / GenericTypeExpr
                     / BroadNamepathExpr
                     / ValueExpr
@@ -720,7 +720,7 @@ GenericTypeExprTypeParamOperand = UnionTypeExpr
                                 / ArrowTypeExpr // no-jsdoc, no-closure
                                 / FunctionTypeExpr
                                 / ParenthesizedExpr
-                                / ArrayTypeExpr
+                                / ArrayTypeExpr // no-closure
                                 / GenericTypeExpr
                                 / TypeQueryExpr // no-jsdoc
                                 / KeyQueryExpr // no-jsdoc, no-closure
@@ -755,7 +755,7 @@ GenericTypeTypeScriptFlavoredStartToken = "<" {
 GenericTypeEndToken = ">"
 
 
-
+// no-closure-begin
 /*
  * JSDoc style array of generic type expressions.
  *
@@ -765,8 +765,9 @@ GenericTypeEndToken = ">"
  *
  * Spec:
  *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions#the-basic-syntax
+ *   - https://jsdoc.app/tags-type.html
  */
-// TODO: We should care complex type expression like "Some[]![]"
+// TODO: We should support complex type expressions like "Some[]![]"
 ArrayTypeExpr = operand:ArrayTypeExprOperand brackets:(_ "[" _ "]")+ {
                 return brackets.reduce(function(operand) {
                   return {
@@ -795,6 +796,7 @@ ArrayTypeExprOperand = UnaryUnionTypeExpr
                      / ValueExpr
                      / AnyTypeExpr
                      / UnknownTypeExpr
+// no-closure-end
 
 // no-jsdoc-begin, no-closure-begin
 ArrowTypeExpr = newModifier:"new"? _ paramsPart:ArrowTypeExprParamsList _ "=>" _ returnedTypeNode:FunctionTypeExprReturnableOperand {
@@ -906,7 +908,7 @@ FunctionTypeExprParamOperand = UnionTypeExpr
                              / ArrowTypeExpr // no-jsdoc, no-closure
                              / FunctionTypeExpr
                              / ParenthesizedExpr
-                             / ArrayTypeExpr
+                             / ArrayTypeExpr // no-closure
                              / GenericTypeExpr
                              / BroadNamepathExpr
                              / ValueExpr
@@ -930,7 +932,7 @@ FunctionTypeExprReturnableOperand = PrefixUnaryUnionTypeExpr
                                   / ArrowTypeExpr // no-jsdoc, no-closure
                                   / FunctionTypeExpr
                                   / ParenthesizedExpr
-                                  / ArrayTypeExpr
+                                  / ArrayTypeExpr // no-closure
                                   / TypeQueryExpr // no-jsdoc
                                   / KeyQueryExpr // no-jsdoc, no-closure
                                   / GenericTypeExpr
@@ -1026,7 +1028,7 @@ RecordTypeExprEntryOperand = UnionTypeExpr
                            / ArrowTypeExpr // no-jsdoc, no-closure
                            / FunctionTypeExpr
                            / ParenthesizedExpr
-                           / ArrayTypeExpr
+                           / ArrayTypeExpr // no-closure
                            / GenericTypeExpr
                            / BroadNamepathExpr
                            / ValueExpr
@@ -1072,7 +1074,7 @@ TupleTypeExprOperand = UnionTypeExpr
                      / ParenthesizedExpr
                      / TypeQueryExpr // no-jsdoc
                      / KeyQueryExpr // no-jsdoc, no-closure
-                     / ArrayTypeExpr
+                     / ArrayTypeExpr // no-closure
                      / GenericTypeExpr
                      / BroadNamepathExpr
                      / ValueExpr
@@ -1104,7 +1106,7 @@ ParenthesizedExprOperand = UnionTypeExpr
                          / TupleTypeExpr // no-jsdoc, no-closure
                          / ArrowTypeExpr // no-jsdoc, no-closure
                          / FunctionTypeExpr
-                         / ArrayTypeExpr
+                         / ArrayTypeExpr // no-closure
                          / TypeQueryExpr // no-jsdoc
                          / KeyQueryExpr // no-jsdoc, no-closure
                          / GenericTypeExpr
@@ -1174,7 +1176,7 @@ VariadicTypeExprOperand = UnionTypeExpr
                         / ParenthesizedExpr
                         / TypeQueryExpr // no-jsdoc
                         / KeyQueryExpr // no-jsdoc, no-closure
-                        / ArrayTypeExpr
+                        / ArrayTypeExpr // no-closure
                         / GenericTypeExpr
                         / BroadNamepathExpr
                         / ValueExpr

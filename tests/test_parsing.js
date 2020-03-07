@@ -1975,6 +1975,12 @@ describe('Parser modes', function() {
     });
   });
   describe('Closure', function () {
+    it('should throw when "ParamType[]" arrived', function() {
+      const typeExprStr = 'ParamType[]';
+      expect(function () {
+        parse(typeExprStr, {mode: 'closure'});
+      }).to.throw(ClosureSyntaxError);
+    });
     it('should throw when "[TupleType1, TupleType2]" arrived', function() {
       const typeExprStr = '[TupleType1, TupleType2]';
       expect(function () {

@@ -8,7 +8,6 @@ const {traverse} = require('./lib/traversing.js');
 const NodeType = require('./lib/NodeType.js');
 const SyntaxType = require('./lib/SyntaxType.js');
 
-
 /**
  * Namespace for jsdoctypeparser.
  * @namespace

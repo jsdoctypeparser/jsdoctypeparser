@@ -3,7 +3,10 @@
 const {expect} = require('chai');
 
 const NodeType = require('../lib/NodeType.js');
-const {parse, JSDocTypeSyntaxError} = require('../lib/parsing.js');
+const {
+  parse, JSDocTypeSyntaxError,
+  JSDocSyntaxError, ClosureSyntaxError, TypeScriptSyntaxError,
+} = require('../lib/parsing.js');
 const SyntaxType = require('../lib/SyntaxType.js');
 
 /** @typedef {{type: import('../lib/NodeType').Type}} Node */
@@ -1909,6 +1912,250 @@ describe('Parser', function() {
   });
 });
 
+describe('Parser modes', function() {
+  it('should throw when invalid mode is specified', function() {
+    expect(function() {
+      parse('foo', {mode: 'invalid'})
+    }).to.throw(TypeError);
+  });
+  describe('jsdoc', function () {
+    it('should throw when "[TupleType1, TupleType2]" arrived', function() {
+      const typeExprStr = '[TupleType1, TupleType2]';
+      expect(function () {
+        parse(typeExprStr, {mode: 'jsdoc'});
+      }).to.throw(JSDocSyntaxError);
+    });
+    it('should throw when "() => string" arrived', function() {
+      const typeExprStr = '() => string';
+      expect(function () {
+        parse(typeExprStr, {mode: 'jsdoc'});
+      }).to.throw(JSDocSyntaxError);
+    });
+    it('should throw when "typeof foo" arrived', function() {
+      const typeExprStr = 'typeof foo';
+      expect(function () {
+        parse(typeExprStr, {mode: 'jsdoc'});
+      }).to.throw(JSDocSyntaxError);
+    });
+    it('should throw when "keyof foo" arrived', function() {
+      const typeExprStr = 'keyof foo';
+      expect(function () {
+        parse(typeExprStr, {mode: 'jsdoc'});
+      }).to.throw(JSDocSyntaxError);
+    });
+    it('should return an external name node when "external:string" arrived', function() {
+      const typeExprStr = 'external:string';
+      const node = parse(typeExprStr, {mode: 'jsdoc'});
+
+      const expectedNode = createExternalNameNode('string');
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a module name node when "module:path/to/file" arrived', function() {
+      const typeExprStr = 'module:path/to/file';
+      const node = parse(typeExprStr, {mode: 'jsdoc'});
+
+      const expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should throw when "import("foo")" arrived', function() {
+      const typeExprStr = 'import("foo")';
+      expect(function () {
+        parse(typeExprStr, {mode: 'jsdoc'});
+      }).to.throw(JSDocSyntaxError);
+    });
+    it('should return a record type node when "{key:ValueType}" arrived', function() {
+      const typeExprStr = '{key:ValueType}';
+      const node = parse(typeExprStr, {mode: 'jsdoc'});
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key', createTypeNameNode('ValueType')),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+  });
+  describe('Closure', function () {
+    it('should throw when "ParamType[]" arrived', function() {
+      const typeExprStr = 'ParamType[]';
+      expect(function () {
+        parse(typeExprStr, {mode: 'closure'});
+      }).to.throw(ClosureSyntaxError);
+    });
+    it('should throw when "[TupleType1, TupleType2]" arrived', function() {
+      const typeExprStr = '[TupleType1, TupleType2]';
+      expect(function () {
+        parse(typeExprStr, {mode: 'closure'});
+      }).to.throw(ClosureSyntaxError);
+    });
+    it('should throw when "() => string" arrived', function() {
+      const typeExprStr = '() => string';
+      expect(function () {
+        parse(typeExprStr, {mode: 'closure'});
+      }).to.throw(ClosureSyntaxError);
+    });
+    it('should return a function type node when "function()" arrived', function() {
+      const typeExprStr = 'function()';
+      const node = parse(typeExprStr, {mode: 'closure'});
+
+      const expectedNode = createFunctionTypeNode(
+        [], null,
+        { 'this': null, 'new': null }
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a type query type node when "typeof foo" arrived', function() {
+      const typeExprStr = 'typeof foo';
+      const node = parse(typeExprStr, {mode: 'closure'});
+
+      const expectedNode = createTypeQueryNode(
+        createTypeNameNode('foo')
+      );
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should throw when "keyof foo" arrived', function() {
+      const typeExprStr = 'keyof foo';
+      expect(function () {
+        parse(typeExprStr, {mode: 'closure'});
+      }).to.throw(ClosureSyntaxError);
+    });
+    it('should return an external name node when "external:string" arrived', function() {
+      const typeExprStr = 'external:string';
+      const node = parse(typeExprStr, {mode: 'closure'});
+
+      const expectedNode = createExternalNameNode('string');
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a module name node when "module:path/to/file" arrived', function() {
+      const typeExprStr = 'module:path/to/file';
+      const node = parse(typeExprStr, {mode: 'closure'});
+
+      const expectedNode = createModuleNameNode(createFilePathNode('path/to/file'));
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should throw when "import("foo")" arrived', function() {
+      const typeExprStr = 'import("foo")';
+      expect(function () {
+        parse(typeExprStr, {mode: 'closure'});
+      }).to.throw(ClosureSyntaxError);
+    });
+    it('should return a record type node when "{key:ValueType}" arrived', function() {
+      const typeExprStr = '{key:ValueType}';
+      const node = parse(typeExprStr, {mode: 'closure'});
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key', createTypeNameNode('ValueType')),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a record type node when "{key?:ValueType}" arrived', function() {
+      const typeExprStr = '{key?:ValueType}';
+      const node = parse(typeExprStr, {mode: 'closure'});
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key', createTypeOptionalNode('ValueType')),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+  });
+  describe('TypeScript', function () {
+    it('should return a tuple type node when "[TupleType1, TupleType2]" arrived', function() {
+      const typeExprStr = '[TupleType1, TupleType2]';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createTupleTypeNode([
+        createTypeNameNode('TupleType1'),
+        createTypeNameNode('TupleType2'),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return an arrow function type node when "() => string" arrived', function() {
+      const typeExprStr = '() => string';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createArrowFunctionTypeNode(
+        [], createTypeNameNode('string'),
+        { 'new': null }
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a function type node when "function()" arrived', function() {
+      const typeExprStr = 'function()';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createFunctionTypeNode(
+        [], null,
+        { 'this': null, 'new': null }
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a type query type node when "typeof foo" arrived', function() {
+      const typeExprStr = 'typeof foo';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createTypeQueryNode(
+        createTypeNameNode('foo')
+      );
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a key query type node when "keyof foo" arrived', function() {
+      const typeExprStr = 'keyof foo';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createKeyQueryNode(
+        createTypeNameNode('foo')
+      );
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should throw when "external:string" arrived', function() {
+      const typeExprStr = 'external:string';
+      expect(function () {
+        parse(typeExprStr, {mode: 'typescript'});
+      }).to.throw(TypeScriptSyntaxError);
+    });
+    it('should return a module name node when "module:path/to/file" arrived', function() {
+      const typeExprStr = 'module:path/to/file';
+      expect(function () {
+        parse(typeExprStr, {mode: 'typescript'});
+      }).to.throw(TypeScriptSyntaxError);
+    });
+    it('should return an import node when "import("foo")" arrived', function() {
+      const typeExprStr = 'import("foo")';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createImportNode(
+        createStringValueNode('foo')
+      );
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a record type node when "{key:ValueType}" arrived', function() {
+      const typeExprStr = '{key:ValueType}';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key', createTypeNameNode('ValueType')),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return a record type node when "{key?:ValueType}" arrived', function() {
+      const typeExprStr = '{key?:ValueType}';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key', createTypeOptionalNode('ValueType')),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+  });
+});
+
 
 /**
  * @param {string} typeName
@@ -1917,6 +2164,22 @@ function createTypeNameNode(typeName) {
   return {
     type: NodeType.NAME,
     name: typeName,
+  };
+}
+
+/**
+ * @param {string} typeName
+ */
+function createTypeOptionalNode(typeName) {
+  return {
+    meta: {
+      syntax: 'SUFFIX_KEY_QUESTION_MARK',
+    },
+    type: NodeType.OPTIONAL,
+    value: {
+      name: typeName,
+      type: 'NAME',
+    },
   };
 }
 
@@ -2122,5 +2385,16 @@ function createKeyQueryNode(value) {
   return {
     type: NodeType.KEY_QUERY,
     value: value,
+  };
+}
+
+/**
+ * @template {Node} T
+ * @param {T} path
+ */
+function createImportNode(path) {
+  return {
+    type: NodeType.IMPORT,
+    path: path,
   };
 }

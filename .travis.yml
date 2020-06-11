@@ -1,25 +1,24 @@
 language: node_js
 
 node_js:
+  - 14
   - 12
   - 10
-  - 8
-  - 6
 
 sudo: false
 
 before_install:
   - npm config set depth 0
 before_script:
+  - 'if [ "${ESLINT-}" == "7" ]; then npm install --no-save "eslint@${ESLINT}" ; fi'
   - 'if [ "${ESLINT-}" == "6" ]; then npm install --no-save "eslint@${ESLINT}" ; fi'
-  - 'if [ "${ESLINT-}" == "5" ]; then npm install --no-save "eslint@${ESLINT}" mocha@6.2.2 mkdirp@0.5.1 ; fi'
 script:
   - npm run test
   - 'if [ -n "${LINTBUILD-}" ]; then npm run lint && npm run build; fi'
 env:
   matrix:
+    - ESLINT=7
     - ESLINT=6
-    - ESLINT=5
 matrix:
   include:
     - node_js: 'lts/*'

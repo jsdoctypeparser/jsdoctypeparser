@@ -1,7 +1,7 @@
 {
   const meta = require('../lib/SyntaxType.js');
   const {
-    GenericTypeSyntax, UnionTypeSyntax,
+    GenericTypeSyntax,
     VariadicTypeSyntax, OptionalTypeSyntax,
     NullableTypeSyntax, NotNullableTypeSyntax,
   } = meta;
@@ -441,18 +441,13 @@ HexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
  *   - number|undefined
  *   - Foo|Bar|Baz
  */
-UnionTypeExpr = left:UnionTypeExprOperand _ syntax:UnionTypeOperator _ right:(UnionTypeExpr / UnionTypeExprOperand) {
+UnionTypeExpr = left:UnionTypeExprOperand _ "|" _ right:(UnionTypeExpr / UnionTypeExprOperand) {
                 return {
                     type: NodeType.UNION,
                     left,
                     right,
-                    meta: { syntax },
                 };
               }
-
-UnionTypeOperator = "|" {
-                      return UnionTypeSyntax.PIPE;
-                    }
 
 UnionTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr

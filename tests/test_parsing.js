@@ -1462,14 +1462,14 @@ describe('Parser', function() {
         const typeExprStr = 'module:"path/t"o/file".event:member';
         expect(function () {
           parse(typeExprStr);
-        }).to.throw('Expected "!", "#", ".", "...", ".<", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
+        }).to.throw('Expected "!", "#", "&", ".", "...", ".<", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
       });
 
       it('should throw when \'module:"path/t\\\\"o/file".event:member', function() {
         const typeExprStr = 'module:"path/t\\\\"o/file".event:member';
         expect(function () {
           parse(typeExprStr);
-        }).to.throw('Expected "!", "#", ".", "...", ".<", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
+        }).to.throw('Expected "!", "#", "&", ".", "...", ".<", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
       });
 
       it('should return a member node when "module:\'path/to/file\'.event:member" arrived', function() {
@@ -1819,6 +1819,63 @@ describe('Parser', function() {
 
       const expectedNode = createParenthesizedNode(
         createUnionTypeNode(
+          createTypeNameNode('LeftType'),
+          createTypeNameNode('RightType')
+        )
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return an intersection type when "LeftType&RightType" arrived', function() {
+      const typeExprStr = 'LeftType&RightType';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createIntersectionTypeNode(
+        createTypeNameNode('LeftType'),
+        createTypeNameNode('RightType')
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+
+    it('should return an intersection type when "LeftType&MiddleType&RightType" arrived', function() {
+      const typeExprStr = 'LeftType&MiddleType&RightType';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createIntersectionTypeNode(
+        createTypeNameNode('LeftType'),
+        createIntersectionTypeNode(
+          createTypeNameNode('MiddleType'),
+          createTypeNameNode('RightType')
+        ));
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+
+    it('should return an intersection type when "(LeftType&RightType)" arrived', function() {
+      const typeExprStr = '(LeftType&RightType)';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createParenthesizedNode(
+        createIntersectionTypeNode(
+          createTypeNameNode('LeftType'),
+          createTypeNameNode('RightType')
+        )
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+
+    it('should return an intersection type when "( LeftType & RightType )" arrived', function() {
+      const typeExprStr = '( LeftType & RightType )';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createParenthesizedNode(
+        createIntersectionTypeNode(
           createTypeNameNode('LeftType'),
           createTypeNameNode('RightType')
         )
@@ -2251,6 +2308,14 @@ function createInstanceMemberTypeNode(ownerTypeExpr, memberTypeName, quoteStyle 
 function createUnionTypeNode(leftTypeExpr, rightTypeExpr) {
   return {
     type: NodeType.UNION,
+    left: leftTypeExpr,
+    right: rightTypeExpr,
+  };
+}
+
+function createIntersectionTypeNode(leftTypeExpr, rightTypeExpr) {
+  return {
+    type: NodeType.INTERSECTION,
     left: leftTypeExpr,
     right: rightTypeExpr,
   };

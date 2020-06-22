@@ -258,10 +258,7 @@ Structure:
 {
   "type": "UNION",
   "left": node,
-  "right": node,
-  "meta": {
-    "syntax": "PIPE"
-  }
+  "right": node
 }
 ```
 

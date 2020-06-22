@@ -12,7 +12,7 @@ const SyntaxType = require('../lib/SyntaxType.js');
 /** @typedef {{type: import('../lib/NodeType').Type}} Node */
 
 const {
-  GenericTypeSyntax, UnionTypeSyntax, VariadicTypeSyntax,
+  GenericTypeSyntax, VariadicTypeSyntax,
   OptionalTypeSyntax, NullableTypeSyntax, NotNullableTypeSyntax,
 } = SyntaxType;
 
@@ -1776,8 +1776,7 @@ describe('Parser', function() {
 
       const expectedNode = createUnionTypeNode(
         createTypeNameNode('LeftType'),
-        createTypeNameNode('RightType'),
-        UnionTypeSyntax.PIPE
+        createTypeNameNode('RightType')
       );
 
       expect(node).to.deep.equal(expectedNode);
@@ -1792,9 +1791,8 @@ describe('Parser', function() {
         createTypeNameNode('LeftType'),
         createUnionTypeNode(
           createTypeNameNode('MiddleType'),
-          createTypeNameNode('RightType'),
-          UnionTypeSyntax.PIPE
-        ), UnionTypeSyntax.PIPE);
+          createTypeNameNode('RightType')
+        ));
 
       expect(node).to.deep.equal(expectedNode);
     });
@@ -1889,8 +1887,7 @@ describe('Parser', function() {
             { 'this': null, 'new': null }
             ),
             NullableTypeSyntax.SUFFIX_QUESTION_MARK
-          ),
-          UnionTypeSyntax.PIPE
+          )
         );
 
         expect(node).to.deep.equal(expectedNode);
@@ -2251,12 +2248,11 @@ function createInstanceMemberTypeNode(ownerTypeExpr, memberTypeName, quoteStyle 
   };
 }
 
-function createUnionTypeNode(leftTypeExpr, rightTypeExpr, syntax) {
+function createUnionTypeNode(leftTypeExpr, rightTypeExpr) {
   return {
     type: NodeType.UNION,
     left: leftTypeExpr,
     right: rightTypeExpr,
-    meta: { syntax: syntax || UnionTypeSyntax.PIPE },
   };
 }
 

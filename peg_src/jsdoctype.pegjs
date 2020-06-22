@@ -18,6 +18,7 @@
 
 TopTypeExpr = _ expr:( VariadicTypeExpr
                   / UnionTypeExpr
+                  / IntersectionTypeExpr // no-jsdoc, no-closure
                   / UnaryUnionTypeExpr
                   / ArrayTypeExpr // no-closure
                   / GenericTypeExpr
@@ -432,7 +433,37 @@ OctNumberLiteralExpr = $("-"? "0o"[0-7]+)
 
 HexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
 
+// no-jsdoc-begin, no-closure-begin
+/*
+ * Intersection type expressions.
+ *
+ * Examples:
+ *   - A & B
+ *   - Person & Serializable & Loggable
+ */
+IntersectionTypeExpr = left:IntersectionTypeExprOperand _ "&" _ right:(IntersectionTypeExpr / IntersectionTypeExprOperand) {
+                return {
+                    type: NodeType.INTERSECTION,
+                    left,
+                    right,
+                };
+              }
 
+IntersectionTypeExprOperand = UnaryUnionTypeExpr
+                     / RecordTypeExpr
+                     / TupleTypeExpr // no-jsdoc, no-closure
+                     / ArrowTypeExpr // no-jsdoc, no-closure
+                     / FunctionTypeExpr
+                     / ParenthesizedExpr
+                     / TypeQueryExpr // no-jsdoc
+                     / KeyQueryExpr // no-jsdoc, no-closure
+                     / GenericTypeExpr
+                     / ArrayTypeExpr // no-closure
+                     / BroadNamepathExpr
+                     / ValueExpr
+                     / AnyTypeExpr
+                     / UnknownTypeExpr
+// no-jsdoc-end, no-closure-end
 
 /*
  * Union type expressions.
@@ -511,6 +542,7 @@ KeyQueryExpr = operator:"keyof" _ operand:KeyQueryExprOperand {
 }
 
 KeyQueryExprOperand = UnionTypeExpr
+                    / IntersectionTypeExpr // no-jsdoc, no-closure
                     / UnaryUnionTypeExpr
                     / RecordTypeExpr
                     / TupleTypeExpr // no-jsdoc, no-closure
@@ -696,6 +728,7 @@ GenericTypeExprOperand = ParenthesizedExpr
 
 
 GenericTypeExprTypeParamOperand = UnionTypeExpr
+                                / IntersectionTypeExpr // no-jsdoc, no-closure
                                 / UnaryUnionTypeExpr
                                 / RecordTypeExpr
                                 / TupleTypeExpr // no-jsdoc, no-closure
@@ -881,6 +914,7 @@ FunctionTypeExprParams = paramsWithComma:(FunctionTypeExprParamOperand _ "," _)*
 
 
 FunctionTypeExprParamOperand = UnionTypeExpr
+                             / IntersectionTypeExpr // no-jsdoc, no-closure
                              / TypeQueryExpr // no-jsdoc
                              / KeyQueryExpr // no-jsdoc, no-closure
                              / UnaryUnionTypeExpr
@@ -1003,6 +1037,7 @@ RecordTypeExprEntryKey = '"' key:$([^\\"] / "\\".)* '"' {
 
 
 RecordTypeExprEntryOperand = UnionTypeExpr
+                           / IntersectionTypeExpr // no-jsdoc, no-closure
                            / UnaryUnionTypeExpr
                            / RecordTypeExpr
                            / TupleTypeExpr // no-jsdoc, no-closure
@@ -1047,6 +1082,7 @@ TupleTypeExprEntries = restWithComma:(TupleTypeExprOperand _ "," _)*
 }
 
 TupleTypeExprOperand = UnionTypeExpr
+                     / IntersectionTypeExpr // no-jsdoc, no-closure
                      / UnaryUnionTypeExpr
                      / RecordTypeExpr
                      / TupleTypeExpr // no-jsdoc, no-closure
@@ -1082,6 +1118,7 @@ ParenthesizedExpr = "(" _ wrapped:ParenthesizedExprOperand _ ")" {
 
 
 ParenthesizedExprOperand = UnionTypeExpr
+                         / IntersectionTypeExpr // no-jsdoc, no-closure
                          / UnaryUnionTypeExpr
                          / RecordTypeExpr
                          / TupleTypeExpr // no-jsdoc, no-closure
@@ -1148,6 +1185,7 @@ AnyVariadicTypeExpr = "..." {
 
 
 VariadicTypeExprOperand = UnionTypeExpr
+                        / IntersectionTypeExpr // no-jsdoc, no-closure
                         / UnaryUnionTypeExpr
                         / RecordTypeExpr
                         / TupleTypeExpr // no-jsdoc, no-closure

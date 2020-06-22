@@ -498,6 +498,11 @@ describe('publish', function() {
       const node = parse('number|boolean');
       expect(publish(node)).to.equal('number|boolean');
     });
+
+    it('should return a type intersection', function() {
+      const node = parse('A&B');
+      expect(publish(node)).to.equal('A&B');
+    });
   });
 
   describe('Types with operations', function () {

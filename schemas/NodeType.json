@@ -4,6 +4,7 @@
     "NAME",
     "MEMBER",
     "UNION",
+    "INTERSECTION",
     "VARIADIC",
     "RECORD",
     "RECORD_ENTRY",

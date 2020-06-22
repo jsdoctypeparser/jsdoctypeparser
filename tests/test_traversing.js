@@ -480,6 +480,38 @@ describe('traversing', function() {
           ['leave', NodeType.UNION, null, null],
         ],
       },
+      'should visit an intersection node': {
+        given: createIntersectionNode(createNameNode('left'), createNameNode('right')),
+        then: [
+          ['enter', NodeType.INTERSECTION, null, null],
+          ['enter', NodeType.NAME, 'left', NodeType.INTERSECTION],
+          ['leave', NodeType.NAME, 'left', NodeType.INTERSECTION],
+          ['enter', NodeType.NAME, 'right', NodeType.INTERSECTION],
+          ['leave', NodeType.NAME, 'right', NodeType.INTERSECTION],
+          ['leave', NodeType.INTERSECTION, null, null],
+        ],
+      },
+      'should visit a nested intersection node': {
+        given: createIntersectionNode(
+          createIntersectionNode(
+            createNameNode('left'),
+            createNameNode('middle')
+          ),
+          createNameNode('right')
+        ),
+        then: [
+          ['enter', NodeType.INTERSECTION, null, null],
+          ['enter', NodeType.INTERSECTION, 'left', NodeType.INTERSECTION],
+          ['enter', NodeType.NAME, 'left', NodeType.INTERSECTION],
+          ['leave', NodeType.NAME, 'left', NodeType.INTERSECTION],
+          ['enter', NodeType.NAME, 'right', NodeType.INTERSECTION],
+          ['leave', NodeType.NAME, 'right', NodeType.INTERSECTION],
+          ['leave', NodeType.INTERSECTION, 'left', NodeType.INTERSECTION],
+          ['enter', NodeType.NAME, 'right', NodeType.INTERSECTION],
+          ['leave', NodeType.NAME, 'right', NodeType.INTERSECTION],
+          ['leave', NodeType.INTERSECTION, null, null],
+        ],
+      },
     },
     'Types with operations': {
       'should visit a type query node': {
@@ -549,6 +581,14 @@ function createMemberNode(name, owner) {
 function createUnionNode(left, right) {
   return {
     type: NodeType.UNION,
+    left: left,
+    right: right,
+  };
+}
+
+function createIntersectionNode(left, right) {
+  return {
+    type: NodeType.INTERSECTION,
     left: left,
     right: right,
   };

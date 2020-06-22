@@ -262,6 +262,27 @@ Structure:
 }
 ```
 
+### `INTERSECTION`
+
+Example:
+
+```javascript
+/**
+ * @type {left&right}
+ * @type {(left&right)}
+ */
+```
+
+Structure:
+
+```javascript
+{
+  "type": "INTERSECTION",
+  "left": node,
+  "right": node
+}
+```
+
 ### `RECORD`
 
 Example:

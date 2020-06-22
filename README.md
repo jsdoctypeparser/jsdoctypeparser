@@ -9,8 +9,6 @@ The parser can parse:
   * `foo.bar`, `String[]`
 * [Closure Compiler type expressions](https://developers.google.com/closure/compiler/docs/js-for-compiler)
   * `Array<string>`, `function(arg1, arg2): ret`
-* [JSDuck type definitions](https://github.com/senchalabs/jsduck/wiki/Type-Definitions)
-  * `Boolean/"top"/"bottom"`
 * [some Typescript types](https://github.com/Microsoft/TypeScript)
   * `(x: number) => string`, `typeof x`, `import("./some-module")`
 * Complex type expressions
@@ -251,7 +249,6 @@ Example:
 /**
  * @type {left|right}
  * @type {(left|right)}
- * @type {left/right}
  */
 ```
 
@@ -263,7 +260,7 @@ Structure:
   "left": node,
   "right": node,
   "meta": {
-    "syntax": ("PIPE" or "SLASH")
+    "syntax": "PIPE"
   }
 }
 ```

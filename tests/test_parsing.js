@@ -1462,14 +1462,14 @@ describe('Parser', function() {
         const typeExprStr = 'module:"path/t"o/file".event:member';
         expect(function () {
           parse(typeExprStr);
-        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
+        }).to.throw('Expected "!", "#", ".", "...", ".<", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
       });
 
       it('should throw when \'module:"path/t\\\\"o/file".event:member', function() {
         const typeExprStr = 'module:"path/t\\\\"o/file".event:member';
         expect(function () {
           parse(typeExprStr);
-        }).to.throw('Expected "!", "#", ".", "...", ".<", "/", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
+        }).to.throw('Expected "!", "#", ".", "...", ".<", "<", "=", "?", "[", "|", "~", [ \\t], [\\n], [\\r], or end of input but "o" found.');
       });
 
       it('should return a member node when "module:\'path/to/file\'.event:member" arrived', function() {
@@ -1829,19 +1829,6 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
-
-    it('should return a union type when "LeftType/RightType" arrived', function() {
-      const typeExprStr = 'LeftType/RightType';
-      const node = parse(typeExprStr);
-
-      const expectedNode = createUnionTypeNode(
-        createTypeNameNode('LeftType'),
-        createTypeNameNode('RightType'),
-        UnionTypeSyntax.SLASH
-      );
-
-      expect(node).to.deep.equal(expectedNode);
-    });
 
     it('should throw a syntax error when "(unclosedParenthesis, " arrived', function() {
       const typeExprStr = '(unclosedParenthesis, ';

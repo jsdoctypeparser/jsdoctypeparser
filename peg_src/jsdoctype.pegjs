@@ -40,8 +40,11 @@ TopTypeExpr = _ expr:( VariadicTypeExpr
 /*
  * White spaces.
  */
-_  = ([ \t] / [\r]? [\n])*
+WS  = [ \t] / [\r]? [\n]
 
+_  = WS*
+
+__ = WS+
 
 /*
  * JavaScript identifier names.
@@ -529,7 +532,7 @@ PrefixUnaryUnionTypeExprOperand = GenericTypeExpr
 // from jsdoc mode for now.
 
 // no-jsdoc-begin
-TypeQueryExpr = operator:"typeof" _ name:QualifiedMemberName {
+TypeQueryExpr = operator:"typeof" __ name:QualifiedMemberName {
                 return {
                     type: NodeType.TYPE_QUERY,
                     name,
@@ -538,7 +541,7 @@ TypeQueryExpr = operator:"typeof" _ name:QualifiedMemberName {
 // no-jsdoc-end
 
 // no-jsdoc-begin, no-closure-begin
-KeyQueryExpr = operator:"keyof" _ operand:KeyQueryExprOperand {
+KeyQueryExpr = operator:"keyof" __ operand:KeyQueryExprOperand {
   return {
     type: NodeType.KEY_QUERY,
     value: operand,

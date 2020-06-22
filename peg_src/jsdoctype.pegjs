@@ -453,19 +453,9 @@ UnionTypeExpr = left:UnionTypeExprOperand _ syntax:UnionTypeOperator _ right:(Un
               }
 
 // https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
-UnionTypeOperator = UnionTypeOperatorClosureLibraryFlavored
-                  / UnionTypeOperatorJSDuckFlavored
-
-
-UnionTypeOperatorClosureLibraryFlavored = "|" {
-                                          return UnionTypeSyntax.PIPE;
-                                        }
-
-
-UnionTypeOperatorJSDuckFlavored = "/" {
-                                  return UnionTypeSyntax.SLASH;
-                                }
-
+UnionTypeOperator = "|" {
+                      return UnionTypeSyntax.PIPE;
+                    }
 
 UnionTypeExprOperand = UnaryUnionTypeExpr
                      / RecordTypeExpr

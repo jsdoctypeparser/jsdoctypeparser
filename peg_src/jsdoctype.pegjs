@@ -388,8 +388,6 @@ UnknownTypeExpr = "?" {
  *   - "foo"
  *   - "foo\"bar\nbuz"
  *
- * Spec:
- *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
  */
 ValueExpr = StringLiteralExpr / NumberLiteralExpr
 
@@ -452,7 +450,6 @@ UnionTypeExpr = left:UnionTypeExprOperand _ syntax:UnionTypeOperator _ right:(Un
                 };
               }
 
-// https://github.com/senchalabs/jsduck/wiki/Type-Definitions#type-names
 UnionTypeOperator = "|" {
                       return UnionTypeSyntax.PIPE;
                     }
@@ -754,7 +751,6 @@ GenericTypeEndToken = ">"
  *   - number[][]
  *
  * Spec:
- *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions#the-basic-syntax
  *   - https://jsdoc.app/tags-type.html
  */
 // TODO: We should support complex type expressions like "Some[]![]"
@@ -1123,7 +1119,6 @@ ParenthesizedExprOperand = UnionTypeExpr
  *
  * Spec:
  *   - https://developers.google.com/closure/compiler/docs/js-for-compiler#types
- *   - https://github.com/senchalabs/jsduck/wiki/Type-Definitions
  */
 VariadicTypeExpr = PrefixVariadicTypeExpr
                  / SuffixVariadicTypeExpr

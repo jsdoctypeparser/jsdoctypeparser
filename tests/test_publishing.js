@@ -490,18 +490,18 @@ describe('publish', function() {
   describe('Type combinations', function () {
     it('should return a formal type union', function() {
       const node = parse('(number|boolean)');
-      expect(publish(node)).to.equal('(number|boolean)');
+      expect(publish(node)).to.equal('(number | boolean)');
     });
 
 
     it('should return a informal type union', function() {
       const node = parse('number|boolean');
-      expect(publish(node)).to.equal('number|boolean');
+      expect(publish(node)).to.equal('number | boolean');
     });
 
     it('should return a type intersection', function() {
       const node = parse('A&B');
-      expect(publish(node)).to.equal('A&B');
+      expect(publish(node)).to.equal('A & B');
     });
   });
 

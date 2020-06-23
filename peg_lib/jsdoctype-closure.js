@@ -138,7 +138,7 @@ function peg$parse(input, options) {
 
   var peg$FAILED = {},
 
-      peg$startRuleFunctions = { TopTypeExpr: peg$parseTopTypeExpr },
+      peg$startRuleFunctions = { TopTypeExpr: peg$parseTopTypeExpr, NamepathExpr: peg$parseNamepathExpr, BroadNamepathExpr: peg$parseBroadNamepathExpr, ExternalNameExpr: peg$parseExternalNameExpr, ModuleNameExpr: peg$parseModuleNameExpr },
       peg$startRuleFunction  = peg$parseTopTypeExpr,
 
       peg$c0 = function(expr) {

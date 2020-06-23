@@ -2207,6 +2207,27 @@ describe('Parser modes', function() {
       expect(node).to.deep.equal(expectedNode);
     });
   });
+
+  describe('`startRule` option', function () {
+    it('should return a member node when \'module:"path/to/file".event:member\' arrived', function() {
+      const typeExprStr = 'module:"path/to/file".event:member';
+      const node = parse(typeExprStr, {startRule: 'BroadNamepathExpr'});
+
+      const expectedNode = createModuleNameNode(
+        createMemberTypeNode(createFilePathNode('path/to/file', 'double'), 'member', 'none', true)
+      );
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should throw when \'abc<\' arrived with `BroadNamepathExpr`', function() {
+      const typeExprStr = 'abc<';
+      expect(function () {
+        parse(typeExprStr, {
+          startRule: 'BroadNamepathExpr',
+        });
+      }).to.throw('or end of input but "<" found.');
+    });
+  });
 });
 
 

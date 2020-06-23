@@ -999,7 +999,7 @@ RecordTypeExprEntries = first:RecordTypeExprEntry restWithComma:((_ "," /_ ";" /
                         }, [first]);
                       }
 
-RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _
+RecordTypeExprEntry = readonly:("readonly" __)? keyInfo:RecordTypeExprEntryKey _
     optional:"?"?
     _ ":" _ value:RecordTypeExprEntryOperand {
                         const {quoteStyle, key} = keyInfo;
@@ -1013,16 +1013,18 @@ RecordTypeExprEntry = keyInfo:RecordTypeExprEntryKey _
                               value,
                               meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK },
                             } :
-                            value
+                            value,
+                          readonly: Boolean(readonly)
                         };
                       }
-                    / keyInfo:RecordTypeExprEntryKey {
+                    / readonly:("readonly" __)? keyInfo:RecordTypeExprEntryKey {
                         const {quoteStyle, key} = keyInfo;
                         return {
                           type: NodeType.RECORD_ENTRY,
                           key,
+                          quoteStyle,
                           value: null,
-                          quoteStyle
+                          readonly: Boolean(readonly)
                         };
                       }
 

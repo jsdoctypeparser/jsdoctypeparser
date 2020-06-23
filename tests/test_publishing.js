@@ -136,6 +136,16 @@ describe('publish', function() {
       expect(publish(node)).to.equal('{myNum}');
     });
 
+    it('should return a record type with a readonly entry', function() {
+      const node = parse('{readonly myNum}');
+      expect(publish(node)).to.equal('{readonly myNum}');
+    });
+
+    it('should return a record type with a readonly entry', function() {
+      const node = parse('{readonly myNum: number}');
+      expect(publish(node)).to.equal('{readonly myNum: number}');
+    });
+
 
     it('should return a record type with 2 entries', function() {
       const node = parse('{myNum: number, myObject}');

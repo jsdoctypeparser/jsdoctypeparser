@@ -478,6 +478,17 @@ describe('Parser', function() {
       expect(node).to.deep.equal(expectedNode);
     });
 
+    it('should return a record type node when "{readonly key:ValueType}" arrived', function() {
+      const typeExprStr = '{readonly key:ValueType}';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('key', createTypeNameNode('ValueType'), undefined, true),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
 
     it('should return a record type node when "{keyOnly}" arrived', function() {
       const typeExprStr = '{keyOnly}';
@@ -485,6 +496,17 @@ describe('Parser', function() {
 
       const expectedNode = createRecordTypeNode([
         createRecordEntryNode('keyOnly', null),
+      ]);
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+
+    it('should return a record type node when "{readonly keyOnly}" arrived', function() {
+      const typeExprStr = '{readonly keyOnly}';
+      const node = parse(typeExprStr);
+
+      const expectedNode = createRecordTypeNode([
+        createRecordEntryNode('keyOnly', null, undefined, true),
       ]);
 
       expect(node).to.deep.equal(expectedNode);
@@ -2369,12 +2391,13 @@ function createRecordTypeNode(recordEntries) {
   };
 }
 
-function createRecordEntryNode(key, valueTypeExpr, quoteStyle = 'none') {
+function createRecordEntryNode(key, valueTypeExpr, quoteStyle = 'none', readonly = false) {
   return {
     type: NodeType.RECORD_ENTRY,
     key: key,
     value: valueTypeExpr,
     quoteStyle,
+    readonly,
   };
 }
 

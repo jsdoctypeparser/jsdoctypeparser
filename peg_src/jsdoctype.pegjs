@@ -440,6 +440,10 @@ HexNumberLiteralExpr = $("-"? "0x"[0-9a-fA-F]+)
  * Examples:
  *   - A & B
  *   - Person & Serializable & Loggable
+ *   Spec:
+ *   - https://www.typescriptlang.org/v2/docs/handbook/unions-and-intersections.html
+ *   Issues to support:
+ *   - https://github.com/jsdoc/jsdoc/issues/1285
  */
 IntersectionTypeExpr = left:IntersectionTypeExprOperand _ "&" _ right:(IntersectionTypeExpr / IntersectionTypeExprOperand) {
                 return {

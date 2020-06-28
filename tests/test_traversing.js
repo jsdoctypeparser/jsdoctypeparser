@@ -534,6 +534,22 @@ describe('traversing', function() {
         ],
       },
 
+      'should visit a parenthesized key query node': {
+        given: createKeyQueryNode(
+          createParenthesizedNode(
+            createNameNode('t')
+          )
+        ),
+        then: [
+          ['enter', NodeType.KEY_QUERY, null, null],
+          ['enter', NodeType.PARENTHESIS, 'value', NodeType.KEY_QUERY],
+          ['enter', NodeType.NAME, 'value', NodeType.PARENTHESIS],
+          ['leave', NodeType.NAME, 'value', NodeType.PARENTHESIS],
+          ['leave', NodeType.PARENTHESIS, 'value', NodeType.KEY_QUERY],
+          ['leave', NodeType.KEY_QUERY, null, null],
+        ],
+      },
+
       'should visit an import type node': {
         given: createImportNode(createStringLiteral('jquery')),
         then: [
@@ -610,6 +626,13 @@ function createKeyQueryNode(value) {
     type: NodeType.KEY_QUERY,
     value: value,
   }
+}
+
+function createParenthesizedNode(value) {
+  return {
+    type: NodeType.PARENTHESIS,
+    value: value,
+  };
 }
 
 function createImportNode(path) {

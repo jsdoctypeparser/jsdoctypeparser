@@ -1916,6 +1916,18 @@ describe('Parser', function() {
     expect(node).to.deep.equal(expectedNode);
   });
 
+  it('should return a key query type node when "keyof(foo)" arrived', function() {
+    const typeExprStr = 'keyof(foo)';
+    const node = parse(typeExprStr);
+
+    const expectedNode = createKeyQueryNode(
+      createParenthesizedNode(
+        createTypeNameNode('foo')
+      )
+    );
+    expect(node).to.deep.equal(expectedNode);
+  });
+
   it('should return a key query type node when "keyof typeof foo" arrived', function() {
     const typeExprStr = 'keyof typeof foo';
     const node = parse(typeExprStr);

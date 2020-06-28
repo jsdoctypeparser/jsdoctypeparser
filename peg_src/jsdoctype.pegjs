@@ -542,11 +542,17 @@ TypeQueryExpr = operator:"typeof" __ name:QualifiedMemberName {
 
 // no-jsdoc-begin, no-closure-begin
 KeyQueryExpr = operator:"keyof" __ operand:KeyQueryExprOperand {
-  return {
-    type: NodeType.KEY_QUERY,
-    value: operand,
+    return {
+      type: NodeType.KEY_QUERY,
+      value: operand,
+    }
   }
-}
+  / operator:"keyof" operand:ParenthesizedExpr {
+    return {
+      type: NodeType.KEY_QUERY,
+      value: operand,
+    }
+  }
 
 KeyQueryExprOperand = UnionTypeExpr
                     / IntersectionTypeExpr // no-jsdoc, no-closure

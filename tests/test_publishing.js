@@ -516,6 +516,11 @@ describe('publish', function() {
       expect(publish(node)).to.equal('keyof x');
     })
 
+    it('should return a parenthesized key query node (with no whitespace)', function() {
+      const node = parse('keyof(x)');
+      expect(publish(node)).to.equal('keyof(x)');
+    })
+
     it('should return an import type node', function() {
       const node = parse('import("./lodash4ever")');
       expect(publish(node)).to.equal('import("./lodash4ever")');

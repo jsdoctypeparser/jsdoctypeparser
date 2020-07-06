@@ -80,6 +80,7 @@
     "open-cli": "^6.0.1",
     "pegjs": "^0.10.0",
     "rimraf": "^3.0.2",
+    "semantic-release": "^17.1.1",
     "typescript": "^3.9.5"
   },
   "license": "MIT"

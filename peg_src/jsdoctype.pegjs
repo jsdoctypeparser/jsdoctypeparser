@@ -616,7 +616,7 @@ PrefixNotNullableTypeExpr = operator:"!" _ operand:PrefixUnaryUnionTypeExprOpera
 
 
 /*
- * Suffix optional type expressions.
+ * Prefix optional type expressions.
  * This expression is deprecated.
  *
  * Examples:
@@ -659,8 +659,7 @@ SuffixUnaryUnionTypeExprOperand = PrefixUnaryUnionTypeExpr
  *
  * Note:
  *   Deprecated optional type operators can be placed before optional operators.
- *   See https://github.com/google/closure-library/blob/
- *     47f9c92bb4c7de9a3d46f9921a427402910073fb/closure/goog/net/tmpnetwork.js#L50
+ *   See https://github.com/google/closure-library/blob/47f9c92bb4c7de9a3d46f9921a427402910073fb/closure/goog/net/tmpnetwork.js#L50
  */
 SuffixNullableTypeExpr = operand:SuffixUnaryUnionTypeExprOperand _ operator:"?" {
                          return {

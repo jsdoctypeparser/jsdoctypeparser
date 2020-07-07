@@ -5,8 +5,6 @@ node_js:
   - 12
   - 10
 
-sudo: false
-
 before_install:
   - npm config set depth 0
 before_script:
@@ -16,13 +14,29 @@ script:
   - npm run test
   - 'if [ -n "${LINTBUILD-}" ]; then npm run lint && npm run build; fi'
 env:
-  matrix:
+  jobs:
     - ESLINT=7
     - ESLINT=6
-matrix:
+jobs:
+  # https://docs.travis-ci.com/user/customizing-the-build/#explicitly-including-jobs
   include:
-    - node_js: 'lts/*'
+    # https://docs.travis-ci.com/user/build-stages
+    - stage: lint
+      node_js: 'lts/*'
       env: LINTBUILD=true
-  exclude:
-    - node_js: 6
-      env: ESLINT=6
+    # https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/travis.md
+    - stage: release
+      node_js: lts/*
+      # script: skip
+      deploy:
+        provider: script
+        skip_cleanup: true
+        script:
+          - npx semantic-release
+
+# Matrix built by `node_js`, and `env.jobs`, running `script` for each,
+#  and running `jobs.include` when criteria (`node_js`) are matched
+# To exclude jobs in the default resulting matrix by criteria
+#  exclude:
+#    - node_js: 6
+#      env: ESLINT=6

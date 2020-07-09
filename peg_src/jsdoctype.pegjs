@@ -507,8 +507,7 @@ UnaryUnionTypeExpr = SuffixUnaryUnionTypeExpr
                    / PrefixUnaryUnionTypeExpr
 
 
-PrefixUnaryUnionTypeExpr = PrefixOptionalTypeExpr
-                         / PrefixNotNullableTypeExpr
+PrefixUnaryUnionTypeExpr = PrefixNotNullableTypeExpr
                          / PrefixNullableTypeExpr
 
 
@@ -612,24 +611,6 @@ PrefixNotNullableTypeExpr = operator:"!" _ operand:PrefixUnaryUnionTypeExprOpera
                               meta: { syntax: NotNullableTypeSyntax.PREFIX_BANG },
                             };
                           }
-
-
-
-/*
- * Prefix optional type expressions.
- * This expression is deprecated.
- *
- * Examples:
- *   - =string (deprecated)
- */
-PrefixOptionalTypeExpr = operator:"=" _ operand:PrefixUnaryUnionTypeExprOperand {
-                         return {
-                           type: NodeType.OPTIONAL,
-                           value: operand,
-                           meta: { syntax: OptionalTypeSyntax.PREFIX_EQUALS_SIGN },
-                         };
-                       }
-
 
 
 SuffixUnaryUnionTypeExpr = SuffixOptionalTypeExpr

@@ -1531,19 +1531,6 @@ describe('Parser', function() {
     });
 
 
-    it('should return an optional type node when "=string" arrived (deprecated)', function() {
-      const typeExprStr = '=string';
-      const node = parse(typeExprStr);
-
-      const expectedNode = createOptionalTypeNode(
-        createTypeNameNode('string'),
-        OptionalTypeSyntax.PREFIX_EQUALS_SIGN
-      );
-
-      expect(node).to.deep.equal(expectedNode);
-    });
-
-
     it('should return a nullable type node when "?string" arrived', function() {
       const typeExprStr = '?string';
       const node = parse(typeExprStr);
@@ -1577,19 +1564,6 @@ describe('Parser', function() {
       const expectedNode = createOptionalTypeNode(
         createTypeNameNode('string'),
         OptionalTypeSyntax.SUFFIX_EQUALS_SIGN
-      );
-
-      expect(node).to.deep.equal(expectedNode);
-    });
-
-
-    it('should return an optional type node when "= string" arrived (deprecated)', function() {
-      const typeExprStr = '= string';
-      const node = parse(typeExprStr);
-
-      const expectedNode = createOptionalTypeNode(
-        createTypeNameNode('string'),
-        OptionalTypeSyntax.PREFIX_EQUALS_SIGN
       );
 
       expect(node).to.deep.equal(expectedNode);

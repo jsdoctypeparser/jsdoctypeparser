@@ -462,12 +462,6 @@ describe('publish', function() {
     });
 
 
-    it('should return an optional type with an optional type operator on the head', function() {
-      const node = parse('=number');
-      expect(publish(node)).to.equal('number=');
-    });
-
-
     it('should return an optional type with an optional type operator on the tail', function() {
       const node = parse('number=');
       expect(publish(node)).to.equal('number=');

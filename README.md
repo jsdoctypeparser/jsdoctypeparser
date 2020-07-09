@@ -394,7 +394,7 @@ Structure:
   "type": "OPTIONAL",
   "value": node,
   "meta": {
-    "syntax": ("PREFIX_EQUALS_SIGN" or "SUFFIX_EQUALS_SIGN")
+    "syntax": "SUFFIX_EQUALS_SIGN"
   }
 }
 ```

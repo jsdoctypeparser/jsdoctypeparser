@@ -35,7 +35,6 @@ jobs:
         skip_cleanup: true # deprecated in favor of `cleanup:false` the default
         on:
           all_branches: true
-          condition: $TRAVIS_BRANCH =~ ^(v\d+)$
         script:
           - npx semantic-release
 

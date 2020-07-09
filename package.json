@@ -41,7 +41,7 @@
   "scripts": {
     "prepare": "npm-run-all build",
     "pretest": "npm-run-all lint build",
-    "test": "npm-run-all mocha typecheck",
+    "test": "npm-run-all coverage typecheck",
     "lint": "eslint .",
     "start": "static -p 8050",
     "open-coverage": "open-cli http://localhost:8050/coverage/",

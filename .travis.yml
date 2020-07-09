@@ -7,8 +7,6 @@ node_js:
   - 12
   - 10
 
-before_install:
-  - npm config set depth 0
 before_script:
   - 'if [ "${ESLINT-}" == "7" ]; then npm install --no-save "eslint@${ESLINT}" ; fi'
   - 'if [ "${ESLINT-}" == "6" ]; then npm install --no-save "eslint@${ESLINT}" ; fi'
@@ -25,14 +23,16 @@ jobs:
     # https://docs.travis-ci.com/user/build-stages
     - stage: lint
       node_js: 'lts/*'
+      script: skip # overwrite tests
       env: LINTBUILD=true
     # https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/travis.md
     - stage: release
       node_js: lts/*
-      # script: skip
+      script: skip # overwrite tests
       deploy:
         provider: script
-        # skip_cleanup: true (deprecated in favor of `cleanup` which defaults to true)
+        cleanup: false
+        skip_cleanup: true # deprecated in favor of `cleanup:false` the default
         script:
           - npx semantic-release
 

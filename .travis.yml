@@ -33,7 +33,7 @@ jobs:
       # script: skip
       deploy:
         provider: script
-        cleanup: true
+        # skip_cleanup: true (deprecated in favor of `cleanup` which defaults to true)
         script:
           - npx semantic-release
 

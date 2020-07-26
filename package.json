@@ -72,9 +72,9 @@
   "dependencies": {},
   "devDependencies": {
     "@frsource/frs-replace": "^2.1.1",
-    "@types/node": "^14.0.20",
+    "@types/node": "^14.0.26",
     "chai": "^4.2.0",
-    "eslint": "^7.4.0",
+    "eslint": "^7.5.0",
     "husky": "^4.2.5",
     "mkdirp": "^1.0.4",
     "mocha": "^8.0.1",
@@ -86,7 +86,7 @@
     "pegjs": "^0.10.0",
     "rimraf": "^3.0.2",
     "semantic-release": "^17.1.1",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.7"
   },
   "license": "MIT"
 }

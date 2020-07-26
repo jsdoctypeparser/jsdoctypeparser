@@ -36,7 +36,7 @@ jobs:
         # on:
         #  all_branches: true
         script:
-          - npx semantic-release
+          - semantic-release
 
 # Matrix built by `node_js`, and `env.jobs`, running `script` for each,
 #  and running `jobs.include` when criteria (`node_js`) are matched

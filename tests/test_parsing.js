@@ -2288,7 +2288,7 @@ function createTypeNameNode(typeName) {
 function createTypeOptionalNode(typeName) {
   return {
     meta: {
-      syntax: 'SUFFIX_KEY_QUESTION_MARK',
+      syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK,
     },
     type: NodeType.OPTIONAL,
     value: {
@@ -2470,7 +2470,7 @@ function createNamedParameter(name, type) {
 function createOptionalNamedParameter(name, type) {
   return {
     meta: {
-      syntax: 'SUFFIX_KEY_QUESTION_MARK',
+      syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK,
     },
     name,
     type: NodeType.NAMED_PARAMETER,

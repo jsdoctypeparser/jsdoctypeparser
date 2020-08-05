@@ -821,9 +821,16 @@ ArrowTypeExprParamsList = "(" _ ")" {
                     "(" _ params:ArrowTypeExprParams _ ")" {
                       return params;
                     }
-ArrowTypeExprParams = paramsWithComma:(JsIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr? {
+ArrowTypeParamIdentifier = id:JsIdentifier _ "?" { return { name: id, optional: true } } / id:JsIdentifier { return { name: id, optional: false } }
+ArrowTypeExprParams = paramsWithComma:(ArrowTypeParamIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr? {
   return paramsWithComma.reduceRight(function(params, tokens) {
-    const param = { type: NodeType.NAMED_PARAMETER, name: tokens[0], typeName: tokens[4] };
+    const param = { 
+        type: tokens[0].optional 
+            ? NodeType.NAMED_PARAMETER_OPTIONAL 
+            : NodeType.NAMED_PARAMETER, 
+        name: tokens[0].name, 
+        typeName: tokens[4] 
+    };
     return [param].concat(params);
   }, lastParam ? [lastParam] : []);
 }

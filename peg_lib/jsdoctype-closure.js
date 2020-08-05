@@ -568,24 +568,29 @@ function peg$parse(input, options) {
       peg$c135 = function(params) {
                             return params;
                           },
-      peg$c136 = function(id) { return { name: id, optional: true } },
-      peg$c137 = function(id) { return { name: id, optional: false } },
+      peg$c136 = function(id) { 
+              return { 
+                name: id, 
+                meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK } 
+              }; 
+            },
+      peg$c137 = function(id) { return { name: id } },
       peg$c138 = function(paramsWithComma, lastParam) {
         return paramsWithComma.reduceRight(function(params, tokens) {
           const param = { 
-              type: tokens[0].optional 
-                  ? NodeType.NAMED_PARAMETER_OPTIONAL 
-                  : NodeType.NAMED_PARAMETER, 
-              name: tokens[0].name, 
+              name: tokens[0].name,
+              type: NodeType.NAMED_PARAMETER,
               typeName: tokens[4] 
           };
+          if (tokens[0].meta) param.meta = tokens[0].meta;
           return [param].concat(params);
         }, lastParam ? [lastParam] : []);
       },
       peg$c139 = "...",
       peg$c140 = peg$literalExpectation("...", false),
       peg$c141 = function(spread, id, type) {
-        const operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
+        const operand = { type: NodeType.NAMED_PARAMETER, name: id.name, typeName: type };
+        if (id.meta) operand.meta = id.meta;
         if (spread) {
         return {
           type: NodeType.VARIADIC,
@@ -5275,7 +5280,7 @@ function peg$parse(input, options) {
     if (s1 !== peg$FAILED) {
       s2 = peg$parse_();
       if (s2 !== peg$FAILED) {
-        s3 = peg$parseJsIdentifier();
+        s3 = peg$parseArrowTypeParamIdentifier();
         if (s3 !== peg$FAILED) {
           s4 = peg$parse_();
           if (s4 !== peg$FAILED) {

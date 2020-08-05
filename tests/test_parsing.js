@@ -2132,6 +2132,51 @@ describe('Parser modes', function() {
 
       expect(node).to.deep.equal(expectedNode);
     });
+    it('should return an arrow function type node when "(input: string) => string" arrived', function() {
+      const typeExprStr = '(input: string) => string';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createArrowFunctionTypeNode(
+        [createNamedParameter('input', 'string')], createTypeNameNode('string'),
+        { 'new': null }
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return an arrow function type node when "(value1: boolean, input?: string) => string" arrived', function() {
+      const typeExprStr = '(value1: boolean, input?: string) => string';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createArrowFunctionTypeNode(
+        [
+          createNamedParameter('value1', 'boolean'),
+          createOptionalNamedParameter('input', 'string'),
+        ], createTypeNameNode('string'),
+        { 'new': null }
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should return an arrow function type node when "(test?: boolean, input?: string) => string" arrived', function() {
+      const typeExprStr = '(test?: boolean, input?: string) => string';
+      const node = parse(typeExprStr, {mode: 'typescript'});
+
+      const expectedNode = createArrowFunctionTypeNode(
+        [
+          createOptionalNamedParameter('test', 'boolean'),
+          createOptionalNamedParameter('input', 'string'),
+        ], createTypeNameNode('string'),
+        { 'new': null }
+      );
+
+      expect(node).to.deep.equal(expectedNode);
+    });
+    it('should throw when an arrow function type node "(test?: boolean, input: string) => string" arrived', function() {
+      expect(function () {
+        const typeExprStr = '(test?: boolean, input: string) => string';
+        parse(typeExprStr, {mode: 'typescript'});
+      }).to.throw('or end of input but "<" found.');
+    });
     it('should return a function type node when "function()" arrived', function() {
       const typeExprStr = 'function()';
       const node = parse(typeExprStr, {mode: 'typescript'});
@@ -2412,6 +2457,25 @@ function createFunctionTypeNode(paramNodes, returnedNode, modifierMap) {
     this: modifierMap.this,
     new: modifierMap.new,
   };
+}
+
+function createNamedParameter(name, type) {
+  return {
+    name,
+    type: NodeType.NAMED_PARAMETER,
+    typeName: createTypeNameNode(type),
+ };
+}
+
+function createOptionalNamedParameter(name, type) {
+  return {
+    meta: {
+      syntax: 'SUFFIX_KEY_QUESTION_MARK',
+    },
+    name,
+    type: NodeType.NAMED_PARAMETER,
+    typeName: createTypeNameNode(type),
+ };
 }
 
 function createNumberValueNode(numberLiteral) {

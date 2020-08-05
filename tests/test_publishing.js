@@ -293,6 +293,16 @@ describe('publish', function() {
       expect(publish(node)).to.equal('(x: true, y: false) => string');
     });
 
+    it('should return an arrow type with one two optional parameters', function() {
+      const node = parse('(x?: string, y?: number) => string');
+      expect(publish(node)).to.equal('(x?: string, y?: number) => string');
+    });
+
+    it('should return an arrow type with one regular parameter and one optional', function() {
+      const node = parse('(x: string, y?: number) => string');
+      expect(publish(node)).to.equal('(x: string, y?: number) => string');
+    });
+
     it('should return an arrow type with one parameter', function() {
       const node = parse('(x: true) => string');
       expect(publish(node)).to.equal('(x: true) => string');

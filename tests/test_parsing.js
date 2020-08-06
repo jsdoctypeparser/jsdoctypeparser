@@ -2175,7 +2175,7 @@ describe('Parser modes', function() {
       expect(function () {
         const typeExprStr = '(test?: boolean, input: string) => string';
         parse(typeExprStr, {mode: 'typescript'});
-      }).to.throw('or end of input but "<" found.');
+      }).to.throw('but ":" found');
     });
     it('should return a function type node when "function()" arrived', function() {
       const typeExprStr = 'function()';

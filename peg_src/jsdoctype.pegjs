@@ -821,39 +821,61 @@ ArrowTypeExprParamsList = "(" _ ")" {
                     "(" _ params:ArrowTypeExprParams _ ")" {
                       return params;
                     }
-ArrowTypeParamIdentifier = id:JsIdentifier _ "?" { 
+ArrowTypeRequiredParamEntry = id:JsIdentifier { return { name: id } }
+ArrowTypeOptionalParamEntry = id:JsIdentifier _ "?" { 
         return { 
           name: id, 
           meta: { syntax: OptionalTypeSyntax.SUFFIX_KEY_QUESTION_MARK } 
         }; 
-      } / 
-      id:JsIdentifier { return { name: id } }
-ArrowTypeExprParams = paramsWithComma:(ArrowTypeParamIdentifier _ ":" _ FunctionTypeExprParamOperand? _ "," _)* lastParam:VariadicNameExpr? {
-  return paramsWithComma.reduceRight(function(params, tokens) {
+      }
+ArrowOptionalLastParams = optionalParams:(ArrowTypeOptionalParamEntry _ ":" _ FunctionTypeExprParamOperand? _ "," _)* _ lastParam:OptionalLastParamExpr {
+  const paramsArray = optionalParams.reduce((params, paramTokens) => {
+    const id = paramTokens[0];
     const param = { 
-        name: tokens[0].name,
-        type: NodeType.NAMED_PARAMETER,
-        typeName: tokens[4] 
+      type: NodeType.NAMED_PARAMETER,
+      name: id.name,
+      typeName: paramTokens[4]
     };
-    if (tokens[0].meta) param.meta = tokens[0].meta;
-    return [param].concat(params);
-  }, lastParam ? [lastParam] : []);
+    if (id.meta) param.meta = id.meta;
+    params.push(param);
+    return params;
+  }, []);
+  if (lastParam) paramsArray.push(lastParam);
+  return paramsArray;
 }
-
-VariadicNameExpr = spread:"..."? _ id:ArrowTypeParamIdentifier _ ":" _ type:FunctionTypeExprParamOperand? {
-  const operand = { type: NodeType.NAMED_PARAMETER, name: id.name, typeName: type };
-  if (id.meta) operand.meta = id.meta;
-  if (spread) {
+FinalParamsExpr = ArrowOptionalLastParams / RequiredLastParamExpr
+ArrowTypeExprParams = requiredParams:(ArrowTypeRequiredParamEntry _ ":" _ FunctionTypeExprParamOperand? _ "," _)* _ finalParams:FinalParamsExpr {
+  const paramsArray = requiredParams.reduce((params, paramTokens) => {
+    const param = {
+      type: NodeType.NAMED_PARAMETER,
+      name: paramTokens[0].name,
+      typeName: paramTokens[4]
+    }
+    params.push(param);
+    return params;
+  }, []);
+  return finalParams ? paramsArray.concat(finalParams) : paramsArray;
+}
+SpreadVariadicNameExpr = spread:"..." _ id:JsIdentifier _ ":" _ type:FunctionTypeExprParamOperand? {
+  const operand = { type: NodeType.NAMED_PARAMETER, name: id, typeName: type };
   return {
     type: NodeType.VARIADIC,
     value: operand,
     meta: { syntax: VariadicTypeSyntax.PREFIX_DOTS },
   };
-  }
-  else {
-    return operand;
-  }
 }
+RequiredVariadicNameExpr = id:ArrowTypeRequiredParamEntry _ ":" _ type:FunctionTypeExprParamOperand? { // TODO: Add default value support
+  const operand = { type: NodeType.NAMED_PARAMETER, name: id.name, typeName: type };
+  if (id.meta) operand.meta = id.meta;
+  return operand;
+}
+OptionalVariadicNameExpr = id:ArrowTypeOptionalParamEntry _ ":" _ type:FunctionTypeExprParamOperand? {
+  const operand = { type: NodeType.NAMED_PARAMETER, name: id.name, typeName: type };
+  if (id.meta) operand.meta = id.meta;
+  return operand;
+}
+OptionalLastParamExpr = SpreadVariadicNameExpr / OptionalVariadicNameExpr
+RequiredLastParamExpr = SpreadVariadicNameExpr / RequiredVariadicNameExpr
 // no-jsdoc-end, no-closure-end
 
 /*

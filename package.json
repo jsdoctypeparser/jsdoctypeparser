@@ -49,6 +49,7 @@
     "pretest": "npm-run-all lint build",
     "test": "npm-run-all coverage typecheck",
     "lint": "eslint --report-unused-disable-directives .",
+    "bin": "./bin/jsdoctypeparser.js",
     "start": "static -p 8050",
     "open-coverage": "open-cli http://localhost:8050/coverage/",
     "open-cov": "run-p start open-coverage",

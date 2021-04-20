@@ -48,7 +48,7 @@
     "prepare": "npm-run-all build",
     "pretest": "npm-run-all lint build",
     "test": "npm-run-all coverage typecheck",
-    "lint": "eslint .",
+    "lint": "eslint --report-unused-disable-directives .",
     "start": "static -p 8050",
     "open-coverage": "open-cli http://localhost:8050/coverage/",
     "open-cov": "run-p start open-coverage",

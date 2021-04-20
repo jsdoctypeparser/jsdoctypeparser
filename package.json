@@ -28,7 +28,7 @@
     "test": "test"
   },
   "main": "index.js",
-  "bin": "./bin/jsdoctypeparser",
+  "bin": "./bin/jsdoctypeparser.js",
   "nyc": {
     "reporter": [
       "text",

@@ -1,7 +1,6 @@
 # jsdoctypeparser
 
-[![Build Status](https://travis-ci.org/jsdoctypeparser/jsdoctypeparser.svg?branch=master)](https://travis-ci.org/jsdoctypeparser/jsdoctypeparser)
-[![NPM version](https://badge.fury.io/js/jsdoctypeparser.svg)](http://badge.fury.io/js/jsdoctypeparser)
+[![NPM version](https://badge.fury.io/js/jsdoctypeparser.svg)](http://badge.fury.io/js/jsdoctypeparser) [![Node.js CI status](https://github.com/jsdoctypeparser/jsdoctypeparser.git/workflows/Node.js%20CI/badge.svg)](https://github.com/jsdoctypeparser/jsdoctypeparser.git/actions) [![npm](https://img.shields.io/npm/v/jsdoctypeparser.svg)](https://www.npmjs.com/package/jsdoctypeparser)
 
 The parser can parse:
 

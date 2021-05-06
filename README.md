@@ -9,13 +9,13 @@ The parser can parse:
 * [Closure Compiler type expressions](https://developers.google.com/closure/compiler/docs/js-for-compiler)
   * `Array<string>`, `function(arg1, arg2): ret`
 * [some Typescript types](https://github.com/Microsoft/TypeScript)
-  * `(x: number) => string`, `typeof x`, `import("./some-module")`
+  * `(x: number) => string`, `typeof x`, `import("./some-module")`, `T & U`
 * Complex type expressions
   * `Array<Array<string>>`, `function(function(Function))`
 
 ## Live demo
 
-The [live demo](https://jsdoctypeparser.github.io) is available.
+A [live demo](https://jsdoctypeparser.github.io) is available.
 
 ## Usage (Programmatic)
 

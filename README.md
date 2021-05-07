@@ -15,7 +15,7 @@ The parser can parse:
 
 ## Live demo
 
-A [live demo](https://jsdoctypeparser.github.io) is available.
+The [live demo](https://jsdoctypeparser.github.io) is available.
 
 ## Usage (Programmatic)
 
